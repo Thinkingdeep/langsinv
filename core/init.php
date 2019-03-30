@@ -15,9 +15,9 @@ $GLOBALS['config'] = array(
 		// $dbname="josephezati_langas";
     'mysql' => array(
          'host' => '127.0.0.1',
-         'username' => 'root',
+         'username' => 'josep_user',
          'password' => '',
-         'db' => 'new_langas_db'
+         'db' => 'josephezati_langas'
      ),
      
     'remember' => array(
