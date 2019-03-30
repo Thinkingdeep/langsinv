@@ -119,7 +119,7 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title text-center">SALES ENTRY FORM</h4>
+                <h4 class="modal-title text-center text-primary">SALES ENTRY FORM</h4>
             </div>
             <form method="post">
                 <div class="modal-body">
@@ -144,6 +144,7 @@
                                     endforeach;
                                     ?>
                                 </select>
+                                <input type="hidden" id="amount">
                             </div>
                         </div>
 
@@ -189,6 +190,7 @@
 
                         <div class="row form-group">
                             <div class="col-xs-6">
+                                <div id="payment_date">
                                 <label class="text-info">Balance payment date</label>
                                 <div class="input-group ">
                                     <div class="input-group-addon">
@@ -196,6 +198,7 @@
                                     </div>
                                     <input type="date" class="form-control pull-right" name="balance_pay_date" >
                                 </div>
+                            </div>
                             </div>
                             <div class="col-xs-6">
                                 <label class="text-info">Receipt</label>
@@ -300,7 +303,7 @@
                         <div class="row form-group">
                             <div class="col-xs-6">
                                 <label class="text-info">Purchase price</label>
-                                <input type="number" id="amount" class="form-control" name="buy_price" required="true" placeholder="Price(UGX)">
+                                <input type="number" id="purchase_amount" class="form-control" name="buy_price" required="true" placeholder="Price(UGX)">
                             </div>
                             <div class="col-xs-6">
                                 <label class="text-info">Purchase Date</label>
@@ -316,23 +319,25 @@
                         <div class="row form-group">
                             <div class="col-xs-6">
                                 <label class="text-info">Cash</label>
-                                <input type="number" id="cash" class="form-control" name="cash_paid" required="true" placeholder="Price(UGX)">
+                                <input type="number" id="purchase_cash" class="form-control" name="cash_paid" required="true" placeholder="Price(UGX)">
                             </div>
                             <div class="col-xs-6">
                                 <label class="text-info">Balance</label>
-                                <input type="number" id="balance" class="form-control" disabled="true" name="buy_balance" required="true" placeholder="Price(UGX)">
+                                <input type="number" id="purchase_balance" class="form-control" disabled="true" name="buy_balance" required="true" placeholder="Price(UGX)">
                             </div>
                         </div>
 
                         <div class="row form-group">
-                            <div class="col-xs-6">
+                            <div class="col-xs-6" >
+                                <div id="purchase_payment_date">
                                 <label class="text-info">Balance payment date</label>
                                 <div class="input-group ">
                                     <div class="input-group-addon">
                                         <i class="fa fa-calendar"></i>
                                     </div>
-                                    <input type="date" class="form-control pull-right" name="buy_balance_pay_date" >
+                                    <input type="date"  class="form-control pull-right" name="buy_balance_pay_date" >
                                 </div>
+                            </div>
                             </div>
                             <div class="col-xs-6">
                                 <label class="text-info">Transaction ID</label>
@@ -360,7 +365,7 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title text-center">BRAND ENTRY FORM</h4>
+                <h4 class="modal-title text-center text-primary">BRAND ENTRY FORM</h4>
             </div>
             <form action="" method="post">
                 <div class="modal-body">
@@ -407,7 +412,7 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title text-center">CUSTOMER ENTRY FORM</h4>
+                <h4 class="modal-title text-center text-primary">CUSTOMER ENTRY FORM</h4>
             </div>
             <form action="" method="post">
                 <div class="modal-body">
@@ -461,7 +466,7 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title text-center">SUPPLIER ENTRY FORM</h4>
+                <h4 class="modal-title text-center text-primary">SUPPLIER ENTRY FORM</h4>
             </div>
             <form action="" method="post">
                 <div class="modal-body">
@@ -638,82 +643,13 @@
     <!-- /.modal-dialog -->
 </div>
 
-<div class="modal modal-default fade" id="pay-purchase-balance-form">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title text-center">BALANCE PAYMENT FORM</h4>
-            </div>
-            <form action="" method="post">
-                <div class="modal-body">
-                    <div class="box-header with-border">
-                        <h3 class="box-title text-success">Purchase Payment</h3>
-                    </div>
-                    <div class="box-body">
-                        <div class="row form-group">
-                            <div class="col-xs-12">
-                                <label class="text-info">Supplier Name</label>
-                                <input type="text" class="form-control" name="make" required="true" autocomplete="
-                                       off">
-                            </div>
-                        </div>
-                        <div class="row form-group">
-                            <div class="col-xs-12">
-                                <label class="text-info">Product</label>
-                                <input type="text" class="form-control" name="model" required="true" autocomplete="
-                                       off">
-                            </div>
-                        </div>
-                        <div class="row form-group">
-                            <div class="col-xs-12">
-                                <label class="text-info">Purchase Price</label>
-                                <input type="text" class="form-control" name="manufacturer" required="true" autocomplete="
-                                       off">
-                            </div>
-                        </div>
-                        <div class="row form-group">
-                            <div class="col-xs-12">
-                                <label class="text-info">Amount Paid</label>
-                                <input type="text" class="form-control" name="manufacturer" required="true" autocomplete="
-                                       off">
-                            </div>
-                        </div>
-                        <div class="row form-group">
-                            <div class="col-xs-12">
-                                <label class="text-info">Balance</label>
-                                <input type="text" class="form-control" name="manufacturer" required="true" autocomplete="
-                                       off">
-                            </div>
-                        </div>
-                        <div class="row form-group">
-                            <div class="col-xs-12">
-                                <label class="text-info">Amount To Pay</label>
-                                <input type="text" class="form-control" name="manufacturer" required="true" autocomplete="
-                                       off">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="reset" class="btn btn-warning btn-md pull-left" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-success btn-md">Record Payment</button>
-                </div>
-            </form>
-        </div>
-        <!-- /.modal-content -->
-    </div>
-    <!-- /.modal-dialog -->
-</div>
-
 <div class="modal modal-default fade" id="new-stock-color-form">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title text-center">STOCK COLOR ENTRY FORM</h4>
+                <h4 class="modal-title text-center text-primary">STOCK COLOR ENTRY FORM</h4>
             </div>
             <form action="" method="post">
                 <div class="modal-body">

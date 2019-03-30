@@ -171,7 +171,7 @@
                                                             <span class="sr-only">Toggle Dropdown</span>
                                                         </button>
                                                         <ul class="dropdown-menu" role="menu">
-                                                            <li><button class="btn btn-success btn-sm" type="submit" id="print">Print</button></li>
+                                                            <li><a data-toggle="modal" href="#new-purchase-form" style="color: #72afd2;">Print</a></li>
 <!--                                                            <li><a data-toggle="modal" href="#new-purchase-form" style="color: #72afd2;">Export As Excel(.xls)</a></li>
                                                             <li><a data-toggle="modal" href="#new-brand-form" style="color: #72afd2;">Export As PDF(.pdf)</a></li>-->
                                                         </ul>

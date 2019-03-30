@@ -60,11 +60,14 @@
          * --------------------------------------------------------------
          */
         // var product = null;
+        var data=null;
         $('#select_product').change(function () {
             // var row_ids = Math.round(Math.random() * 300000000);
             product = $(this).children("option:selected").val();
             var text_value = $(this).children("option:selected").text();
-            // var data = text_value.split(" ", 5);
+//             var data = text_value.split(" ", 8);
+//             var y = data[7];
+//             getProductPrice(y);
 //     $('#select_product').text('');
             $("#display_selected_products").find('tbody tr td')
                     // .append($('<tr id="'+row_ids+'">')
@@ -91,6 +94,60 @@
 //                console.log('Button clicked');
             })
         })
+        var x = null;
+        function getProuctPrice(x){
+            $('#amount').val(x);
+            console.log($('#amount').val());
+        }
+        $("#cash").keyup(function () {
+            $("#balance").val();
+            var value = $('#amount').val() - $('#cash').val();
+            if (value < 0) {
+                $("#balance").val(0);
+                $("#cash").val($('#amount').val());
+                $("#cash").disable();
+            } else {
+                $("#balance").val(value);
+            }
+        })
+        $("#purchase_cash").keyup(function () {
+            $("#purchase_balance").val();
+            var value = $('#purchase_amount').val() - $('#purchase_cash').val();
+            if (value < 0) {
+                $("#purchase_balance").val(0);
+                $("#purchase_cash").val($('#purchase_amount').val());
+                $("#purchase_cash").disable();
+            } else {
+                $("#purchase_balance").val(value);
+            }
+        })
+
+// function refreshPage(){
+//   window.load();
+// }
+
+// function update() {
+//   // $("#balance").val();
+//   var value = $('#amount').val() - $('#cash').val();
+//   if (value < 0) {
+//     $("#balance").val(0);
+//     $("#cash").val($('#amount').val());
+//     $("#cash").disable();
+//   }else{
+//     $("#balance").val(value);
+//   }
+
+// }
+// function schedulePay(){
+//   if ($('#balance').val() <= 0){
+//     $("#payment_date").hide();
+//   }else{
+//     $("#payment_date").show();
+//   }}
+
+        // $("#cash").keyup(function(){
+        //     $("#balance").hide();
+        // })
 
 
 //        $('#display_selected_products > tbody:last-child').append('<tr><td>'+(data[0])+'</td></tr>');
@@ -265,4 +322,5 @@
             $('#new-event').val('')
         })
     })
+
 </script>

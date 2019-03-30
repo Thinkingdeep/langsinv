@@ -159,7 +159,7 @@
                                         <th>SUPPLIER</th>
                                         <th>SALES PRICE</th>
                                         <th>STATUS</th>
-                                        <th>ACTION</th>
+                                        <th style="width:70px;">ACTION</th>
                                     </tr>
                                 </thead>
                                 <tbody>

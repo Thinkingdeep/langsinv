@@ -91,16 +91,16 @@
                                         </button>
                                         <ul class="dropdown-menu" role="menu" style="">
                                             <li><a data-toggle="modal" href="#new-sale-form" style="color: #72afd2;">Print </a></li>
-                                            <li><a data-toggle="modal" href="#new-purchase-form" style="color: #72afd2;">Export As Excel(.xls)</a></li>
-                                            <li><a data-toggle="modal" href="#new-brand-form" style="color: #72afd2;">Export As PDF(.pdf)</a></li>
+                                            <!-- <li><a data-toggle="modal" href="#new-purchase-form" style="color: #72afd2;">Export As Excel(.xls)</a></li>
+                                            <li><a data-toggle="modal" href="#new-brand-form" style="color: #72afd2;">Export As PDF(.pdf)</a></li> -->
                                             <li class="divider"></li>
                                             <li><a data-toggle="modal" href="#new-sale-form" style="color: #72afd2;">Sell</a></li>
-                                            <li><a data-toggle="modal" href="#new-purchase-form" style="color: #72afd2;">Buy</a></li>
-                                            <li><a data-toggle="modal" href="#new-brand-form" style="color: #72afd2;">Add New Brand</a></li>
-                                            <li><a data-toggle="modal" href="#new-customer-form" style="color: #72afd2;">Add New Customer</a></li>
-                                            <li><a data-toggle="modal" href="#new-supplier-form" style="color: #72afd2;">Add New Supplier</a></li>
-                                            <li><a data-toggle="modal" href="#new-supplier-form" style="color: #72afd2;">Record An Income</a></li>
-                                            <li><a data-toggle="modal" href="#new-supplier-form" style="color: #72afd2;">Record An Expense</a></li>
+                <li><a data-toggle="modal" href="#new-purchase-form" style="color: #72afd2;">Buy</a></li>
+                <li><a data-toggle="modal" href="#new-brand-form" style="color: #72afd2;">Add New Brand</a></li>
+                <li><a data-toggle="modal" href="#new-customer-form" style="color: #72afd2;">Add New Customer</a></li>
+                <li><a data-toggle="modal" href="#new-supplier-form" style="color: #72afd2;">Add New Supplier</a></li>
+                <li><a data-toggle="modal" href="#new-income-form" style="color: #72afd2;">Record An Income</a></li>
+                <li><a data-toggle="modal" href="#new-expense-form" style="color: #72afd2;">Record Stock Expense</a></li>
                                         </ul>
                                     </div>
                             

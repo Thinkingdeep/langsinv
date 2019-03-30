@@ -93,9 +93,9 @@
                                             <span class="sr-only">Toggle Dropdown</span>
                                         </button>
                                         <ul class="dropdown-menu" role="menu" style="">
-                                            <li><a data-toggle="modal" href="#new-sale-form" style="color: #72afd2;">Print </a></li>
-                                            <li><a data-toggle="modal" href="#new-purchase-form" style="color: #72afd2;">Export As Excel(.xls)</a></li>
-                                            <li><a data-toggle="modal" href="#new-brand-form" style="color: #72afd2;">Export As PDF(.pdf)</a></li>
+                                            <li><a data-toggle="modal" href="index.php?page=print&columns=5&type=report&sub_type=purchases&from=00-00-0000&to=00-00-0000" style="color: #72afd2;">Print </a></li>
+                                            <!--                                            <li><a data-toggle="modal" href="#new-purchase-form" style="color: #72afd2;">Export As Excel(.xls)</a></li>
+                                                                                        <li><a data-toggle="modal" href="#new-brand-form" style="color: #72afd2;">Export As PDF(.pdf)</a></li>-->
                                             <li class="divider"></li>
                                             <li><a data-toggle="modal" href="#new-sale-form" style="color: #72afd2;">Sell</a></li>
                                             <li><a data-toggle="modal" href="#new-purchase-form" style="color: #72afd2;">Buy</a></li>
@@ -103,8 +103,7 @@
                                             <li><a data-toggle="modal" href="#new-customer-form" style="color: #72afd2;">Add New Customer</a></li>
                                             <li><a data-toggle="modal" href="#new-supplier-form" style="color: #72afd2;">Add New Supplier</a></li>
                                             <li><a data-toggle="modal" href="#new-income-form" style="color: #72afd2;">Record An Income</a></li>
-                                            <li><a data-toggle="modal" href="#new-expense-form" style="color: #72afd2;">Record Stock Expense</a></li> 
-                                        </ul>
+                                            <li><a data-toggle="modal" href="#new-expense-form" style="color: #72afd2;">Record Stock Expense</a></li>                       </ul>
                                     </div>
                                 </div>
                             </div>
@@ -126,7 +125,10 @@
                                 </thead>
                                 <tbody>
                                     <?php
-                                    $sales_query = DB::getInstance()->query("SELECT * FROM stock s,clients c, stock_name n, stock_prices sk,payments p WHERE s.id_client =c.id_client AND s.id_stock = sk.id_stock AND s.id_stock_name = n.id_stock_name AND s.id_stock = p.id_stock AND s.stock_status = 'SOLD' AND p.id_stock_price_type =2 AND sk.id_stock_price_type =2 ");
+                                    $bal_msg = "";
+                                    $edit_msg = "Edit";
+                                    $del_msg = "Delete";
+                                    $sales_query = DB::getInstance()->query("SELECT * FROM stock s,clients c, stock_name n, stock_prices sk,payments p WHERE s.id_client =c.id_client AND s.id_stock = sk.id_stock AND s.id_stock_name = n.id_stock_name AND s.id_stock = p.id_stock AND s.stock_status = 'SOLD' AND p.id_stock_price_type =2 AND sk.id_stock_price_type =2 GROUP BY s.id_stock DESC");
                                     $x = 1;
                                     foreach ($sales_query->results() as $sales_query):
                                         ?>
@@ -134,13 +136,20 @@
                                             <td><?php echo $x; ?></td>
                                             <td><?php echo $sales_query->payment_date; ?></td>
                                             <td><?php echo $sales_query->stock_make . ' ' . $sales_query->stock_model; ?></td>
-                                            <td><?php 
-                                            $sales_price = $sales_query->stock_price;
-                                            echo number_format($sales_query->stock_price, 2); ?></td>
-                                            <td><?php 
-                                            $total_pay = selectSum('payments', 'payment_amount', 'id_stock ="' . $sales_query->id_stock . '" AND id_stock_price_type = 2');
-                                            echo number_format(($sales_price - $total_pay),2);
-                                            ?></td>
+                                            <td><?php
+                                                $sales_price = $sales_query->stock_price;
+                                                echo number_format($sales_query->stock_price, 2);
+                                                ?></td>
+                                            <td><?php
+                                                $total_pay = selectSum('payments', 'payment_amount', 'id_stock ="' . $sales_query->id_stock . '" AND id_stock_price_type = 2');
+                                                $balance = $sales_price - $total_pay;
+                                                if($balance > 0){
+                                                    $bal_msg = "Pay Balance";
+                                                    }else{
+                                                        $bal_msg = "";
+                                                    }
+                                                echo number_format($balance,2);
+                                                ?></td>
                                             <td><?php echo $sales_query->name; ?></td>
                                             <td><?php echo $sales_query->payment_receipt; ?></td>
                                             <td><div class="btn-group">
@@ -150,17 +159,84 @@
                                                         <span class="sr-only">Toggle Dropdown</span>
                                                     </button>
                                                     <ul class="dropdown-menu" role="menu" style="">
-                                                        <li><a data-toggle="modal" href="#pay-purchase-balance-form" style="color: #72afd2;">Pay Balance </a></li>
-                                                        <li><a data-toggle="modal" href="#new-purchase-form" style="color: #72afd2;">Edit</a></li>
-                                                        <?php $content = 'Gift'; ?>
-                                                        <li><a data-toggle="modal" href="#delete-form" style="color: #72afd2;">Delete if not sold</a></li>
+                                                        <li><a data-toggle="modal" href="#pay-sales-balance-form<?php $sales_query->id_stock;?>" style="color: #72afd2;"><?php echo $bal_msg;?> </a></li>
+                                                        <li><a data-toggle="modal" href="#sales-edit-form" style="color: #72afd2;"><?php echo $edit_msg;?></a></li>
+                                                        <li><a data-toggle="modal" href="#delete-form" style="color: #72afd2;"><?php echo $del_msg;?></a></li>
                                                     </ul>
                                                 </div></td>
-                                        </tr>
-                                        <?php
-                                        $x++;
-                                    endforeach;
-                                    ?>
+                                    <div class="modal modal-default fade" id="pay-sales-balance-form<?php $sales_query->id_stock;?>">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span></button>
+                                                    <h4 class="modal-title text-center text-primary">BALANCE PAYMENT FORM</h4>
+                                                </div>
+                                                <form action="" method="post">
+                                                    <div class="modal-body">
+                                                        <div class="box-header with-border">
+                                                            <h3 class="box-title text-success">Sales Payment</h3>
+                                                        </div>
+                                                        <div class="box-body">
+                                                            <div class="row form-group">
+                                                                <div class="col-xs-12">
+                                                                    <label class="text-info">Customer Name</label>
+                                                                    <input type="text" class="form-control" name="make" required="true" autocomplete="
+                                                                           off" value="<?php echo $sales_query->name; ?>">
+                                                                </div>
+                                                            </div>
+                                                            <div class="row form-group">
+                                                                <div class="col-xs-12">
+                                                                    <label class="text-info">Product</label>
+                                                                    <input type="text" class="form-control" name="model" required="true" autocomplete="
+                                                                           off" value="<?php echo $sales_query->stock_make . ' ' . $sales_query->stock_model; ?>">
+                                                                </div>
+                                                            </div>
+                                                            <div class="row form-group">
+                                                                <div class="col-xs-12">
+                                                                    <label class="text-info">Sales Price</label>
+                                                                    <input type="text" class="form-control" disabled="true" required="true" autocomplete="
+                                                                           off" value="<?php echo number_format($sales_price, 2); ?>">
+                                                                </div>
+                                                            </div>
+                                                            <div class="row form-group">
+                                                                <div class="col-xs-12">
+                                                                    <label class="text-info">Amount Paid</label>
+                                                                    <input type="text" class="form-control" disabled="true" id="amount" autocomplete="
+                                                                           off" value="<?php echo number_format($total_pay, 2); ?>">
+                                                                </div>
+                                                            </div>
+                                                            <div class="row form-group">
+                                                                <div class="col-xs-12">
+                                                                    <label class="text-info">Balance</label>
+                                                                    <input type="text" class="form-control" id="balance" disabled="true" autocomplete="
+                                                                           off" value="<?php echo number_format(($balance), 2); ?>" >
+                                                                </div>
+                                                            </div>
+                                                            <div class="row form-group">
+                                                                <div class="col-xs-12">
+                                                                    <label class="text-info">Amount To Pay</label>
+                                                                    <input type="text" class="form-control" name="cash" id="cash" required="true" autocomplete="
+                                                                           off">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="reset" class="btn btn-warning btn-md pull-left" data-dismiss="modal">Cancel</button>
+                                                        <button type="submit" class="btn btn-success btn-md">Record Payment</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            <!-- /.modal-content -->
+                                        </div>
+                                        <!-- /.modal-dialog -->
+                                    </div>
+                                    </tr>
+                                    <?php
+                                    $x++;
+                                endforeach;
+                                ?>
                                 </tbody>
                             </table>
                         </div>
