@@ -211,7 +211,7 @@
                                                                 ?>
                                                             </td>
                                                             <td><?php echo number_format($balance,2);?></td>
-                                                            <td><?php echo $sales_query->name; ?></td>
+                                                            <td><a href="index.php?page=view_sales_single&id=<?php echo $sales_query->id_client;?>"><?php echo $sales_query->name; ?></a></td>
                                                         </tr>
                                                         <?php
                                                         $x++;
@@ -301,7 +301,7 @@
                                                                 }
                                                                 ?></td>
                                                             <td><?php echo $query_purchase->stock_status; ?></td>
-                                                            <td><?php echo DB::getInstance()->getName('clients', $query_purchase->id_client, 'name', 'id_client'); ?></td>
+                                                            <td><a href="index.php?page=view_purchases_single&id=<?php echo $query_purchase->id_client;?>"><?php echo DB::getInstance()->getName('clients', $query_purchase->id_client, 'name', 'id_client'); ?></a></td>
                                                         </tr>
                                                         <?php
                                                         $x++;

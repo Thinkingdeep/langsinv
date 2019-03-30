@@ -2,7 +2,6 @@
 <?php
 
 //echo 'Display';
-
 // session_start();
 // $_SESSION['getin_role'] = 'Administrator';
 require_once 'functions/functions.php';
@@ -45,12 +44,12 @@ switch ($page) {
         if (file_exists('pages/' . $page . '.php'))
             include 'pages/' . $page . '.php';
         break;
-        
+
     case 'profile':
         if (file_exists('pages/' . $page . '.php'))
             include 'pages/' . $page . '.php';
         break;
-        
+
     case 'print':
         if (file_exists('pages/' . $page . '.php'))
             include 'pages/' . $page . '.php';
@@ -67,6 +66,11 @@ switch ($page) {
         break;
 
     case 'view_purchases':
+        if (file_exists('pages/stock/' . $page . '.php'))
+            include 'pages/stock/' . $page . '.php';
+        break;
+
+    case 'view_purchases_single':
         if (file_exists('pages/stock/' . $page . '.php'))
             include 'pages/stock/' . $page . '.php';
         break;
@@ -102,6 +106,21 @@ switch ($page) {
         break;
 
     case 'view_sales':
+        if (file_exists('pages/sales/' . $page . '.php'))
+            include 'pages/sales/' . $page . '.php';
+        break;
+        
+    case 'new_schedule':
+        if (file_exists('pages/sales/' . $page . '.php'))
+            include 'pages/sales/' . $page . '.php';
+        break;
+
+    case 'view_schedules':
+        if (file_exists('pages/sales/' . $page . '.php'))
+            include 'pages/sales/' . $page . '.php';
+        break;
+        
+    case 'view_sales_single':
         if (file_exists('pages/sales/' . $page . '.php'))
             include 'pages/sales/' . $page . '.php';
         break;

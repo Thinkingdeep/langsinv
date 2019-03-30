@@ -96,8 +96,8 @@
             </span>
           </a>
           <ul class="treeview-menu">
-            <li><a href="index.php?page=profile"><i class="fa fa-circle-o"></i>User Profile</a></li>
-            <li><a href="index.php?page=company_account_settings"><i class="fa fa-circle-o"></i>Company Account</a></li>
+            <!--<li><a href="index.php?page=profile"><i class="fa fa-circle-o"></i>User Profile</a></li>-->
+            <!--<li><a href="index.php?page=company_account_settings"><i class="fa fa-circle-o"></i>Company Account</a></li>-->
             <li><a href="index.php?page=company_product_settings"><i class="fa fa-circle-o"></i>Prodouct Settings</a></li>
             <!-- <li><a href="index.php?page=company_stock_settings"><i class="fa fa-circle-o"></i>Stock Settings</a></li> -->
             <li><a href="index.php?page=company_income_settings"><i class="fa fa-circle-o"></i>Income Settings</a></li>

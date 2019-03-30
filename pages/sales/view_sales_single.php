@@ -125,10 +125,11 @@
                                 </thead>
                                 <tbody>
                                     <?php
+                                    $id = Input::get('id');
                                     $bal_msg = "";
                                     $edit_msg = "Edit";
                                     $del_msg = "Delete";
-                                    $sales_query = DB::getInstance()->query("SELECT * FROM stock s,clients c, stock_name n, stock_prices sk,payments p WHERE s.id_client =c.id_client AND s.id_stock = sk.id_stock AND s.id_stock_name = n.id_stock_name AND s.id_stock = p.id_stock AND s.stock_status = 'SOLD' AND p.id_stock_price_type =2 AND sk.id_stock_price_type =2 GROUP BY s.id_stock DESC");
+                                    $sales_query = DB::getInstance()->query("SELECT * FROM stock s,clients c, stock_name n, stock_prices sk,payments p WHERE s.id_client =c.id_client AND s.id_stock = sk.id_stock AND s.id_stock_name = n.id_stock_name AND s.id_stock = p.id_stock AND s.stock_status = 'SOLD' AND p.id_stock_price_type =2 AND sk.id_stock_price_type =2 AND c.id_client = $id GROUP BY s.id_stock DESC");
                                     $x = 1;
                                     foreach ($sales_query->results() as $sales_query):
                                         ?>
@@ -143,14 +144,14 @@
                                             <td><?php
                                                 $total_pay = selectSum('payments', 'payment_amount', 'id_stock ="' . $sales_query->id_stock . '" AND id_stock_price_type = 2');
                                                 $balance = $sales_price - $total_pay;
-                                                if($balance > 0){
+                                                if ($balance > 0) {
                                                     $bal_msg = "Pay Balance";
-                                                    }else{
-                                                        $bal_msg = "";
-                                                    }
-                                                echo number_format($balance,2);
+                                                } else {
+                                                    $bal_msg = "";
+                                                }
+                                                echo number_format($balance, 2);
                                                 ?></td>
-                                            <td><a href="index.php?page=view_sales_single&id=<?php echo $sales_query->id_client;?>"><?php echo $sales_query->name; ?></a></td>
+                                            <td><?php echo $sales_query->name; ?></td>
                                             <td><?php echo $sales_query->payment_receipt; ?></td>
                                             <td><div class="btn-group">
                                                     <button type="button" class="btn btn-default">Action</button>
@@ -159,12 +160,12 @@
                                                         <span class="sr-only">Toggle Dropdown</span>
                                                     </button>
                                                     <ul class="dropdown-menu" role="menu" style="">
-                                                        <li><a data-toggle="modal" href="#pay-sales-balance-form<?php echo $sales_query->id_stock;?>" style="color: #72afd2;"><?php echo $bal_msg;?> </a></li>
-                                                        <li><a data-toggle="modal" href="#sales-edit-form" style="color: #72afd2;"><?php echo $edit_msg;?></a></li>
-                                                        <li><a data-toggle="modal" href="#delete-form" style="color: #72afd2;"><?php echo $del_msg;?></a></li>
+                                                        <li><a data-toggle="modal" href="#pay-sales-balance-form<?php echo $sales_query->id_stock; ?>" style="color: #72afd2;"><?php echo $bal_msg; ?> </a></li>
+                                                        <li><a data-toggle="modal" href="#sales-edit-form" style="color: #72afd2;"><?php echo $edit_msg; ?></a></li>
+                                                        <li><a data-toggle="modal" href="#delete-form" style="color: #72afd2;"><?php echo $del_msg; ?></a></li>
                                                     </ul>
                                                 </div></td>
-                                    <div class="modal modal-default fade" id="pay-sales-balance-form<?php echo $sales_query->id_stock;?>">
+                                    <div class="modal modal-default fade" id="pay-sales-balance-form<?php echo $sales_query->id_stock; ?>">
                                         <div class="modal-dialog">
                                             <div class="modal-content">
                                                 <div class="modal-header">

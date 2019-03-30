@@ -3,6 +3,7 @@
     <?php
     error_reporting(E_ALL);
     include 'includes/header.php';
+     
     ?>
 
     <body class="hold-transition skin-blue sidebar-mini">
@@ -55,6 +56,7 @@
                     </ol>
                 </section>
                 <?php
+               $id = Input::get('id');
                 if (Input::exists() && Input::get('save_edit') == 'save_edit') {
                     $stock_id = Input::get('id_stock');
                     $supplier_id = Input::get('id_supplier');
@@ -167,7 +169,7 @@
                                     $del_msg = "";
                                     $bal_msg = "";
                                     $price_msg = "";
-                                    $query_purchase = DB::getInstance()->query("SELECT * FROM stock ORDER BY purchase_date DESC");
+                                    $query_purchase = DB::getInstance()->query("SELECT * FROM stock WHERE id_client = $id ORDER BY purchase_date DESC");
                                     $x = 1;
                                     foreach ($query_purchase->results() as $query_purchase):
                                         $product = DB::getInstance()->getName('stock_name', $query_purchase->id_stock_name, 'stock_make', 'id_stock_name')
@@ -189,7 +191,7 @@
                                             $balance = $cost_price - $total_pay;
                                             ?>
                                             <td><?php echo number_format($balance, 2); ?></td>
-                                            <td><a href="index.php?page=view_purchases_single&id=<?php echo $query_purchase->id_client;?>"><?php echo $supplier; ?></a></td>
+                                            <td><?php echo $supplier; ?></td>
                                             <?php
                                             $sales_price = getProuctPrice('stock_prices', $query_purchase->id_stock, 2);
                                             if ($sales_price <= 0) {
@@ -400,3 +402,5 @@
     </body>
 
 </html>
+
+

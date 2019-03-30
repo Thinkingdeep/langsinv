@@ -10,7 +10,9 @@ error_reporting(1);
 
 //session_start();
 $GLOBALS['config'] = array(
-    
+    // $username="josep_user";
+		// $password="a2cuggWE";
+		// $dbname="josephezati_langas";
     'mysql' => array(
          'host' => '127.0.0.1',
          'username' => 'root',
