@@ -171,7 +171,7 @@
                                                             <span class="sr-only">Toggle Dropdown</span>
                                                         </button>
                                                         <ul class="dropdown-menu" role="menu">
-                                                            <li><a data-toggle="modal" href="#new-purchase-form" style="color: #72afd2;">Print</a></li>
+                                                            <!-- <li><a data-toggle="modal" href="#new-purchase-form" style="color: #72afd2;">Print</a></li> -->
 <!--                                                            <li><a data-toggle="modal" href="#new-purchase-form" style="color: #72afd2;">Export As Excel(.xls)</a></li>
                                                             <li><a data-toggle="modal" href="#new-brand-form" style="color: #72afd2;">Export As PDF(.pdf)</a></li>-->
                                                         </ul>
@@ -270,7 +270,7 @@
                                                             <span class="sr-only">Toggle Dropdown</span>
                                                         </button>
                                                         <ul class="dropdown-menu" role="menu" style="">
-                                                            <li><a data-toggle="modal" href="index.php?page=print&columns=5&type=report&sub_type=purchases&from=00-00-0000&to=00-00-0000" style="color: #72afd2;">Print </a></li>
+                                                            <!-- <li><a data-toggle="modal" href="index.php?page=print&columns=5&type=report&sub_type=purchases&from=00-00-0000&to=00-00-0000" style="color: #72afd2;">Print </a></li> -->
 <!--                                                            <li><a data-toggle="modal" href="#new-purchase-form" style="color: #72afd2;">Export As Excel(.xls)</a></li>
                                                             <li><a data-toggle="modal" href="#new-brand-form" style="color: #72afd2;">Export As PDF(.pdf)</a></li>-->
                                                         </ul>
@@ -476,7 +476,7 @@
                                                             <span class="sr-only">Toggle Dropdown</span>
                                                         </button>
                                                         <ul class="dropdown-menu" role="menu" style="">
-                                                            <li><a data-toggle="modal" href="index.php?page=print&columns=6&type=report&sub_type=customers&from=00-00-0000&to=00-00-0000" style="color: #72afd2;">Print </a></li>
+                                                            <!-- <li><a data-toggle="modal" href="index.php?page=print&columns=6&type=report&sub_type=customers&from=00-00-0000&to=00-00-0000" style="color: #72afd2;">Print </a></li> -->
 <!--                                                            <li><a data-toggle="modal" href="#new-purchase-form" style="color: #72afd2;">Export As Excel(.xls)</a></li>
                                                             <li><a data-toggle="modal" href="#new-brand-form" style="color: #72afd2;">Export As PDF(.pdf)</a></li>-->
                                                         </ul>
@@ -564,7 +564,7 @@
                                                             <span class="sr-only">Toggle Dropdown</span>
                                                         </button>
                                                         <ul class="dropdown-menu" role="menu" style="">
-                                                            <li><a data-toggle="modal" href="index.php?page=print&columns=6&type=report&sub_type=suppliers&from=00-00-0000&to=00-00-0000" style="color: #72afd2;">Print </a></li>
+                                                            <!-- <li><a data-toggle="modal" href="index.php?page=print&columns=6&type=report&sub_type=suppliers&from=00-00-0000&to=00-00-0000" style="color: #72afd2;">Print </a></li> -->
 <!--                                                            <li><a data-toggle="modal" href="#new-purchase-form" style="color: #72afd2;">Export As Excel(.xls)</a></li>
                                                             <li><a data-toggle="modal" href="#new-brand-form" style="color: #72afd2;">Export As PDF(.pdf)</a></li>-->
                                                         </ul>
@@ -652,7 +652,7 @@
                                                             <span class="sr-only">Toggle Dropdown</span>
                                                         </button>
                                                         <ul class="dropdown-menu" role="menu" style="">
-                                                            <li><a data-toggle="modal" href="index.php?page=print&columns=4&type=report&sub_type=incomes&from=00-00-0000&to=00-00-0000" style="color: #72afd2;">Print </a></li>
+                                                            <!-- <li><a data-toggle="modal" href="index.php?page=print&columns=4&type=report&sub_type=incomes&from=00-00-0000&to=00-00-0000" style="color: #72afd2;">Print </a></li> -->
 <!--                                                            <li><a data-toggle="modal" href="#new-purchase-form" style="color: #72afd2;">Export As Excel(.xls)</a></li>
                                                             <li><a data-toggle="modal" href="#new-brand-form" style="color: #72afd2;">Export As PDF(.pdf)</a></li>-->
                                                         </ul>
@@ -729,7 +729,7 @@
                                                             <span class="sr-only">Toggle Dropdown</span>
                                                         </button>
                                                         <ul class="dropdown-menu" role="menu" style="">
-                                                            <li><a data-toggle="modal" href="index.php?page=print&columns=4&type=report&sub_type=expenses&from=00-00-0000&to=00-00-0000" style="color: #72afd2;">Print </a></li>
+                                                            <!-- <li><a data-toggle="modal" href="index.php?page=print&columns=4&type=report&sub_type=expenses&from=00-00-0000&to=00-00-0000" style="color: #72afd2;">Print </a></li> -->
 <!--                                                            <li><a data-toggle="modal" href="#new-purchase-form" style="color: #72afd2;">Export As Excel(.xls)</a></li>
                                                             <li><a data-toggle="modal" href="#new-brand-form" style="color: #72afd2;">Export As PDF(.pdf)</a></li>-->
                                                         </ul>
@@ -810,7 +810,7 @@
                                                             <span class="sr-only">Toggle Dropdown</span>
                                                         </button>
                                                         <ul class="dropdown-menu" role="menu" style="">
-                                                            <li><a data-toggle="modal" href="index.php?page=print&columns=4&type=report&sub_type=income_statement&from=00-00-0000&to=00-00-0000" style="color: #72afd2;">Print </a></li>
+                                                            <!-- <li><a data-toggle="modal" href="index.php?page=print&columns=4&type=report&sub_type=income_statement&from=00-00-0000&to=00-00-0000" style="color: #72afd2;">Print </a></li> -->
 <!--                                                            <li><a data-toggle="modal" href="#new-purchase-form" style="color: #72afd2;">Export As Excel(.xls)</a></li>
                                                             <li><a data-toggle="modal" href="#new-brand-form" style="color: #72afd2;">Export As PDF(.pdf)</a></li>-->
                                                         </ul>
@@ -937,7 +937,7 @@
                                                             <span class="sr-only">Toggle Dropdown</span>
                                                         </button>
                                                         <ul class="dropdown-menu" role="menu" style="">
-                                                            <li><a data-toggle="modal" href="index.php?page=print&columns=4&type=report&sub_type=balance_sheet&from=00-00-0000&to=00-00-0000" style="color: #72afd2;">Print </a></li>
+                                                            <!-- <li><a data-toggle="modal" href="index.php?page=print&columns=4&type=report&sub_type=balance_sheet&from=00-00-0000&to=00-00-0000" style="color: #72afd2;">Print </a></li> -->
 <!--                                                            <li><a data-toggle="modal" href="#new-purchase-form" style="color: #72afd2;">Export As Excel(.xls)</a></li>
                                                             <li><a data-toggle="modal" href="#new-brand-form" style="color: #72afd2;">Export As PDF(.pdf)</a></li>-->
                                                         </ul>
