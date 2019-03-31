@@ -99,17 +99,17 @@
 //            $('#amount').val(y);
 //            console.log($('#amount').val());
 //        }
-//        $("#cash").keyup(function () {
-//            $("#balance").val();
-//            var value = $('#amount').val() - $('#cash').val();
-//            if (value < 0) {
-//                $("#balance").val(0);
-//                $("#cash").val($('#amount').val());
-//                $("#cash").disable();
-//            } else {
-//                $("#balance").val(value);
-//            }
-//        })
+       // $("#cash").keyup(function () {
+       //     $("#balance").val();
+       //     var value = $('#amount').val() - $('#cash').val();
+       //     if (value < 0) {
+       //         $("#balance").val(0);
+       //         $("#cash").val($('#amount').val());
+       //         $("#cash").disable();
+       //     } else {
+       //         $("#balance").val(value);
+       //     }
+       // })
         $("#purchase_cash").keyup(function () {
             $("#purchase_balance").val();
             var value = $('#purchase_amount').val() - $('#purchase_cash').val();
@@ -121,7 +121,14 @@
                 $("#purchase_balance").val(value);
             }
         })
-
+        $('#balance_pay').keyup(function (){
+            var x = $('#outstanding_balance').val();
+            var y = $('#balance_pay').val();
+            if((x-y)<=0){
+                $('#balance_pay').val($('#outstanding_balance').val());
+                $('#balance_pay').disable();
+            }
+        })
 // function refreshPage(){
 //   window.load();
 // }

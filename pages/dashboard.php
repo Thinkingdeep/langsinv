@@ -14,12 +14,12 @@
                             <img src="assets/dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
                         </div>
                         <div class="pull-left info">
-                            <p>Alexander Pierce</p>
+                            <p><?php echo $current_user;?></p>
                             <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
                         </div>
                     </div>
                     <!-- search form -->
-                    <form action="#" method="get" class="sidebar-form">
+                    <!-- <form action="#" method="get" class="sidebar-form">
                         <div class="input-group">
                             <input type="text" name="q" class="form-control" placeholder="Search...">
                             <span class="input-group-btn">
@@ -27,7 +27,7 @@
                                 </button>
                             </span>
                         </div>
-                    </form>
+                    </form> -->
                     <!-- /.search form -->
                     <!-- sidebar menu: : style can be found in sidebar.less -->
                     <?php include 'includes/side_nav.php'; ?>
@@ -191,27 +191,38 @@
                                                         <th>CASH PAID</th>
                                                         <th>BALANCE</th>
                                                         <th>CUSTOMER</th>
+                                                        <th>RECEIPT</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <?php
-                                                    $sales_query = DB::getInstance()->query("SELECT * FROM stock s,clients c, stock_name n, stock_prices sk,payments p WHERE s.id_client =c.id_client AND s.id_stock = sk.id_stock AND s.id_stock_name = n.id_stock_name AND s.id_stock = p.id_stock AND s.stock_status = 'SOLD' AND p.id_stock_price_type =2 AND sk.id_stock_price_type =2 ");
-                                                    $x = 1;
-                                                    foreach ($sales_query->results() as $sales_query):
-                                                        ?>
-                                                        <tr>
-                                                            <td><?php echo $x; ?></td>
-                                                            <td><?php echo $sales_query->payment_date; ?></td>
-                                                            <td><?php echo $sales_query->stock_make . ' ' . $sales_query->stock_model; ?></td>
-                                                            <td><?php
-                                                                $sales_price = $sales_query->stock_price;
-                                                                $total_pay = selectSum('payments', 'payment_amount', 'id_stock ="' . $sales_query->id_stock . '" AND id_stock_price_type = 2');
-                                                                echo number_format(($total_pay), 2);
-                                                                $balance = $sales_price -$total_pay;
-                                                                ?>
-                                                            </td>
-                                                            <td><?php echo number_format($balance,2);?></td>
-                                                            <td><a href="index.php?page=view_sales_single&id=<?php echo $sales_query->id_client;?>"><?php echo $sales_query->name; ?></a></td>
+                                    <?php
+                                    $bal_msg = "";
+                                    $edit_msg = "Edit";
+                                    $del_msg = "Delete";
+                                    $sales_query = DB::getInstance()->query("SELECT * FROM stock s,clients c, stock_name n, stock_prices sk,payments p WHERE s.stock_sold_to =c.id_client AND s.id_stock = sk.id_stock AND s.id_stock_name = n.id_stock_name AND s.id_stock = p.id_stock AND s.stock_status = 'SOLD' AND p.id_stock_price_type =2 AND sk.id_stock_price_type =2 GROUP BY s.id_stock DESC");
+                                    $x = 1;
+                                    foreach ($sales_query->results() as $sales_query):
+                                        ?>
+                                        <tr>
+                                            <td><?php echo $x; ?></td>
+                                            <td><?php echo $sales_query->payment_date; ?></td>
+                                            <td><?php echo getProductName($sales_query->id_stock); ?></td>
+                                            <td><?php
+                                                $sales_price = $sales_query->stock_price;
+                                                echo number_format($sales_query->stock_price, 2);
+                                                ?></td>
+                                            <td><?php
+                                                $total_pay = selectSum('payments', 'payment_amount', 'id_stock ="' . $sales_query->id_stock . '" AND id_stock_price_type = 2');
+                                                $balance = $sales_price - $total_pay;
+                                                if($balance > 0){
+                                                    $bal_msg = "Pay Balance";
+                                                    }else{
+                                                        $bal_msg = "";
+                                                    }
+                                                echo number_format($balance,2);
+                                                ?></td>
+                                            <td><a href="index.php?page=view_sales_single&id=<?php echo $sales_query->stock_sold_to;?>"><?php echo $sales_query->name; ?></a></td>
+                                            <td><?php echo $sales_query->payment_receipt; ?></td>
                                                         </tr>
                                                         <?php
                                                         $x++;
@@ -269,47 +280,163 @@
                                         </div>
                                         <!-- /.box-header -->
                                         <div class="box-body">
+                                            <?php
+                                                if (Input::exists() && Input::get('save_price') == 'save_price') {
+                    $stock_id = Input::get('id_stock');
+                    $sales_price = Input::get('sales_price');
+                    $arraySalesPrice = array("stock_price" => $sales_price, "id_stock_price_type" => 2, "id_stock" => $stock_id);
+
+                    if (DB::getInstance()->insert("stock_prices", $arraySalesPrice)) {
+                        $entry_alert = submissionReport("success", "Price set successfully");
+                    } else {
+                        $entry_alert = submissionReport("error", "Failed to set product price");
+                    }
+                }
+                                            ?>
                                             <table id="example3" class="table table-bordered table-hover">
-                                                <thead>
-                                                    <tr>
-                                                        <th>NO</th>
-                                                        <th>DATE</th>
-                                                        <th>PRODUCT</th>
-                                                        <th>PURCHASE PRICE</th>
-                                                        <th>STATUS</th>
-                                                        <th>SUPPLIER</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <?php
-                                                    $query_purchase = DB::getInstance()->query("SELECT * FROM stock ORDER BY id_stock DESC");
-                                                    $x = 1;
-                                                    foreach ($query_purchase->results() as $query_purchase):
-                                                        ?>
-                                                        <tr>
-                                                            <td><?php echo $x; ?></td>
-                                                            <td><?php echo $query_purchase->purchase_date; ?></td>
-                                                            <td><?php
-                                                                echo DB::getInstance()->getName('stock_name', $query_purchase->id_stock_name, 'stock_make', 'id_stock_name')
-                                                                . ' ' . DB::getInstance()->getName('stock_name', $query_purchase->id_stock_name, 'stock_model', 'id_stock_name');
-                                                                ?></td>
-                                                            <td><?php
-                                                                try {
-                                                                    echo number_format(DB::getInstance()->getName('stock_prices', $query_purchase->id_stock, 'stock_price', 'id_stock'), 2);
-                                                                } catch (Exception $e) {
-                                                                    echo $e->getMessage();
-                                                                }
-                                                                ?></td>
-                                                            <td><?php echo $query_purchase->stock_status; ?></td>
-                                                            <td><a href="index.php?page=view_purchases_single&id=<?php echo $query_purchase->id_client;?>"><?php echo DB::getInstance()->getName('clients', $query_purchase->id_client, 'name', 'id_client'); ?></a></td>
-                                                        </tr>
-                                                        <?php
-                                                        $x++;
-                                                    endforeach;
-                                                    ?>
-                                                </tbody>
-                                                <tfoot></tfoot>
-                                            </table>
+                                <thead>
+                                    <tr>
+                                        <th>NO</th>
+                                        <th>DATE</th>
+                                        <th>PRODUCT</th>
+                                        <th>PURCHASE PRICE</th>
+                                        <th>PURCHASE BALANCE</th>
+                                        <th>SUPPLIER</th>
+                                        <th>SALES PRICE</th>
+                                        <th>STATUS</th>
+                                        <th>ACTION</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                    $del_msg = "";
+                                    $bal_msg = "";
+                                    $price_msg = "";
+                                    $query_purchase = DB::getInstance()->query("SELECT * FROM stock WHERE id_stock_price_type = 1 ORDER BY id_stock DESC");
+                                    $x = 1;
+                                    foreach ($query_purchase->results() as $query_purchase):
+                                        $product = getProductName($query_purchase->id_stock);
+                                        $supplier = DB::getInstance()->getName('clients', $query_purchase->id_client, 'name', 'id_client');
+                                        $idstock = $query_purchase->id_stock;
+                                        ?>
+                                        <tr>
+                                            <td><?php echo $x; ?></td>
+                                            <td><?php echo $query_purchase->purchase_date; ?></td>
+                                            <td><?php echo $product; ?></td>
+                                            <td><?php
+                                                echo number_format(getProuctPrice('stock_prices', $query_purchase->id_stock, 1), 2);
+                                                $cost_price = getProuctPrice('stock_prices', $query_purchase->id_stock, 1);
+                                                ?>
+                                            </td>
+                                            <?php
+                                            $total_pay = selectSum('payments', 'payment_amount', 'id_stock ="' . $query_purchase->id_stock . '" AND id_stock_price_type = 1');
+                                            $balance = $cost_price - $total_pay;
+                                            ?>
+                                            <td><?php echo number_format($balance, 2); ?></td>
+                                            <td><a href="index.php?page=view_purchases_single&id=<?php echo $query_purchase->id_client;?>"><?php echo $supplier; ?></a></td>
+                                            <?php
+                                            $sales_price = getProuctPrice('stock_prices', $query_purchase->id_stock, 2);
+                                            if ($sales_price <= 0) {
+                                                echo '<td><button class="btn btn-primary">NOT SET</button></td>';
+                                            } else {
+                                                ?>
+                                                <td><?php echo number_format($sales_price, 2);
+                                    }
+                                            ?></td>
+
+                                            <td><?php
+                                                echo $query_purchase->stock_status;
+                                                $status = $query_purchase->stock_status;
+                                                if (($balance > 0) && ($status == 'NOT SOLD') && ($sales_price <= 0)) {
+                                                    $bal_msg = 'Pay Balance';
+                                                    $del_msg = 'Delete';
+                                                    $price_msg = 'Set Price';
+                                                } elseif (($balance > 0) && ($sales_price > 0)) {
+                                                    $bal_msg = 'Pay Balance';
+                                                } elseif (($balance > 0) && ($status == 'NOT SOLD' || $status == 'SOLD') && ($sales_price <= 0)) {
+                                                    $bal_msg = 'Pay Balance';
+                                                } elseif ($balance <= 0 && $sales_price <= 0) {
+                                                    $price_msg = 'Set Price';
+                                                } else {
+                                                    $del_msg = '';
+                                                    $bal_msg = '';
+                                                    $price_msg = '';
+                                                }
+                                                ?></td>
+                                            <td><div class="btn-group">
+                                                    <button type="button" class="btn btn-default">Action</button>
+                                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                                                        <span class="caret"></span>
+                                                        <span class="sr-only">Toggle Dropdown</span>
+                                                    </button>
+                                                    <ul class="dropdown-menu" role="menu" style="">
+                                                        <li><a data-toggle="modal" href="#set-sales_price-form<?php echo $idstock; ?>" style="color: #72afd2;"><?php echo $price_msg; ?></a></li>
+                                                        <!-- <li><a data-toggle="modal" href="#pay-supp-balance-form<?php echo $idstock; ?>" style="color: #72afd2;"><?php echo $bal_msg; ?></a></li>
+                                                        <li><a data-toggle="modal" id="delete_record" href="#delete-stock-form<?php echo $idstock; ?>" style="color: #72afd2;"><?php echo $del_msg; ?></a></li> -->
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                    <div class="modal modal-default fade" id="set-sales_price-form<?php echo $idstock; ?>">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span></button>
+                                                    <h4 class="modal-title text-primary text-center">PRODUCT PRICING FORM</h4>
+                                                </div>
+                                                <form action="" method="post">
+                                                    <div class="modal-body">
+                                                        <div class="box-header with-border">
+                                                            <h3 class="box-title text-success">Product</h3>
+                                                        </div>
+                                                        <div class="box-body">
+                                                            <input type="hidden" name="id_stock" value="<?php echo $idstock; ?>">
+                                                            <div class="row form-group">
+                                                                <div class="col-xs-12">
+                                                                    <label class="text-info">Product Name</label>
+                                                                    <input type="text" class="form-control" disabled="true" value="<?php
+                                                                    echo DB::getInstance()->getName('stock_name', $query_purchase->id_stock_name, 'stock_make', 'id_stock_name')
+                                                                    . ' ' . DB::getInstance()->getName('stock_name', $query_purchase->id_stock_name, 'stock_model', 'id_stock_name');
+                                                                    ?>">
+                                                                </div>
+                                                            </div>
+                                                            <div class="row form-group">
+                                                                <div class="col-xs-12">
+                                                                    <label class="text-info">Supplier</label>
+                                                                    <input type="text" class="form-control" disabled="true" value="<?php echo DB::getInstance()->getName('clients', $query_purchase->id_client, 'name', 'id_client'); ?>" >
+                                                                </div>
+                                                            </div>
+                                                            <div class="row form-group">
+                                                                <div class="col-xs-12">
+                                                                    <label class="text-info">Purchase Price</label>
+                                                                    <input type="text" class="form-control" disabled="true" value="<?php echo number_format($cost_price, 2); ?>">
+                                                                </div>
+                                                            </div>
+                                                            <div class="row form-group">
+                                                                <div class="col-xs-12">
+                                                                    <label class="text-info">Sales Price</label>
+                                                                    <input type="number" class="form-control" name="sales_price" value="">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="reset" class="btn btn-warning btn-md pull-left" data-dismiss="modal">Cancel</button>
+                                                        <button type="submit" name="save_price" value="save_price" class="btn btn-success btn-md">Save</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            <!-- /.modal-content -->
+                                        </div>
+                                        <!-- /.modal-dialog -->
+                                    </div>
+                                    </tr>
+                                    <?php
+                                    $x++;
+                                endforeach;
+                                ?>
+                                </tbody>
+                            </table>
                                         </div>
                                         <!-- </div> -->
                                     </div>

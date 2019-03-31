@@ -20,12 +20,12 @@
                             <img src="assets/dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
                         </div>
                         <div class="pull-left info">
-                            <p>Alexander Pierce</p>
+                            <p><?php echo $current_user;?></p>
                             <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
                         </div>
                     </div>
                     <!-- search form -->
-                    <form action="#" method="get" class="sidebar-form">
+                    <!-- <form action="#" method="get" class="sidebar-form">
                         <div class="input-group">
                             <input type="text" name="q" class="form-control" placeholder="Search...">
                             <span class="input-group-btn">
@@ -33,7 +33,7 @@
                                 </button>
                             </span>
                         </div>
-                    </form>
+                    </form> -->
                     <!-- /.search form -->
                     <!-- sidebar menu: : style can be found in sidebar.less -->
                     <?php include'includes/side_nav.php' ?>
@@ -161,7 +161,7 @@
                                         <th>SUPPLIER</th>
                                         <th>SALES PRICE</th>
                                         <th>STATUS</th>
-                                        <th style="width:70px;">ACTION</th>
+                                        <th style="width: 70px;">ACTION</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -169,11 +169,10 @@
                                     $del_msg = "";
                                     $bal_msg = "";
                                     $price_msg = "";
-                                    $query_purchase = DB::getInstance()->query("SELECT * FROM stock WHERE id_client = $id ORDER BY purchase_date DESC");
+                                    $query_purchase = DB::getInstance()->query("SELECT * FROM stock WHERE id_stock_price_type = 1 AND id_client = $id  ORDER BY id_stock DESC");
                                     $x = 1;
                                     foreach ($query_purchase->results() as $query_purchase):
-                                        $product = DB::getInstance()->getName('stock_name', $query_purchase->id_stock_name, 'stock_make', 'id_stock_name')
-                                                . ' ' . DB::getInstance()->getName('stock_name', $query_purchase->id_stock_name, 'stock_model', 'id_stock_name');
+                                        $product = getProductName($query_purchase->id_stock);
                                         $supplier = DB::getInstance()->getName('clients', $query_purchase->id_client, 'name', 'id_client');
                                         $idstock = $query_purchase->id_stock;
                                         ?>
@@ -329,13 +328,14 @@
                                                             <div class="row form-group">
                                                                 <div class="col-xs-12">
                                                                     <label class="text-info">Balance</label>
-                                                                    <input type="text" class="form-control" value="<?php echo number_format($balance, 2); ?>">
+                                                        <input type="text" disabled="true" class="form-control" value="<?php echo number_format($balance, 2); ?>">
+                                                        <input type="hidden" id="outstanding_balance" class="form-control" value="<?php echo $balance; ?>">
                                                                 </div>
                                                             </div>
                                                             <div class="row form-group">
                                                                 <div class="col-xs-6">
                                                                     <label class="text-info">Amount</label>
-                                                                    <input type="text" class="form-control" name="cash_to_pay" value="">
+                                                                    <input type="text" class="form-control" id="balance_pay" name="cash_to_pay" value="">
                                                                 </div>
                                                                 <div class="col-xs-6">
                                                                     <label class="text-info">Transaction ID</label>
@@ -348,7 +348,7 @@
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="reset" class="btn btn-warning btn-md pull-left" data-dismiss="modal">Cancel</button>
-                                                        <button type="submit" name="save_edit" value="save_edit" class="btn btn-success btn-md">Record</button>
+                                                        <button type="submit" name="save_edit" value="save_edit" id="save_changes" class="btn btn-success btn-md">Record</button>
                                                     </div>
                                                 </form>
                                             </div>

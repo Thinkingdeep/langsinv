@@ -54,7 +54,7 @@
                     </ol>
                 </section>
                 <?php
-                $query_stock = DB::getInstance()->query("SELECT * FROM stock s,stock_name n, clients c WHERE s.id_stock_name = n.id_stock_name AND s.id_client = c.id_client AND c.id_client_type = 1 GROUP BY s.id_stock_name DESC");
+                $query_stock = DB::getInstance()->query("SELECT * FROM stock s,stock_name n, clients c WHERE s.id_stock_name = n.id_stock_name AND s.id_client = c.id_client GROUP BY s.id_stock_name DESC");
                 ?>
 
                 <!-- Main content -->

@@ -53,6 +53,21 @@
                         <li class="active">View Sales</li>
                     </ol>
                 </section>
+                <?php
+                        if(Input::exists() && Input::get('save_payment') == 'save_payment'){
+
+                            $arrayPayment = array("payment_amount" => Input::get('balance_pay'), "id_stock_price_type" => 2, "payment_date" => date("Y-m-d h:i:s"), "payment_receipt" => Input::get('sales_receipt'), "id_stock" => Input::get('product_id'));
+
+                            if (DB::getInstance()->insert("payments", $arrayPayment)) {
+
+                        $entry_alert = submissionReport("success", "Payment recorded successfully");
+                        Redirect::to();
+                    } else {
+                        $entry_alert = submissionReport("error", "Failed to submit payment");
+                    }
+
+                        }
+                        ?>
 
                 <!-- Main content -->
                 <section class="content">
@@ -119,8 +134,7 @@
                                         <th>SALES PRICE(UGX)</th>
                                         <th>SALES BALANCE(UGX)</th>
                                         <th>CUSTOMER</th>
-                                        <th>RECEIPT</th>
-                                        <th>ACTION</th>
+                                        <th style="width: 70px;">ACTION</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -129,14 +143,14 @@
                                     $bal_msg = "";
                                     $edit_msg = "Edit";
                                     $del_msg = "Delete";
-                                    $sales_query = DB::getInstance()->query("SELECT * FROM stock s,clients c, stock_name n, stock_prices sk,payments p WHERE s.id_client =c.id_client AND s.id_stock = sk.id_stock AND s.id_stock_name = n.id_stock_name AND s.id_stock = p.id_stock AND s.stock_status = 'SOLD' AND p.id_stock_price_type =2 AND sk.id_stock_price_type =2 AND c.id_client = $id GROUP BY s.id_stock DESC");
+                                    $sales_query = DB::getInstance()->query("SELECT * FROM stock s,clients c, stock_name n, stock_prices sk,payments p WHERE s.stock_sold_to =c.id_client AND s.id_stock = sk.id_stock AND s.id_stock_name = n.id_stock_name AND s.id_stock = p.id_stock AND s.stock_status = 'SOLD' AND p.id_stock_price_type =2 AND sk.id_stock_price_type =2 AND c.id_client = $id GROUP BY s.id_stock DESC");
                                     $x = 1;
                                     foreach ($sales_query->results() as $sales_query):
                                         ?>
                                         <tr>
                                             <td><?php echo $x; ?></td>
                                             <td><?php echo $sales_query->payment_date; ?></td>
-                                            <td><?php echo $sales_query->stock_make . ' ' . $sales_query->stock_model; ?></td>
+                                            <td><?php echo getProductName($sales_query->id_stock); ?></td>
                                             <td><?php
                                                 $sales_price = $sales_query->stock_price;
                                                 echo number_format($sales_query->stock_price, 2);
@@ -152,7 +166,6 @@
                                                 echo number_format($balance, 2);
                                                 ?></td>
                                             <td><?php echo $sales_query->name; ?></td>
-                                            <td><?php echo $sales_query->payment_receipt; ?></td>
                                             <td><div class="btn-group">
                                                     <button type="button" class="btn btn-default">Action</button>
                                                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
@@ -191,6 +204,8 @@
                                                                     <label class="text-info">Product</label>
                                                                     <input type="text" class="form-control" name="model" required="true" autocomplete="
                                                                            off" value="<?php echo $sales_query->stock_make . ' ' . $sales_query->stock_model; ?>">
+                                                                    <input type="hidden" class="form-control" name="product_id" required="true" autocomplete="
+                                                                           off" value="<?php echo $sales_query->id_stock; ?>">
                                                                 </div>
                                                             </div>
                                                             <div class="row form-group">
@@ -212,20 +227,28 @@
                                                                     <label class="text-info">Balance</label>
                                                                     <input type="text" class="form-control" id="balance" disabled="true" autocomplete="
                                                                            off" value="<?php echo number_format(($balance), 2); ?>" >
+                                                                    <input type="hidden" class="form-control" id="outstanding_balance"  autocomplete="
+                                                                           off" value="<?php echo $balance; ?>" >
                                                                 </div>
                                                             </div>
                                                             <div class="row form-group">
-                                                                <div class="col-xs-12">
+                                                                <div class="col-xs-6">
                                                                     <label class="text-info">Amount To Pay</label>
-                                                                    <input type="text" class="form-control" name="cash" id="cash" required="true" autocomplete="
+                                                                    <input type="number" class="form-control" name="balance_pay" id="balance_pay" required="true" autocomplete="
                                                                            off">
+                                                                </div>
+                                                                <div class="col-xs-6">
+                                                                    <label class="text-info">Receipt</label>
+                                                                    <p><strong  class="text-danger"  style="font-size: 25px;"><?php echo generateAutoIncrementNumber('payments', 'id_payment'); ?></strong></p>
+                                                                    <input type="hidden" name="sales_receipt" value="<?php echo generateAutoIncrementNumber('payments', 'id_payment'); ?>">
+
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="reset" class="btn btn-warning btn-md pull-left" data-dismiss="modal">Cancel</button>
-                                                        <button type="submit" class="btn btn-success btn-md">Record Payment</button>
+                                                        <button type="submit" name="save_payment" value="save_payment" class="btn btn-success btn-md">Record</button>
                                                     </div>
                                                 </form>
                                             </div>

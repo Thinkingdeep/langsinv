@@ -7,8 +7,10 @@ ob_start();
     include 'includes/header.php';
     ?>
     <?php
+    global $current_user;
     $alert_entry = "";
     if (Input::exists()) {
+        
         $validate = new Validate();
         $validation = $validate->check($_POST, array(
             'username' => array(
@@ -22,20 +24,10 @@ ob_start();
             $username = Input::get('username');
             $password = sha1(Input::get('password'));
             if (DB::getInstance()->checkRows("SELECT * FROM users WHERE username = '$username' AND user_password = '$password' ")) {
-                Session::put($username, DB::getInstance()->getName("users", $username, "user_type", "username"));
+//                Session::put($username, DB::getInstance()->getName("users", $username, "username", "username"));
+                $current_user =  DB::getInstance()->getName("users", $username, "username", "username");
+                createSession('Admin');
                 Redirect::to('index.php?page=dashboard');
-
-//                $type = Config::get('session/session_name');
-//                $type = DB::getInstance()->getName("users", $username, "user_type", "username");
-//                switch ($type){
-//                    case $type = 'admin':
-//                        $_SESSION[$type] = $username;
-//                        Redirect::to('index.php?page=dashboard');
-//                        break;
-//                    default :
-//                        Redirect::to();
-//                        break;
-//                }
             } else {
                 $alert_entry = "Sorry, login failed";
             }

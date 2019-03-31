@@ -2,7 +2,7 @@
 <?php
 
 //echo 'Display';
-// session_start();
+ session_start();
 // $_SESSION['getin_role'] = 'Administrator';
 require_once 'functions/functions.php';
 include 'core/init.php';

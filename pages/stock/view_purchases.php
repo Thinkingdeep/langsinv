@@ -165,13 +165,13 @@
                                 <tbody>
                                     <?php
                                     $del_msg = "";
+                                    $edit_msg = "";
                                     $bal_msg = "";
                                     $price_msg = "";
-                                    $query_purchase = DB::getInstance()->query("SELECT * FROM stock ORDER BY purchase_date DESC");
+                                    $query_purchase = DB::getInstance()->query("SELECT * FROM stock WHERE id_stock_price_type = 1 ORDER BY id_stock DESC");
                                     $x = 1;
                                     foreach ($query_purchase->results() as $query_purchase):
-                                        $product = DB::getInstance()->getName('stock_name', $query_purchase->id_stock_name, 'stock_make', 'id_stock_name')
-                                                . ' ' . DB::getInstance()->getName('stock_name', $query_purchase->id_stock_name, 'stock_model', 'id_stock_name');
+                                        $product = getProductName($query_purchase->id_stock);
                                         $supplier = DB::getInstance()->getName('clients', $query_purchase->id_client, 'name', 'id_client');
                                         $idstock = $query_purchase->id_stock;
                                         ?>
@@ -207,16 +207,13 @@
                                                     $bal_msg = 'Pay Balance';
                                                     $del_msg = 'Delete';
                                                     $price_msg = 'Set Price';
+                                                    $edit_msg = 'Edit';
                                                 } elseif (($balance > 0) && ($sales_price > 0)) {
                                                     $bal_msg = 'Pay Balance';
-                                                } elseif (($balance > 0) && ($status == 'NOT SOLD' || $status == 'SOLD') && ($sales_price <= 0)) {
-                                                    $bal_msg = 'Pay Balance';
+                                                    $edit_msg = 'Edit';
                                                 } elseif ($balance <= 0 && $sales_price <= 0) {
                                                     $price_msg = 'Set Price';
-                                                } else {
-                                                    $del_msg = '';
-                                                    $bal_msg = '';
-                                                    $price_msg = '';
+                                                    $edit_msg = 'Edit';
                                                 }
                                                 ?></td>
                                             <td><div class="btn-group">
@@ -228,6 +225,7 @@
                                                     <ul class="dropdown-menu" role="menu" style="">
                                                         <li><a data-toggle="modal" href="#set-sales_price-form<?php echo $idstock; ?>" style="color: #72afd2;"><?php echo $price_msg; ?></a></li>
                                                         <li><a data-toggle="modal" href="#pay-supp-balance-form<?php echo $idstock; ?>" style="color: #72afd2;"><?php echo $bal_msg; ?></a></li>
+                                                         <li><a data-toggle="modal" id="delete_record" href="#delete-stock-form<?php echo $idstock; ?>" style="color: #72afd2;"><?php echo $edit_msg; ?></a></li>
                                                         <li><a data-toggle="modal" id="delete_record" href="#delete-stock-form<?php echo $idstock; ?>" style="color: #72afd2;"><?php echo $del_msg; ?></a></li>
                                                     </ul>
                                                 </div>
@@ -328,12 +326,13 @@
                                                                 <div class="col-xs-12">
                                                                     <label class="text-info">Balance</label>
                                                                     <input type="text" class="form-control" value="<?php echo number_format($balance, 2); ?>">
+                                                                    <input type="hidden" class="form-control" id="outstanding_balance" value="<?php echo $balance; ?>">
                                                                 </div>
                                                             </div>
                                                             <div class="row form-group">
                                                                 <div class="col-xs-6">
                                                                     <label class="text-info">Amount</label>
-                                                                    <input type="text" class="form-control" name="cash_to_pay" value="">
+                                                                    <input type="text" class="form-control" id="balance_pay" name="cash_to_pay" value="">
                                                                 </div>
                                                                 <div class="col-xs-6">
                                                                     <label class="text-info">Transaction ID</label>

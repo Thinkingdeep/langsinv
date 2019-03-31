@@ -1,11 +1,11 @@
-
+<?php $current_user = createSession('Admin');?>
 <header class="main-header">
     <!-- Logo -->
     <a href="index.php?page=dashboard" class="logo">
         <!-- mini logo for sidebar mini 50x50 pixels -->
-<!--        <span class="logo-mini">Langas<b>Investments</b></span>
-         logo for regular state and mobile devices 
-        <span class="logo-lg">Langas<b>Investments</b></span>-->
+        <span class="logo-mini">Langas<b>Investments</b></span>
+         <!--logo for regular state and mobile devices--> 
+        <span class="logo-lg">Langas<b>Investments</b></span>
     </a>
     <!-- Header Navbar: style can be found in header.less -->
     <nav class="navbar navbar-static-top">
@@ -165,7 +165,7 @@
                         <div class="row form-group">
                             <div class="col-xs-12">
                                 <label class="text-info">Customer</label>
-                                <select  class="form-control select2 " name="customer_name"  style="width: 100%;">
+                                <select  class="form-control select2 " name="customer_name" id="customer_id"  style="width: 100%;">
                                     <option >--select--</option>
                                     <?php
                                     $query_customer = DB::getInstance()->query("SELECT * FROM clients WHERE id_client_type = 1");
@@ -811,7 +811,7 @@ if (Input::exists()) {
               </div>';
         } else {
             $arrayStock = array("chasis_number" => $chasis, "id_client" => $supplier, "engine_number" => $engine, "plate_number" => $plate, "purchase_date" => $purchase_date
-                , "id_stock_color" => $car_color, "id_stock_name" => $brand, "id_stock_type" => 2, "stock_status" => 'NOT SOLD');
+                , "id_stock_color" => $car_color, "id_stock_name" => $brand, "id_stock_price_type" => 1, "stock_status" => 'NOT SOLD');
             DB::getInstance()->insert("stock", $arrayStock);
 
             $arrayStockPrice = array("stock_price" => $cost_price, "occurred_on" => date("Y-m-d h:i:s"), "id_stock_price_type" => 1,
@@ -833,29 +833,25 @@ if (Input::exists()) {
         $balance = Input::get('product_balance');
         $pay_date = Input::get('balance_pay_date');
         $cash_receipt = Input::get('sales_receipt');
-//        if(DB::getInstance()->checkRows("SELECT * FROM client_orders WHERE id_client = $customer AND id_stock = $product_sold")){
-//            $entry_alert = '<div class="alert alert-danger alert-dismissible" style="height: 40px;">
-//                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-//                <p class="text-center" style="font-size: 16px;">You had ordered for this product, do you wish to pay for it?</p>
-//              </div>';
-//        }else{
-//            
-//        }
-        //=======================================INSERT INTO CLIENT ORDER TABLE==============================
+
+//=======================================INSERT INTO CLIENT ORDER TABLE==============================
+
         $arrayCustomerOrder = array("order_status" => 'NOT PAID', "id_client" => $customer, "id_stock" => $product_sold);
         DB::getInstance()->insert("client_orders", $arrayCustomerOrder);
         $arrayCustomerPayment = array("id_stock" => $product_sold, "id_stock_price_type" => 2, "payment_amount" => $cash_paid, "payment_receipt" => $cash_receipt);
 
-        //=======================INSERT INTO PAYMENTS TABLE, UPDATE STOCK & CLIENT ORDER TABLES===============
+//=======================INSERT INTO PAYMENTS TABLE, UPDATE STOCK & CLIENT ORDER TABLES===============
+
         if (DB::getInstance()->insert("payments", $arrayCustomerPayment)) {
-            $arrayProductSale = array("id_client" => $customer, "id_stock_type" => 1, "stock_status" => 'SOLD');
+            $arrayProductSale = array("stock_sold_to" => $customer,"stock_status" => 'SOLD');
             DB::getInstance()->update("stock", $product_sold, $arrayProductSale, "id_stock");
 
-            //==========GET ID OF ORDER PLACED
+//==========GET ID OF ORDER PLACED
             $order_query = DB::getInstance()->query("SELECT * FROM client_orders WHERE id_client = $customer AND id_stock = $product_sold");
             foreach ($order_query->results() as $order_query) {
                 $order_id = $order_query->id_client_order;
             }
+            if($cash_paid > 0){
             $arrayUpdateCustomerOrder = array("order_status" => 'PAID');
             DB::getInstance()->update("client_orders", $order_id, $arrayUpdateCustomerOrder, 'id_client_order');
             $entry_alert = '<div class="alert alert-success alert-dismissible" style="height: 40px;">
@@ -863,6 +859,12 @@ if (Input::exists()) {
                 <p class="text-center" style="font-size: 16px;">Data saved successfully</p>
               </div>';
             Redirect::to('index.php?page=print&columns=4&type=transaction&sub_type=sales&from=00-00-0000&to=00-00-0000');
+        }else{
+                $entry_alert = '<div class="alert alert-success alert-dismissible" style="height: 40px;">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                <p class="text-center" style="font-size: 16px;">Data saved successfully</p>
+              </div>';
+        }
         } else {
             $entry_alert = '<div class="alert alert-danger alert-dismissible" style="height: 40px;">
                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
