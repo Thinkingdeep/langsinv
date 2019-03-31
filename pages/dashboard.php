@@ -65,7 +65,7 @@
                                 <div class="icon">
                                     <i class="fa fa-arrow-down"></i>
                                 </div>
-                                <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+                                <a href="index.php?page=view_sales" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
                             </div>
                         </div>
                         <!-- ./col -->
@@ -80,7 +80,7 @@
                                 <div class="icon">
                                     <i class="fa fa-arrow-up"></i>
                                 </div>
-                                <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+                                <a href="index.php?page=view_purchases" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
                             </div>
                         </div>
                         <!-- ./col -->
@@ -95,7 +95,7 @@
                                 <div class="icon">
                                     <i class="fa fa-suitcase"></i>
                                 </div>
-                                <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+                                <a href="index.php?page=view_stock" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
                             </div>
                         </div>
                         <!-- ./col -->
@@ -103,14 +103,14 @@
                             <!-- small box -->
                             <div class="small-box bg-red">
                                 <div class="inner">
-                                    <h4>23</h4>
+                                    <h4><?php echo countEntries('clients', 'id_client','id_client_type = 1');?></h4>
 
-                                    <p>New Customers</p>
+                                    <p>Customers</p>
                                 </div>
                                 <div class="icon">
                                     <i class="fa  fa-user-plus"></i>
                                 </div>
-                                <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+                                <a href="index.php?page=view_customers" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
                             </div>
                         </div>
                         <!-- ./col -->
@@ -958,10 +958,6 @@
                                                 </thead>
                                                 <tbody>
                                                     <tr>
-                                                        <td>Gecko</td>
-                                                        <td>1.8</td>
-                                                        <td>A</td>
-                                                        <td>Gecko</td>
                                                     </tr>
                                                 </tbody>
                                                 <tfoot></tfoot>
