@@ -128,21 +128,40 @@
                                 <tbody>
                                     <?php
                                     $x = 1;
+                                    $stock_now = 0;
+                                    $stock_received = 0;
+                                    $stock_sold = 0;
                                     foreach ($query_stock->results() as $query):
                                         ?>
                                         <tr>
                                             <td><?php echo $x; ?></td>
                                             <td><?php echo $query->stock_make . ' ' . $query->stock_model; ?></td>
                                             <td><?php echo $query->stock_manufacturer; ?></td>
-                                            <td><?php echo countEntries('stock', 'id_stock', 'stock_status="NOT SOLD" AND id_stock_name ="' . $query->id_stock_name . '"'); ?></td>
-                                            <td><?php echo countEntries('stock', 'id_stock', 'id_stock_name ="' . $query->id_stock_name . '"'); ?></td>
-                                            <td><?php echo countEntries('stock', 'id_stock', 'stock_status="SOLD" AND id_stock_name ="' . $query->id_stock_name . '"'); ?></td>
+                                            <td><?php 
+                                            $stock_now  += countEntries('stock', 'id_stock', 'stock_status="NOT SOLD" AND id_stock_name ="' . $query->id_stock_name . '"');
+                                            echo countEntries('stock', 'id_stock', 'stock_status="NOT SOLD" AND id_stock_name ="' . $query->id_stock_name . '"'); ?></td>
+                                            <td><?php 
+                                            $stock_received += countEntries('stock', 'id_stock', 'id_stock_name ="' . $query->id_stock_name . '"');
+                                            echo countEntries('stock', 'id_stock', 'id_stock_name ="' . $query->id_stock_name . '"'); ?></td>
+                                            <td><?php
+                                            $stock_sold += countEntries('stock', 'id_stock', 'stock_status="SOLD" AND id_stock_name ="' . $query->id_stock_name . '"'); 
+                                            echo countEntries('stock', 'id_stock', 'stock_status="SOLD" AND id_stock_name ="' . $query->id_stock_name . '"');  ?></td>
                                         </tr>
                                         <?php
                                         $x++;
                                     endforeach;
                                     ?>
                                 </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td><strong>Total</strong></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td><strong><?php echo $stock_now; ?></strong></td>
+                                        <td><strong><?php echo $stock_received; ?></strong></td>
+                                        <td><strong><?php echo $stock_sold; ?></strong></td>
+                                    </tr>
+                                </tfoot>
                             </table>
                         </div>
                     </div>

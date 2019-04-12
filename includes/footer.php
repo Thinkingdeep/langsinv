@@ -60,56 +60,75 @@
          * --------------------------------------------------------------
          */
         // var product = null;
-        var data=null;
+        var data = null;
         $('#select_product').change(function () {
             // var row_ids = Math.round(Math.random() * 300000000);
             product = $(this).children("option:selected").val();
             var text_value = $(this).children("option:selected").text();
-             var data = text_value.split(" ", 8);
-              window.y = data[7];
-//             getProductPrice(y);
-//     $('#select_product').text('');
-            $("#display_selected_products").find('tbody tr td')
-                    // .append($('<tr id="'+row_ids+'">')
-                    // .append($('<td>')
-                    // .text(data[1] + ' ' + data[2]+' '+data[0]+' '+data[4])
-                    .text(text_value)
-                    // )
-                    // .append($('<td>')
-                    //         .text(data[0])
-                    //         )
-                    // .append($('<td>')
-                    //         .text(data[4])
-                    //         )
-                    // .append($('<td>')
-                    .append($('<input type="button" class="btn btn-danger pull-right" id="product_in_list" value="Remove">'))
-            // )
+            var data = text_value.split(" ", 11);
+            window.y = data[7];
+            $("#display_selected_products").show();
+
+            $("#display_selected_products").find('tbody tr')
+
+                    .append($('<td>')
+                            .text(data[0] + ' ' + data[1] + ' ' + data[2] + ' ' + data[3] + ' ' + data[4] + ' ' + data[5])
+                            )
+                    .append($('<td>')
+                            .text(data[8])
+                            )
+                    .append($('<td>')
+                            .text(data[10])
+                            )
+                    .append($('<td>')
+                            .append($('<input type="button" class="btn btn-danger pull-right" id="product_in_list" value="Remove">'))
+                            )
+                    var price = data[8].split(".",2);
+                    var formated_price = price[0].split(",",price[0].length);
+                    $('#selectedProductPrice').val(formated_price);
+                    var expense = data[10].split(".",2);
+                    var formated_expense = expense[0].split(",",expense[0].length);
+                    $('#selectedProductExpense').val(formated_expense);
+                    // console.log(formated_price);
+            $('#stock_purchase_price').val(data[8]);
+            $('#stock_expense_cost').val(data[10]);
             // )
             $('#product_in_list').click(function () {
                 $(this).parent().parent().remove()
+                $("#display_selected_products").hide();
+                $('#stock_purchase_price').val(0);
+                $('#stock_expense_cost').val(0);
                 $("#display_selected_products").find('tbody')
-                        .append($('<tr>')
-                                .append($('<td>'))
-                                )
-//                console.log('Button clicked');
+                        .append($('<tr>'))
             })
         })
-//        var x = null;
-//        function getProuctPrice(x){
-//            $('#amount').val(y);
-//            console.log($('#amount').val());
-//        }
-       // $("#cash").keyup(function () {
-       //     $("#balance").val();
-       //     var value = $('#amount').val() - $('#cash').val();
-       //     if (value < 0) {
-       //         $("#balance").val(0);
-       //         $("#cash").val($('#amount').val());
-       //         $("#cash").disable();
-       //     } else {
-       //         $("#balance").val(value);
-       //     }
-       // })
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+        $('#product_sales_price').keyup(function () {
+            var price = Number($("#selectedProductPrice").val());
+            var expenses = Number($("#selectedProductExpense").val());
+            var total_product_cost = (price + expenses);
+            var sales_price = Number($("#product_sales_price").val());
+            $("#product_profit").val(sales_price - total_product_cost);
+        })
+
+////////////////////////////////////////////////////////////////////////////////////////////
+
+        $("#product_cash_paid").keyup(function () {
+            $("#product_balance").val();
+            var value = $('#product_sales_price').val() - $('#product_cash_paid').val();
+            if (value < 0) {
+                $("#product_balance").val(0);
+                $("#product_cash_paid").val($('#product_sales_price').val());
+                $("#product_cash_paid").disable();
+            } else {
+                $("#product_balance").val(value);
+            }
+        })
+
+////////////////////////////////////////////////////////////////////////////////////////////
+
         $("#purchase_cash").keyup(function () {
             $("#purchase_balance").val();
             var value = $('#purchase_amount').val() - $('#purchase_cash').val();
@@ -121,10 +140,13 @@
                 $("#purchase_balance").val(value);
             }
         })
-        $('#balance_pay').keyup(function (){
+
+///////////////////////////////////////////////////////////////////////////////////////////
+
+        $('#balance_pay').keyup(function () {
             var x = $('#outstanding_balance').val();
             var y = $('#balance_pay').val();
-            if((x-y)<=0){
+            if ((x - y) <= 0) {
                 $('#balance_pay').val($('#outstanding_balance').val());
                 $('#balance_pay').disable();
             }
@@ -292,18 +314,7 @@
             //Add color effect to button
             $('#add-new-event').css({'background-color': currColor, 'border-color': currColor})
         })
-//        $('button[id="print"]').click(function () {
-//            var pageTitle = 'Page Title',
-//                    stylesheet = '//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css',
-//                    win = window.open('', 'Print', 'width=500,height=300');
-//            win.document.write('<html><head><title>' + pageTitle + '</title>' +
-//                    '<link rel="stylesheet" href="' + stylesheet + '">' +
-//                    '</head><body>' + $('.table')[0].outerHTML + '</body></html>');
-//            win.document.close();
-//            win.print();
-//            win.close();
-//            return false;
-//        });
+
         $('#add-new-event').click(function (e) {
             e.preventDefault()
             //Get value and make sure it is not null
@@ -327,6 +338,41 @@
 
             //Remove event from text input
             $('#new-event').val('')
+        })
+        $(document).ready(function () { //// when page loads, hide fields for new and existing customers
+            $('#new_customer').hide();
+            $('#existing_customer').hide();
+            $('#payment_date').hide();
+            $("#display_selected_products").hide();
+            $("#new_supplier").hide();
+            $("#existing_supplier").hide();
+            $("#vehicle_number_plate").hide();
+        })
+        $('#optionsRadios2').click(function () { // when new customer selected, show new customer fields.
+            $('#new_customer').hide();
+            $('#existing_customer').show();
+            $('#new_supplier').hide();
+            $('#existing_supplier').show();
+        })
+        $('#optionsRadios1').click(function () { // when existing customer selected, show existing customer field
+            $('#existing_customer').hide();
+            $('#new_customer').show();
+            $('#existing_supplier').hide();
+            $('#new_supplier').show();
+        })
+        $('#optionsRadios4').click(function () { // when new supplier selected, show new supplier fields.
+            $('#new_supplier').hide();
+            $('#existing_supplier').show();
+        })
+        $('#optionsRadios3').click(function () { // when existing supplier selected, show existing supplier field
+            $('#existing_supplier').hide();
+            $('#new_supplier').show();
+        })
+        $('#optionsRadios5').click(function () {
+            $('#vehicle_number_plate').hide();
+        })
+        $('#optionsRadios6').click(function () { 
+            $('#vehicle_number_plate').show();
         })
     })
 

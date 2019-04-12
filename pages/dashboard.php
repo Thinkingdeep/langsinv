@@ -188,7 +188,7 @@
                                                         <th>NO</th>
                                                         <th>DATE & TIME</th>
                                                         <th>PRODUCT</th>
-                                                        <th>CASH PAID</th>
+                                                        <th>SALES_PRICE</th>
                                                         <th>BALANCE</th>
                                                         <th>CUSTOMER</th>
                                                         <th>RECEIPT</th>
@@ -356,11 +356,11 @@
                                                 } elseif (($balance > 0) && ($status == 'NOT SOLD' || $status == 'SOLD') && ($sales_price <= 0)) {
                                                     $bal_msg = 'Pay Balance';
                                                 } elseif ($balance <= 0 && $sales_price <= 0) {
-                                                    $price_msg = 'Set Price';
+                                                    $price_msg = 'all';
                                                 } else {
                                                     $del_msg = '';
                                                     $bal_msg = '';
-                                                    $price_msg = '';
+                                                    $price_msg = 'none';
                                                 }
                                                 ?></td>
                                             <td><div class="btn-group">
@@ -370,9 +370,7 @@
                                                         <span class="sr-only">Toggle Dropdown</span>
                                                     </button>
                                                     <ul class="dropdown-menu" role="menu" style="">
-                                                        <li><a data-toggle="modal" href="#set-sales_price-form<?php echo $idstock; ?>" style="color: #72afd2;"><?php echo $price_msg; ?></a></li>
-                                                        <!-- <li><a data-toggle="modal" href="#pay-supp-balance-form<?php echo $idstock; ?>" style="color: #72afd2;"><?php echo $bal_msg; ?></a></li>
-                                                        <li><a data-toggle="modal" id="delete_record" href="#delete-stock-form<?php echo $idstock; ?>" style="color: #72afd2;"><?php echo $del_msg; ?></a></li> -->
+                                                        <li style="display: none;"><a data-toggle="modal" href="#set-sales_price-form<?php echo $idstock; ?>" style="color: #72afd2;">SET PRICE</a></li>
                                                     </ul>
                                                 </div>
                                             </td>

@@ -97,6 +97,24 @@ class DB {
         return false;
     }
 
+        public function updateMany($table,$fields,$updateWhere) {
+        $set = '';
+        $x = 1;
+        foreach ($fields as $name => $value) {
+            $set.="{$name}= ?";
+            if ($x < count($fields)) {
+                $set.=', ';
+            }
+            $x++;
+        }
+        //die($set);
+        $sql = "UPDATE {$table} SET {$set} WHERE {$updateWhere}";
+//        echo $sql;
+        if(!$this->query($sql,$fields)->error()){
+            return TRUE;
+        }
+    }
+
     public function update($table, $id, $fields,$updateWhere) {
         $set = '';
         $x = 1;

@@ -1,10 +1,10 @@
-<?php $current_user = createSession('Admin');?>
+<?php $current_user = createSession('Admin'); ?>
 <header class="main-header">
     <!-- Logo -->
     <a href="index.php?page=dashboard" class="logo">
         <!-- mini logo for sidebar mini 50x50 pixels -->
         <span class="logo-mini">Langas<b>Investments</b></span>
-         <!--logo for regular state and mobile devices--> 
+        <!--logo for regular state and mobile devices--> 
         <span class="logo-lg">Langas<b>Investments</b></span>
     </a>
     <!-- Header Navbar: style can be found in header.less -->
@@ -41,7 +41,7 @@
                         <span>Notifiations</span>
                         <i class="fa fa-bell-o"></i>
                         <span class="label label-warning">10</span>
-                         
+
                     </a>
                     <ul class="dropdown-menu">
                         <li class="header">You have 10 notifications</li>
@@ -87,28 +87,28 @@
                     </a>
                 </li>
                 <!-- User Account: style can be found in dropdown.less -->
-<!--                                <li class="dropdown user user-menu">
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                        <img src="assets/dist/img/user2-160x160.jpg" class="user-image" alt="User Image">
-                                        <span class="hidden-xs"><?php // echo Session::get('session/session_name');?></span>
-                                    </a>
-                                    <ul class="dropdown-menu">
-                                         User image 
-                                        <li class="user-header">
-                                            <img src="assets/dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
-                                            <p><?php // echo Session::get('session/session_name');?></p>
-                                        </li>
-                                         Menu Footer
-                                        <li class="user-footer">
-                                            <div class="pull-left">
-                                                <a href="index.php?page=profile" class="btn btn-default btn-flat">Profile</a>
-                                            </div>
-                                            <div class="pull-right">
-                                                <a href="#" class="btn btn-default btn-flat">Sign out</a>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </li>-->
+                <!--                                <li class="dropdown user user-menu">
+                                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                                        <img src="assets/dist/img/user2-160x160.jpg" class="user-image" alt="User Image">
+                                                        <span class="hidden-xs"><?php // echo Session::get('session/session_name');    ?></span>
+                                                    </a>
+                                                    <ul class="dropdown-menu">
+                                                         User image 
+                                                        <li class="user-header">
+                                                            <img src="assets/dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
+                                                            <p><?php // echo Session::get('session/session_name');    ?></p>
+                                                        </li>
+                                                         Menu Footer
+                                                        <li class="user-footer">
+                                                            <div class="pull-left">
+                                                                <a href="index.php?page=profile" class="btn btn-default btn-flat">Profile</a>
+                                                            </div>
+                                                            <div class="pull-right">
+                                                                <a href="#" class="btn btn-default btn-flat">Sign out</a>
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+                                                </li>-->
             </ul>
         </div>
     </nav>
@@ -128,43 +128,122 @@
                     </div>
                     <div class="box-body">
                         <div class="row form-group">
-                            <div class="col-xs-12">
+                            <div class="col-xs-8">
                                 <label class="text-info">Product</label>
                                 <select  class="form-control select2 " id="select_product" name="select_product"  style="width: 100%;">
                                     <option >--select--</option>
                                     <?php
-                                    $products_query = DB::getInstance()->query("SELECT * FROM stock s,stock_name n,stock_prices p WHERE p.id_stock = s.id_stock AND s.id_stock_name = n.id_stock_name AND s.stock_status ='NOT SOLD' AND p.id_stock_price_type = 2");
+                                    $products_query = DB::getInstance()->query("SELECT * FROM stock s,stock_name n,stock_prices p WHERE p.id_stock = s.id_stock AND s.id_stock_name = n.id_stock_name AND s.stock_status ='NOT SOLD' AND p.id_stock_price_type = 1");
                                     foreach ($products_query->results() as $products_query):
                                         ?>
                                         <option value="<?php echo $products_query->id_stock; ?>" ><?php
                                             echo $products_query->stock_make . ' ' . $products_query->stock_model . ' '
-                                            . 'CHS: ' . $products_query->chasis_number . ' EGN: ' . $products_query->engine_number . ' PRICE: ' . number_format($products_query->stock_price, 2);
+                                            . 'CHS: ' . $products_query->chasis_number . ' EGN: ' . $products_query->engine_number . ' PURCHASE PRICE: ' . $products_query->stock_price . ' EXPENSE ' . selectSum('expenditures', 'expense_amount', 'id_stock=' . $products_query->id_stock);
                                             ?></option>
                                         <?php
                                     endforeach;
                                     ?>
                                 </select>
-                                <input type="hidden" id="amount">
+                            </div>
+                            <div class="col-xs-4">
+                                <label class="text-info">Receipt</label>
+                                <p><strong  class="text-danger"  style="font-size: 25px;"><?php echo generateAutoIncrementNumber('payments', 'id_payment'); ?></strong></p>
+                                <input type="hidden" name="sales_receipt" value="<?php echo generateAutoIncrementNumber('payments', 'id_payment'); ?>">
                             </div>
                         </div>
 
                         <div class="row form-group">
                             <div class="col-xs-12">
-                                <label class="text-info">Selected Product</label>
-                                <!--<textarea class="form-control" name="display_selected_products" disabled="true"></textarea>-->
+                                <label class="text-success text-uppercase">Selected Product</label>
                                 <table class="table table-stripped table-hover" id="display_selected_products">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-primary"><small>Product</small></th>
+                                            <th class="text-primary"><small>Purchase_Price</small></th>
+                                            <th class="text-primary"><small>Expenses</small></th>
+                                            <th class="text-primary"><small>Action</small></th>
+                                    <input type="hidden" id="selectedProductPrice">
+                                    <input type="hidden" id="selectedProductExpense">
+                                    </tr>
+                                    </thead>
                                     <tbody>
                                         <tr>
-                                            <td></td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
                         </div>
-
                         <div class="row form-group">
-                            <div class="col-xs-12">
-                                <label class="text-info">Customer</label>
+                            <div class="col-xs-6">
+                                <label class="text-info">Sales Price</label>
+                                <input type="number" id="product_sales_price" class="form-control" required="true" name="product_sales_price" placeholder="Enter Price">
+                            </div>
+                            <div class="col-xs-6">
+                                <label class="text-info">Profit</label>
+                                <input type="number" id="product_profit" class="form-control" name="product_profit" placeholder="Profit/Loss after sale" disabled="true">
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col-xs-4">
+                                <label class="text-info">Cash Deposit</label>
+                                <input type="number" id="product_cash_paid" class="form-control" name="product_cash_paid" placeholder="Enter amount">
+                            </div>
+                            <div class="col-xs-4">
+                                <label class="text-info">Balance</label>
+                                <input type="number" id="product_balance" class="form-control" disabled="true" name="product_balance" placeholder="Amount">
+                            </div>
+                            <div class="col-xs-4" id="payment_date">
+                                <label class="text-info">Balance Payment Date</label>
+                                <div class="input-group ">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-calendar"></i>
+                                    </div>
+                                    <input type="date" class="form-control pull-right" name="balance_pay_date" >
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col-xs-4 form-group">
+                                <label class="text-success text-uppercase">Select Customer Type</label>
+                            </div>
+                            <div class="col-xs-4 form-group">
+                                <label class="text-primary">
+                                    <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1">
+                                    <small>New Customer</small>
+                                </label>
+                            </div>
+                            <div class="col-xs-4 form-group">
+                                <label class="text-primary">
+                                    <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">
+                                    <small>Existing Customer</small>
+                                </label>
+                            </div>
+                            <div class="col-xs-12" id="new_customer">
+                                <div class="row form-group">
+                                    <div class="col-xs-6">
+                                        <label class="text-info">Full Name</label>
+                                        <input type="text" class="form-control" name="full_name" autocomplete="off" placeholder="Enter name">
+                                    </div>
+                                    <div class="col-xs-6">
+                                        <label class="text-info">Address/Company</label>
+                                        <input type="text" class="form-control" name="customer_address" autocomplete="off" placeholder="Enter address or company name">
+                                    </div>
+                                </div>
+                                <div class="row form-group">
+                                    <div class="col-xs-6">
+                                        <label class="text-info">Telephone</label>
+                                        <input type="text" class="form-control" name="customer_telephone" autocomplete="
+                                               off" placeholder="Enter phone number">
+                                    </div>
+                                    <div class="col-xs-6">
+                                        <label class="text-info">Email</label>
+                                        <input type="email" class="form-control" name="customer_email" autocomplete="
+                                               off" placeholder="Enter email">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-12" id="existing_customer">
+                                <label class="text-info">Select customer</label>
                                 <select  class="form-control select2 " name="customer_name" id="customer_id"  style="width: 100%;">
                                     <option >--select--</option>
                                     <?php
@@ -174,36 +253,6 @@
                                         <option value="<?php echo $query_customer->id_client; ?>"><?php echo $query_customer->name . ' ' . $query_customer->address . ' ' . $query_customer->telephone; ?></option>
                                     <?php endforeach; ?>
                                 </select>
-                            </div>
-                        </div>
-
-                        <div class="row form-group">
-                            <div class="col-xs-6">
-                                <label class="text-info">Cash</label>
-                                <input type="number" id="cash" class="form-control" name="product_cash_paid" placeholder="Price(UGX)">
-                            </div>
-                            <div class="col-xs-6">
-                                <label class="text-info">Balance</label>
-                                <input type="number" id="balance" class="form-control" disabled="true" name="product_balance" required="true" placeholder="Price(UGX)">
-                            </div>
-                        </div>
-
-                        <div class="row form-group">
-                            <div class="col-xs-6">
-                                <div id="payment_date">
-                                <label class="text-info">Balance payment date</label>
-                                <div class="input-group ">
-                                    <div class="input-group-addon">
-                                        <i class="fa fa-calendar"></i>
-                                    </div>
-                                    <input type="date" class="form-control pull-right" name="balance_pay_date" >
-                                </div>
-                            </div>
-                            </div>
-                            <div class="col-xs-6">
-                                <label class="text-info">Receipt</label>
-                                <p><strong  class="text-danger"  style="font-size: 25px;"><?php echo generateAutoIncrementNumber('payments', 'id_payment'); ?></strong></p>
-                                <input type="hidden" name="sales_receipt" value="<?php echo generateAutoIncrementNumber('payments', 'id_payment'); ?>">
                             </div>
                         </div>
 
@@ -238,7 +287,7 @@
                     </div>
                     <div class="box-body">
                         <div class="row form-group">
-                            <div class="col-xs-12">
+                            <div class="col-xs-8">
                                 <label class="text-info">Brand</label>
                                 <select  class="form-control select2 " name="stock_name"  style="width: 100%;" required>
                                     <option >--select--</option>
@@ -248,6 +297,11 @@
                                     }
                                     ?>
                                 </select>
+                            </div>
+                            <div class="col-xs-4">
+                                <label class="text-info">Transaction ID</label>
+                                <p><strong  class="text-danger"  style="font-size: 25px;"><?php echo generateAutoIncrementNumber('payments', 'id_payment'); ?></strong></p>
+                                <input type="hidden" name="purchases_receipt" value="<?php echo generateAutoIncrementNumber('payments', 'id_payment'); ?>">
                             </div>
                         </div>
 
@@ -263,14 +317,6 @@
                                        off">
                             </div>
                             <div class="col-xs-4">
-                                <label class="text-info">Plate Number</label>
-                                <input type="text" class="form-control" name="plate_number" placeholder="Enter" required="true" autocomplete="
-                                       off">
-                            </div>
-                        </div>
-
-                        <div class="row form-group">
-                            <div class="col-xs-6">
                                 <label class="text-info">Color</label>
                                 <select class="form-control select2 " name="car_color" style="width: 100%" required="true">
                                     <option>--select--</option>
@@ -284,9 +330,72 @@
                                     <?php } ?>
                                 </select>
                             </div>
-                            <div class="col-xs-6">
-                                <label class="text-info">Supplier</label>
-                                <select class="form-control select2 " name="supplier" style="width: 100%">
+                        </div>
+
+                        <div class="row form-group">
+                            <div class="col-xs-4">
+                                <label class="text-success text-uppercase">Select Vehicle Type</label>
+                            </div>
+                            <div class="col-xs-3 form-group">
+                                <label class="text-info">
+                                    <input type="radio" name="optionRadios" id="optionsRadios5" value="option1">
+                                    <small>New vehicle</small>
+                                </label>
+                            </div>
+                            <div class="col-xs-3 form-group">
+                                <label class="text-info">
+                                    <input type="radio" name="optionRadios" id="optionsRadios6" value="option2">
+                                    <small>Used vehicle</small>
+                                </label>
+                            </div>
+                            <div class="col-xs-5 pull-right" id="vehicle_number_plate">
+                                <input type="text" class="form-control" name="plate_number" placeholder="Enter Vehicle Number Plate" autocomplete="
+                                       off">
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col-xs-4 form-group">
+                                <label class="text-success  text-uppercase">Select Supplier Type</label>
+                            </div>
+                            <div class="col-xs-3 form-group">
+                                <label class="text-info">
+                                    <input type="radio" name="optionsRadios" id="optionsRadios3" value="option3">
+                                    <small>New supplier</small>
+                                </label>
+                            </div>
+                            <div class="col-xs-3 form-group">
+                                <label class="text-info">
+                                    <input type="radio" name="optionsRadios" id="optionsRadios4" value="option4">
+                                    <small>Existing supplier</small>
+                                </label>
+                            </div>
+                            <div class="col-xs-12" id="new_supplier">
+                                <div class="row form-group">
+                                    <div class="col-xs-6">
+                                        <label class="text-info">Full Name</label>
+                                        <input type="text" class="form-control" name="full_name" autocomplete="off" placeholder="Enter name">
+                                    </div>
+                                    <div class="col-xs-6">
+                                        <label class="text-info">Address/Company</label>
+                                        <input type="text" class="form-control" name="supplier_address" autocomplete="off" placeholder="Enter address or company name">
+                                    </div>
+                                </div>
+                                <div class="row form-group">
+                                    <div class="col-xs-6">
+                                        <label class="text-info">Telephone</label>
+                                        <input type="text" class="form-control" name="supplier_telephone" autocomplete="
+                                               off" placeholder="Enter phone number">
+                                    </div>
+                                    <div class="col-xs-6">
+                                        <label class="text-info">Email</label>
+                                        <input type="email" class="form-control" name="supplier_email" autocomplete="
+                                               off" placeholder="Enter email">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-xs-12" id="existing_supplier">
+                                <select class="form-control select2 " name="id_supplier" style="width: 100%">
                                     <option>--select--</option>
                                     <?php
                                     $supplier_query = "SELECT * FROM clients WHERE id_client_type = 2";
@@ -326,26 +435,6 @@
                                 <input type="number" id="purchase_balance" class="form-control" disabled="true" name="buy_balance" required="true" placeholder="Price(UGX)">
                             </div>
                         </div>
-
-                        <div class="row form-group">
-                            <div class="col-xs-6" >
-                                <div id="purchase_payment_date">
-                                <label class="text-info">Balance payment date</label>
-                                <div class="input-group ">
-                                    <div class="input-group-addon">
-                                        <i class="fa fa-calendar"></i>
-                                    </div>
-                                    <input type="date"  class="form-control pull-right" name="buy_balance_pay_date" >
-                                </div>
-                            </div>
-                            </div>
-                            <div class="col-xs-6">
-                                <label class="text-info">Transaction ID</label>
-                                <p><strong  class="text-danger"  style="font-size: 25px;"><?php echo generateAutoIncrementNumber('payments', 'id_payment'); ?></strong></p>
-                                <input type="hidden" name="purchases_receipt" value="<?php echo generateAutoIncrementNumber('payments', 'id_payment'); ?>">
-                            </div>
-                        </div>
-
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -710,26 +799,20 @@ if (Input::exists()) {
         $telephone = Input::get('customer_telephone');
         $email = strtolower(Input::get('customer_email'));
         if (strlen($telephone) != 10) {
-            $entry_alert = '<div class="alert alert-danger alert-dismissible" style="height: 40px;">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                <p class="text-center" style="font-size: 16px;">Phone number ' . $telephone . ' is incorrect, correct and try again </p>
-              </div>';
+            $entry_alert = submissionReport('error', 'Phone number ' . $telephone . ' is incorrect, correct and try again');
         } else {
 
 
             if (DB::getInstance()->checkRows("SELECT * FROM clients WHERE name='$name' AND address = '$address' AND telephone = '$telephone'"
                             . " AND email = '$email' AND id_client_type = 1")) {
-                $entry_alert = '<div class="alert alert-danger alert-dismissible" style="height: 40px;">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                <p class="text-center" style="font-size: 16px;">User ' . $name . ' exists in the database</p>
-              </div>';
+
+                $entry_alert = submissionReport('error', 'User ' . $name . ' exists in the database');
             } else {
                 $arrayClient = array("name" => $name, "address" => $address, "telephone" => $telephone, "email" => $email, "id_client_type" => 1);
+
                 DB::getInstance()->insert('clients', $arrayClient);
-                $entry_alert = '<div class="alert alert-success alert-dismissible" style="height: 40px;">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                <p class="text-center" style="font-size: 16px;">Data saved successfully</p>
-              </div>';
+
+                $entry_alert = submissionReport('success', 'Data saved successfully');
             }
         }
     } elseif (Input::get('save_supplier') == 'save_supplier') {
@@ -738,139 +821,175 @@ if (Input::exists()) {
         $telephone = Input::get('supplier_telephone');
         $email = strtolower(Input::get('supplier_email'));
         if (strlen($telephone) != 10) {
-            $entry_alert = '<div class="alert alert-danger alert-dismissible" style="height: 40px;">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                <p class="text-center" style="font-size: 16px;">Phone number ' . $telephone . ' is incorrect, correct and try again </p>
-              </div>';
+            $entry_alert = submissionReport('error', 'Phone number ' . $telephone . ' is incorrect, correct and try again');
         } else {
-            if (DB::getInstance()->checkRows("SELECT * FROM clients WHERE name='$name' AND address = '$address' AND telephone = '$telephone'"
-                            . " AND email = '$email' AND id_client_type = 2")) {
-                $entry_alert = '<div class="alert alert-danger alert-dismissible" style="height: 40px;">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                <p class="text-center" style="font-size: 16px;"> User ' . $name . ' exists in the database</p>
-              </div>';
+
+            if (DB::getInstance()->checkRows("SELECT * FROM clients WHERE name='$name' AND address = '$address' AND telephone = '$telephone'". " AND email = '$email' AND id_client_type = 2")) {
+
+                $entry_alert = submissionReport('error', 'User ' . $name . ' exists in the database');
+
             } else {
+
                 $arrayClient = array("name" => $name, "address" => $address, "telephone" => $telephone, "email" => $email, "id_client_type" => 2);
+
                 DB::getInstance()->insert('clients', $arrayClient);
-                $entry_alert = '<div class="alert alert-success alert-dismissible" style="height: 40px;">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                <p class="text-center" style="font-size: 16px;">Data saved successfully</p>
-              </div>';
+
+                $entry_alert = submissionReport('success', 'Data saved successfully');
             }
         }
     } elseif (Input::get('save_brand') == 'save_brand') {
         $make = strtoupper(Input::get('make'));
         $model = strtoupper(Input::get('model'));
         $manufacturer = strtoupper(Input::get('manufacturer'));
-        if (DB::getInstance()->checkRows("SELECT * FROM stock_name WHERE stock_make='$make' AND stock_model = '$model' AND "
-                        . "stock_manufacturer = '$manufacturer'")) {
-            $entry_alert = '<div class="alert alert-danger alert-dismissible" style="height: 40px;">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-               <p class="text-center" style="font-size: 16px;"> A product of ' . $manufacturer . ' with make ' . $make . ' and model ' . $model . ' exists in the database</p>
-              </div>';
+
+        if (DB::getInstance()->checkRows("SELECT * FROM stock_name WHERE stock_make='$make' AND stock_model = '$model' AND ". "stock_manufacturer = '$manufacturer'")) {
+
+            $entry_alert = submissionReport('error', 'A product of ' . $manufacturer . ' with make ' . $make . ' and model ' . $model . ' exists in the database');
+
         } else {
             $arrayBrand = array("stock_make" => $make, "stock_model" => $model, "stock_manufacturer" => $manufacturer);
+
             DB::getInstance()->insert('stock_name', $arrayBrand);
-            $entry_alert = '<div class="alert alert-success alert-dismissible" style="height: 40px;">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                <p class="text-center" style="font-size: 16px;">Data saved successfully</p>
-              </div>';
+
+            $entry_alert = submissionReport('success', 'Data saved successfully');
         }
     } elseif (Input::get('save_color') == 'save_color') {
+
         $stock_color = strtoupper(Input::get('color_name'));
+
         if (DB::getInstance()->checkRows("SELECT * FROM stock_color WHERE color_name = '$stock_color'")) {
-            $entry_alert = '<div class="alert alert-danger alert-dismissible" style="height: 40px;">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                <p class="text-center" style="font-size: 16px;"> Color ' . $stock_color . ' exists in the database, enter a different color</p>
-              </div>';
+
+            $entry_alert = submissionReport('error', 'Color ' . $stock_color . ' exists in the database, enter a different color');
         } else {
             $arrayColor = array("color_name" => $stock_color);
+
             DB::getInstance()->insert('stock_color', $arrayColor);
-            $entry_alert = '<div class="alert alert-success alert-dismissible" style="height: 40px;">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                <p class="text-center" style="font-size: 16px;">Data saved successfully</p>
-              </div>';
+
+            $entry_alert = submissionReport('success', 'Data saved successfully');
         }
     } elseif (Input::get('save_purchase') == 'save_purchase') {
         $brand = Input::get('stock_name');
         $chasis = strtoupper(Input::get('chasis_number'));
         $engine = strtoupper(Input::get('engine_number'));
-        $plate = strtoupper(Input::get('plate_number'));
         $car_color = Input::get('car_color');
         $receipt_number = Input::get('purchases_receipt');
-        $supplier = Input::get('supplier');
+        $supplier = Input::get('id_supplier');
         $cost_price = Input::get('buy_price');
         $purchase_date = Input::get('buy_date');
         $cash_paid = Input::get('cash_paid');
+        $vehicle_number_plate = strtoupper(Input::get('plate_number'));
+        $name = strtoupper(Input::get('full_name'));
+        $address = strtoupper(Input::get('supplier_address'));
+        $telephone = Input::get('supplier_telephone');
+        $email = strtolower(Input::get('supplier_email'));
 
-        if (DB::getInstance()->checkRows("SELECT * FROM stock WHERE chasis_number ='$chasis' AND engine_number = '$engine' AND plate_number = '$plate'")) {
-            $entry_alert = '<div class="alert alert-danger alert-dismissible" style="height: 40px;">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                <p class="text-center" style="font-size: 16px;"> Vehicle ' . DB::getInstance()->getName('stock_name', $brand, 'stock_make', 'id_stock_name') . ' with chasis number ' . $chasis . ' and 
-                    engine number ' . $engine . ' was bought. Do you really want to buy this vehicle again?</p>
-              </div>';
+        if (!empty($name) || !empty($telephone)) {
+            $arrayClient = array("name" => $name, "address" => $address, "telephone" => $telephone, "email" => $email, "id_client_type" => 2);
+
+            DB::getInstance()->insert('clients', $arrayClient);
+
+            $supplier = getLastInsertId('clients', 'id_client');
+        }
+
+        if (DB::getInstance()->checkRows("SELECT * FROM stock WHERE chasis_number ='$chasis' AND engine_number = '$engine' AND plate_number = '$vehicle_number_plate'")) {
+
+            $entry_alert = submissionReport('error', 'Vehicle ' . DB::getInstance()->getName('stock_name', $brand, 'stock_make', 'id_stock_name') . ' with chasis number ' . $chasis . ' and 
+                    engine number ' . $engine . ' was bought. Do you really want to buy this vehicle again?');
         } else {
-            $arrayStock = array("chasis_number" => $chasis, "id_client" => $supplier, "engine_number" => $engine, "plate_number" => $plate, "purchase_date" => $purchase_date
-                , "id_stock_color" => $car_color, "id_stock_name" => $brand, "id_stock_price_type" => 1, "stock_status" => 'NOT SOLD');
-            DB::getInstance()->insert("stock", $arrayStock);
+            if (empty($vehicle_number_plate)) {
+                $arrayStock = array("chasis_number" => $chasis, "id_client" => $supplier, "engine_number" => $engine, "plate_number" => ' ', "purchase_date" => $purchase_date
+                    , "id_stock_type" => 1, "id_stock_color" => $car_color, "id_stock_name" => $brand, "id_stock_price_type" => 1, "stock_status" => 'NOT SOLD');
 
-            $arrayStockPrice = array("stock_price" => $cost_price, "occurred_on" => date("Y-m-d h:i:s"), "id_stock_price_type" => 1,
-                "id_stock" => getLastInsertId('stock', 'id_stock'));
-            DB::getInstance()->insert("stock_prices", $arrayStockPrice);
+                DB::getInstance()->insert("stock", $arrayStock);
 
-            $arrayPayment = array("payment_amount" => $cash_paid, "id_stock_price_type" => 1, "payment_date" => date("Y-m-d h:i:s"), "payment_receipt" => $receipt_number, "id_stock" => getLastInsertId('stock', 'id_stock'));
-            DB::getInstance()->insert("payments", $arrayPayment);
+                $arrayStockPrice = array("stock_price" => $cost_price, "occurred_on" => date("Y-m-d h:i:s"), "id_stock_price_type" => 1,
+                    "id_stock" => getLastInsertId('stock', 'id_stock'));
 
-            $entry_alert = '<div class="alert alert-success alert-dismissible" style="height: 40px;">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                <p class="text-center" style="font-size: 16px;">Data saved successfully</p>
-              </div>';
+                DB::getInstance()->insert("stock_prices", $arrayStockPrice);
+
+                $arrayPayment = array("payment_amount" => $cash_paid, "id_stock_price_type" => 1, "payment_date" => date("Y-m-d h:i:s"), "payment_receipt" => $receipt_number, "id_stock" => getLastInsertId('stock', 'id_stock'));
+
+                DB::getInstance()->insert("payments", $arrayPayment);
+
+                $entry_alert = submissionReport('success','Data saved successfully');
+            } else {
+                $arrayStock = array("chasis_number" => $chasis, "id_client" => $supplier, "engine_number" => $engine, "plate_number" => $vehicle_number_plate, "purchase_date" => $purchase_date
+                    , "id_stock_type" => 2, "id_stock_color" => $car_color, "id_stock_name" => $brand, "id_stock_price_type" => 1, "stock_status" => 'NOT SOLD');
+
+                DB::getInstance()->insert("stock", $arrayStock);
+
+                $arrayStockPrice = array("stock_price" => $cost_price, "occurred_on" => date("Y-m-d h:i:s"), "id_stock_price_type" => 1,
+                    "id_stock" => getLastInsertId('stock', 'id_stock'));
+                DB::getInstance()->insert("stock_prices", $arrayStockPrice);
+
+                $arrayPayment = array("payment_amount" => $cash_paid, "id_stock_price_type" => 1, "payment_date" => date("Y-m-d h:i:s"), "payment_receipt" => $receipt_number, "id_stock" => getLastInsertId('stock', 'id_stock'));
+                DB::getInstance()->insert("payments", $arrayPayment);
+
+                $entry_alert = submissionReport('success', 'Data saved successfully');
+            }
         }
     } elseif (Input::get('save_new_sale') == 'save_new_sale') {
         $product_sold = Input::get('select_product');
         $customer = Input::get('customer_name');
+        $stock_price = Input::get('product_sales_price');
         $cash_paid = Input::get('product_cash_paid');
-        $balance = Input::get('product_balance');
+        $sales_balance = Input::get('product_balance');
         $pay_date = Input::get('balance_pay_date');
         $cash_receipt = Input::get('sales_receipt');
+        $name = strtoupper(Input::get('full_name'));
+        $address = strtoupper(Input::get('customer_address'));
+        $telephone = Input::get('customer_telephone');
+        $email = strtolower(Input::get('customer_email'));
+
+        if (!empty($name) || !empty($telephone)) {
+            $arrayClient = array("name" => $name, "address" => $address, "telephone" => $telephone, "email" => $email, "id_client_type" => 1);
+            DB::getInstance()->insert('clients', $arrayClient);
+            $customer = getLastInsertId('clients', 'id_client');
+        }
+
+//=================================INSERT OR UPDATE STOCK PRICES TABLE==============================
+            if (DB::getInstance()->checkRows("SELECT * FROM stock_prices WHERE id_stock= $product_sold AND id_stock_price_type = 2")) {
+                $arrayUpdateStockPrice = array("stock_price" => $stock_price);
+                DB::getInstance()->updateMany("stock_prices", $arrayUpdateStockPrice, "id_stock =" . $product_sold . " AND id_stock_price_type =2");
+            } else {
+                $arrayStockPrice = array("stock_price" => $stock_price, "id_stock_price_type" => 2, "id_stock" => $product_sold);
+                DB::getInstance()->insert("stock_prices", $arrayStockPrice);
+            }
 
 //=======================================INSERT INTO CLIENT ORDER TABLE==============================
 
-        $arrayCustomerOrder = array("order_status" => 'NOT PAID', "id_client" => $customer, "id_stock" => $product_sold);
-        DB::getInstance()->insert("client_orders", $arrayCustomerOrder);
-        $arrayCustomerPayment = array("id_stock" => $product_sold, "id_stock_price_type" => 2, "payment_amount" => $cash_paid, "payment_receipt" => $cash_receipt);
+            $arrayCustomerOrder = array("order_status" => 'NOT PAID', "id_client" => $customer, "id_stock" => $product_sold);
+            DB::getInstance()->insert("client_orders", $arrayCustomerOrder);
+            $arrayCustomerPayment = array("id_stock" => $product_sold, "id_stock_price_type" => 2, "payment_amount" => $cash_paid, "payment_receipt" => $cash_receipt);
 
 //=======================INSERT INTO PAYMENTS TABLE, UPDATE STOCK & CLIENT ORDER TABLES===============
 
-        if (DB::getInstance()->insert("payments", $arrayCustomerPayment)) {
-            $arrayProductSale = array("stock_sold_to" => $customer,"stock_status" => 'SOLD');
-            DB::getInstance()->update("stock", $product_sold, $arrayProductSale, "id_stock");
+            if (DB::getInstance()->insert("payments", $arrayCustomerPayment)) {
+                $arrayProductSale = array("stock_sold_to" => $customer, "stock_status" => 'SOLD');
+                DB::getInstance()->update("stock", $product_sold, $arrayProductSale, "id_stock");
 
-//==========GET ID OF ORDER PLACED
-            $order_query = DB::getInstance()->query("SELECT * FROM client_orders WHERE id_client = $customer AND id_stock = $product_sold");
-            foreach ($order_query->results() as $order_query) {
-                $order_id = $order_query->id_client_order;
+//================================GET ID OF ORDER PLACED==============================================
+                $order_query = DB::getInstance()->query("SELECT * FROM client_orders WHERE id_client = $customer AND id_stock = $product_sold");
+                foreach ($order_query->results() as $order_query) {
+                    $order_id = $order_query->id_client_order;
+                }
+                if ($cash_paid > 0 ) {
+                    $arrayUpdateCustomerOrder = array("order_status" => 'PAID');
+                    DB::getInstance()->update("client_orders", $order_id, $arrayUpdateCustomerOrder, 'id_client_order');
+                    $entry_alert = submissionReport('success','Data saved successfully'.$sales_balance);
+
+                    if($sales_balance > 0){
+                       Redirect::to('index.php?page=new_schedule'); 
+                    }
+                    
+                } else {
+                    if($sales_balance > 0){
+                       Redirect::to('index.php?page=new_schedule'); 
+                    }
+                }
+            } else {
+                $entry_alert = submissionReport('error','Error in submitting payment');
             }
-            if($cash_paid > 0){
-            $arrayUpdateCustomerOrder = array("order_status" => 'PAID');
-            DB::getInstance()->update("client_orders", $order_id, $arrayUpdateCustomerOrder, 'id_client_order');
-            $entry_alert = '<div class="alert alert-success alert-dismissible" style="height: 40px;">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                <p class="text-center" style="font-size: 16px;">Data saved successfully</p>
-              </div>';
-            Redirect::to('index.php?page=print&columns=4&type=transaction&sub_type=sales&from=00-00-0000&to=00-00-0000');
-        }else{
-                $entry_alert = '<div class="alert alert-success alert-dismissible" style="height: 40px;">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                <p class="text-center" style="font-size: 16px;">Data saved successfully</p>
-              </div>';
-        }
-        } else {
-            $entry_alert = '<div class="alert alert-danger alert-dismissible" style="height: 40px;">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                <p class="text-center" style="font-size: 16px;">Error in submitting payment</p>
-              </div>';
-        }
     } elseif (Input::get('save_income') == 'save_income') {
         $income_source = Input::get('income_source');
         $income_type = Input::get('income_type');

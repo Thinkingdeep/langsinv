@@ -111,13 +111,13 @@ switch ($page) {
         break;
         
     case 'new_schedule':
-        if (file_exists('pages/sales/' . $page . '.php'))
-            include 'pages/sales/' . $page . '.php';
+        if (file_exists('pages/schedules/' . $page . '.php'))
+            include 'pages/schedules/' . $page . '.php';
         break;
 
     case 'view_schedules':
-        if (file_exists('pages/sales/' . $page . '.php'))
-            include 'pages/sales/' . $page . '.php';
+        if (file_exists('pages/schedules/' . $page . '.php'))
+            include 'pages/schedules/' . $page . '.php';
         break;
         
     case 'view_sales_single':
