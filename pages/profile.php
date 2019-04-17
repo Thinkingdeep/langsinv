@@ -28,15 +28,15 @@
                     <!-- Sidebar user panel -->
                     <div class="user-panel">
                         <div class="pull-left image">
-                            <img src="assets/dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
+                            <img src="<?php echo $current_user_photo; ?>" class="img-circle" alt="User Image">
                         </div>
                         <div class="pull-left info">
-                            <p>Alexander Pierce</p>
+                            <p><?php echo $current_user; ?></p>
                             <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
                         </div>
                     </div>
                     <!-- search form -->
-                    <form action="#" method="get" class="sidebar-form">
+                    <!-- <form action="#" method="get" class="sidebar-form">
                         <div class="input-group">
                             <input type="text" name="q" class="form-control" placeholder="Search...">
                             <span class="input-group-btn">
@@ -44,7 +44,7 @@
                                 </button>
                             </span>
                         </div>
-                    </form>
+                    </form> -->
                     <!-- /.search form -->
                     <!-- sidebar menu: : style can be found in sidebar.less -->
                     <?php include'includes/side_nav.php' ?>
@@ -57,7 +57,7 @@
                 <!-- Content Header (Page header) -->
                 <section class="content-header">
                     <h1>
-                        Settings
+                        User profile
                     </h1>
                     <ol class="breadcrumb">
                         <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
@@ -66,26 +66,62 @@
                     </ol>
                 </section>
 
+                <?php
+                if (Input::exists() && Input::get('save_basic_changes') == 'save_basic_changes') {
+                    $file_name = $_FILES['userphoto']['name']; //get the file name for the photo
+                    $file_tmp = $_FILES['userphoto']['tmp_name'];
+                    $url = '';
+                    if (!empty($file_name)) {
+                        $file_ext = strtolower(substr($file_name, strpos($file_name, '.') + 1));
+                        if (($file_ext == 'jpg') || ($file_ext == 'jpeg') || ($file_ext == 'png')) {
+                            $new_file_name = renameUploadedFile($file_name, $file_ext);
+                            move_uploaded_file($file_tmp, "assets/uploads/profile/" . $new_file_name);
+                            $url = 'assets/uploads/profile/' . $new_file_name;
+                        } else {
+                            $entry_alert = submissionReport('error', 'Unsupported format of image selected, select a .jpeg or .jpg or .png image');
+                        }
+                    } else {
+                        $url = $current_user_photo;
+                    }
+                    if (!empty($url)) {
+                        $arrayUpdateContent = array("name" => Input::get('full_name'), "user_address" => Input::get('address'), "telephone" => Input::get('telephone'), "email" => Input::get('email'), "username" => Input::get('username'), "user_photo" => $url);
+                        if (DB::getInstance()->update("users", $current_user_id, $arrayUpdateContent, "id_user")) {
+                            $entry_alert = submissionReport('success', 'Record updated succcessfully');
+                        } else {
+                            $entry_alert = submissionReport('error', 'Failure in updating user information');
+                        }
+                    }
+                } elseif (Input::exists() && Input::get('save_advanced_changes') == 'save_advanced_changes') {
+                    $old_password = sha1(Input::get('old_password'));
+                    $arrayInsertPassword = array("user_password" => $old_password, "id_user" => $current_user_id);
+                    $arrayUpdatePassword = array("user_password" => sha1(Input::get('new_password')));
+                    if (DB::getInstance()->checkRows("SELECT * from users WHERE id_user = $current_user_id AND user_password = '$old_password'")) {
+
+                        if (DB::getInstance()->insert("user_password", $arrayInsertPassword)) {
+                            DB::getInstance()->update("users", $current_user_id, $arrayUpdatePassword, "id_user");
+                            $entry_alert = submissionReport('success', 'Password changed successfully');
+                        } else {
+                            $entry_alert = submissionReport('error', 'Failure in changing password');
+                        }
+                    } else {
+                        $entry_alert = submissionReport('error', 'Old password entered is wrong');
+                    }
+                }
+                ?>
                 <!-- Main content -->
                 <section class="content">
-
+                    <?php echo $entry_alert; ?>
                     <div class="row">
                         <div class="col-md-3">
 
                             <!-- Profile Image -->
                             <div class="box box-primary">
                                 <div class="box-body box-profile">
-                                    <img class="profile-user-img img-responsive img-circle" src="assets/dist/img/user4-128x128.jpg" alt="User profile picture">
+                                    <img class="profile-user-img img-responsive img-circle" src="<?php echo $current_user_photo; ?>" alt="User profile picture">
 
-                                    <h3 class="profile-username text-center">Alua</h3>
+                                    <h3 class="profile-username text-center"><?php echo $current_user; ?></h3>
 
-                                    <p class="text-muted text-center">Software Engineer</p>
-
-                                    <div class="file btn btn-md btn-primary col-md-12 col-xs-12">
-                                        Change photo
-                                        <input type="file" name="file" class="picture_input" />
-                                        <input type="hidden" name="iduser" value="" />
-                                    </div>
+                                    <p class="text-muted text-center"><?php echo $current_user_type; ?></p>
                                 </div>
                                 <!-- /.box-body -->
                             </div>
@@ -100,301 +136,120 @@
                                 <div class="box-body">
                                     <strong><i class=" glyphicon glyphicon-user margin-r-5"></i> Name</strong>
 
-                                    <p class="text-muted">
-                                        Gift Emmanuel
-                                    </p>
+                                    <p class="text-muted"><?php echo $current_user_name; ?></p>
 
                                     <hr>
 
-                                    <strong><i class="fa fa-map-marker margin-r-5"></i> Location</strong>
-
-                                    <p class="text-muted">Koboko, Uganda</p>
-
+                                    <strong><i class="fa fa-map-marker margin-r-5"></i> Address</strong>
+                                    <p class="text-muted"><?php echo $current_user_address; ?></p>
                                     <hr>
 
                                     <strong><i class="fa fa-phone margin-r-5"></i>Telephone</strong>
-
-                                    <p>
-                                        <p class="text-muted">0785156404</p>
-                                    </p>
-
+                                    <p class="text-muted"><?php echo $current_user_telephone; ?></p>
                                     <hr>
-                                    
+
                                     <strong><i class="fa fa-envelope margin-r-5"></i>Email</strong>
-
-                                    <p>
-                                        <p class="text-muted">aluanuel@gmail.com</p>
-                                    </p>
-
+                                    <p class="text-muted"><?php echo $current_user_email; ?></p>
                                 </div>
                                 <!-- /.box-body -->
                             </div>
                             <!-- /.box -->
                         </div>
                         <!-- /.col -->
+
                         <div class="col-md-9">
                             <div class="nav-tabs-custom">
                                 <ul class="nav nav-tabs">
-                                    <li class="active"><a href="#activity" data-toggle="tab">Settings</a></li>
-<!--                                    <li><a href="#timeline" data-toggle="tab">Timeline</a></li>
-                                    <li><a href="#settings" data-toggle="tab">Activity</a></li>-->
+                                    <li class="active"><a href="#activity" data-toggle="tab">Account settings</a></li>
+                                    <li><a href="#settings" data-toggle="tab">Security settings</a></li>
                                 </ul>
                                 <div class="tab-content">
-<!--                                    <div class="tab-pane" id="activity">
-                                         Post 
-                                        <div class="post">
-                                            <div class="user-block">
-                                                <img class="img-circle img-bordered-sm" src="assets/dist/img/user1-128x128.jpg" alt="user image">
-                                                <span class="username">
-                                                    <a href="#">Jonathan Burke Jr.</a>
-                                                    <a href="#" class="pull-right btn-box-tool"><i class="fa fa-times"></i></a>
-                                                </span>
-                                                <span class="description">Shared publicly - 7:30 PM today</span>
-                                            </div>
-                                             /.user-block 
-                                            <p>
-                                                Lorem ipsum represents a long-held tradition for designers,
-                                                typographers and the like. Some people hate it and argue for
-                                                its demise, but others ignore the hate as they create awesome
-                                                tools to help create filler text for everyone from bacon lovers
-                                                to Charlie Sheen fans.
-                                            </p>
-                                            <ul class="list-inline">
-                                                <li><a href="#" class="link-black text-sm"><i class="fa fa-share margin-r-5"></i> Share</a></li>
-                                                <li><a href="#" class="link-black text-sm"><i class="fa fa-thumbs-o-up margin-r-5"></i> Like</a>
-                                                </li>
-                                                <li class="pull-right">
-                                                    <a href="#" class="link-black text-sm"><i class="fa fa-comments-o margin-r-5"></i> Comments
-                                                        (5)</a></li>
-                                            </ul>
-
-                                            <input class="form-control input-sm" type="text" placeholder="Type a comment">
+                                    <div class="active tab-pane" id="activity">
+                                        <div class="form-group">
+                                            <h4 class="text-success">Basic account settings</h4>
                                         </div>
-                                         /.post 
-
-                                         Post 
-                                        <div class="post clearfix">
-                                            <div class="user-block">
-                                                <img class="img-circle img-bordered-sm" src="assets/dist/img/user7-128x128.jpg" alt="User Image">
-                                                <span class="username">
-                                                    <a href="#">Sarah Ross</a>
-                                                    <a href="#" class="pull-right btn-box-tool"><i class="fa fa-times"></i></a>
-                                                </span>
-                                                <span class="description">Sent you a message - 3 days ago</span>
-                                            </div>
-                                             /.user-block 
-                                            <p>
-                                                Lorem ipsum represents a long-held tradition for designers,
-                                                typographers and the like. Some people hate it and argue for
-                                                its demise, but others ignore the hate as they create awesome
-                                                tools to help create filler text for everyone from bacon lovers
-                                                to Charlie Sheen fans.
-                                            </p>
-
-                                            <form class="form-horizontal">
-                                                <div class="form-group margin-bottom-none">
-                                                    <div class="col-sm-9">
-                                                        <input class="form-control input-sm" placeholder="Response">
-                                                    </div>
-                                                    <div class="col-sm-3">
-                                                        <button type="submit" class="btn btn-danger pull-right btn-block btn-sm">Send</button>
-                                                    </div>
-                                                </div>
-                                            </form>
-                                        </div>
-                                         /.post 
-
-                                         Post 
-                                        <div class="post">
-                                            <div class="user-block">
-                                                <img class="img-circle img-bordered-sm" src="assets/dist/img/user6-128x128.jpg" alt="User Image">
-                                                <span class="username">
-                                                    <a href="#">Adam Jones</a>
-                                                    <a href="#" class="pull-right btn-box-tool"><i class="fa fa-times"></i></a>
-                                                </span>
-                                                <span class="description">Posted 5 photos - 5 days ago</span>
-                                            </div>
-                                             /.user-block 
-                                            <div class="row margin-bottom">
-                                                <div class="col-sm-6">
-                                                    <img class="img-responsive" src="assets/dist/img/photo1.png" alt="Photo">
-                                                </div>
-                                                 /.col 
-                                                <div class="col-sm-6">
-                                                    <div class="row">
-                                                        <div class="col-sm-6">
-                                                            <img class="img-responsive" src="assets/dist/img/photo2.png" alt="Photo">
-                                                            <br>
-                                                            <img class="img-responsive" src="assets/dist/img/photo3.jpg" alt="Photo">
-                                                        </div>
-                                                         /.col 
-                                                        <div class="col-sm-6">
-                                                            <img class="img-responsive" src="assets/dist/img/photo4.jpg" alt="Photo">
-                                                            <br>
-                                                            <img class="img-responsive" src="assets/dist/img/photo1.png" alt="Photo">
-                                                        </div>
-                                                         /.col 
-                                                    </div>
-                                                     /.row 
-                                                </div>
-                                                 /.col 
-                                            </div>
-                                             /.row 
-
-                                            <ul class="list-inline">
-                                                <li><a href="#" class="link-black text-sm"><i class="fa fa-share margin-r-5"></i> Share</a></li>
-                                                <li><a href="#" class="link-black text-sm"><i class="fa fa-thumbs-o-up margin-r-5"></i> Like</a>
-                                                </li>
-                                                <li class="pull-right">
-                                                    <a href="#" class="link-black text-sm"><i class="fa fa-comments-o margin-r-5"></i> Comments
-                                                        (5)</a></li>
-                                            </ul>
-
-                                            <input class="form-control input-sm" type="text" placeholder="Type a comment">
-                                        </div>
-                                         /.post 
-                                    </div>
-                                     /.tab-pane 
-                                    <div class="tab-pane" id="timeline">
-                                         The timeline 
-                                        <ul class="timeline timeline-inverse">
-                                             timeline time label 
-                                            <li class="time-label">
-                                                <span class="bg-red">
-                                                    10 Feb. 2014
-                                                </span>
-                                            </li>
-                                             /.timeline-label 
-                                             timeline item 
-                                            <li>
-                                                <i class="fa fa-envelope bg-blue"></i>
-
-                                                <div class="timeline-item">
-                                                    <span class="time"><i class="fa fa-clock-o"></i> 12:05</span>
-
-                                                    <h3 class="timeline-header"><a href="#">Support Team</a> sent you an email</h3>
-
-                                                    <div class="timeline-body">
-                                                        Etsy doostang zoodles disqus groupon greplin oooj voxy zoodles,
-                                                        weebly ning heekya handango imeem plugg dopplr jibjab, movity
-                                                        jajah plickers sifteo edmodo ifttt zimbra. Babblely odeo kaboodle
-                                                        quora plaxo ideeli hulu weebly balihoo...
-                                                    </div>
-                                                    <div class="timeline-footer">
-                                                        <a class="btn btn-primary btn-xs">Read more</a>
-                                                        <a class="btn btn-danger btn-xs">Delete</a>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                             END timeline item 
-                                             timeline item 
-                                            <li>
-                                                <i class="fa fa-user bg-aqua"></i>
-
-                                                <div class="timeline-item">
-                                                    <span class="time"><i class="fa fa-clock-o"></i> 5 mins ago</span>
-
-                                                    <h3 class="timeline-header no-border"><a href="#">Sarah Young</a> accepted your friend request
-                                                    </h3>
-                                                </div>
-                                            </li>
-                                             END timeline item 
-                                             timeline item 
-                                            <li>
-                                                <i class="fa fa-comments bg-yellow"></i>
-
-                                                <div class="timeline-item">
-                                                    <span class="time"><i class="fa fa-clock-o"></i> 27 mins ago</span>
-
-                                                    <h3 class="timeline-header"><a href="#">Jay White</a> commented on your post</h3>
-
-                                                    <div class="timeline-body">
-                                                        Take me to your leader!
-                                                        Switzerland is small and neutral!
-                                                        We are more like Germany, ambitious and misunderstood!
-                                                    </div>
-                                                    <div class="timeline-footer">
-                                                        <a class="btn btn-warning btn-flat btn-xs">View comment</a>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                             END timeline item 
-                                             timeline time label 
-                                            <li class="time-label">
-                                                <span class="bg-green">
-                                                    3 Jan. 2014
-                                                </span>
-                                            </li>
-                                             /.timeline-label 
-                                             timeline item 
-                                            <li>
-                                                <i class="fa fa-camera bg-purple"></i>
-
-                                                <div class="timeline-item">
-                                                    <span class="time"><i class="fa fa-clock-o"></i> 2 days ago</span>
-
-                                                    <h3 class="timeline-header"><a href="#">Mina Lee</a> uploaded new photos</h3>
-
-                                                    <div class="timeline-body">
-                                                        <img src="http://placehold.it/150x100" alt="..." class="margin">
-                                                        <img src="http://placehold.it/150x100" alt="..." class="margin">
-                                                        <img src="http://placehold.it/150x100" alt="..." class="margin">
-                                                        <img src="http://placehold.it/150x100" alt="..." class="margin">
-                                                    </div>
-                                                </div>
-                                            </li>
-                                             END timeline item 
-                                            <li>
-                                                <i class="fa fa-clock-o bg-gray"></i>
-                                            </li>
-                                        </ul>
-                                    </div>-->
-                                    <!-- /.tab-pane -->
-
-                                    <div class="active tab-pane" id="settings">
-                                        <form class="form-horizontal">
+                                        <form class="form-horizontal" action="" method="post" enctype="multipart/form-data">
                                             <div class="form-group">
                                                 <label for="inputName" class="col-sm-2 control-label">Name</label>
 
                                                 <div class="col-sm-10">
-                                                    <input type="email" class="form-control" id="inputName" placeholder="Name">
+                                                    <input type="text" class="form-control" id="inputName" placeholder="Name" name="full_name" value="<?php echo $current_user_name; ?>" autocomplete="off">
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label for="inputName" class="col-sm-2 control-label">Address</label>
 
                                                 <div class="col-sm-10">
-                                                    <input type="text" class="form-control" id="inputName" placeholder="Address">
+                                                    <input type="text" class="form-control" id="inputName" placeholder="Address" name="address" value="<?php echo $current_user_address; ?>" autocomplete="off">
                                                 </div>
                                             </div>
                                             <div class="form-group">
-                                                <label for="inputName" class="col-sm-2 control-label">Telephone</label>
+                                                <label for="inputTelephone" class="col-sm-2 control-label">Telephone</label>
 
                                                 <div class="col-sm-10">
-                                                    <input type="text" class="form-control" id="inputName" placeholder="Name">
+                                                    <input type="text" class="form-control" id="inputTelephone" placeholder="Telephone" name="telephone" value="<?php echo $current_user_telephone; ?>" autocomplete="off">
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label for="inputEmail" class="col-sm-2 control-label">Email</label>
 
                                                 <div class="col-sm-10">
-                                                    <input type="email" class="form-control" id="inputEmail" placeholder="Email">
+                                                    <input type="email" class="form-control" id="inputEmail" placeholder="Email" name="email" value="<?php echo $current_user_email; ?>" autocomplete="off">
                                                 </div>
                                             </div>
                                             <div class="form-group">
-                                                <label for="inputName" class="col-sm-2 control-label">Username</label>
+                                                <label for="inputTelephone" class="col-sm-2 control-label">Username</label>
 
                                                 <div class="col-sm-10">
-                                                    <input type="text" class="form-control" id="inputName" placeholder="Name">
+                                                    <input type="text" class="form-control" id="inputTelephone" placeholder="Username" name="username" value="<?php echo $current_user; ?>" autocomplete="off">
                                                 </div>
                                             </div>
                                             <div class="form-group">
-                                                <label for="inputName" class="col-sm-4 control-label"><a>Want to change password?</a></label>
+                                                <label for="inputEmail" class="col-sm-2 control-label">Upload photo</label>
+
+                                                <div class="col-sm-10">
+                                                    <input type="file" name="userphoto" id="exampleInputFile" accept="image/jpg,image/png,image/jpeg">
+                                                </div>
                                             </div>
-                                            
                                             <div class="form-group">
                                                 <div class="col-sm-offset-2 col-sm-10">
-                                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                                    <button type="submit" class="btn btn-primary" name="save_basic_changes" value="save_basic_changes">Save changes</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <!-- /.tab-pane -->
+                                    <div class="tab-pane" id="settings">
+                                        <div class="form-group">
+                                            <h4 class="text-success">Advanced account settings</h4>
+                                        </div>
+                                        <form class="form-horizontal" action="" method="post">
+                                            <div class="form-group">
+                                                <label for="inputName" class="col-sm-3 control-label">Old password</label>
+                                                <div class="col-sm-9">
+                                                    <input type="password" class="form-control" id="inputName" name="old_password" placeholder="Old password" required="true">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="inputName" class="col-sm-3 control-label">New password</label>
+
+                                                <div class="col-sm-9">
+                                                    <input type="password" class="form-control" id="new_password" name="new_password" placeholder="New password" required="true">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="inputName" class="col-sm-3 control-label">New password again</label>
+
+                                                <div class="col-sm-9">
+                                                    <input type="password" class="form-control" id="new_password_again" name="new_password_again" placeholder="New password again" required="true">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <p class="text-danger text-center" id="password_notification"></p>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="col-sm-offset-2 col-sm-10">
+                                                    <button type="submit" class="btn btn-primary" name="save_advanced_changes" value="save_advanced_changes">Save changes</button>
                                                 </div>
                                             </div>
                                         </form>

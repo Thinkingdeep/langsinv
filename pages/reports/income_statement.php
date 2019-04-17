@@ -15,24 +15,13 @@
                     <!-- Sidebar user panel -->
                     <div class="user-panel">
                         <div class="pull-left image">
-                            <img src="assets/dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
+                            <img src="<?php echo $current_user_photo; ?>" class="img-circle" alt="User Image">
                         </div>
                         <div class="pull-left info">
-                            <p><?php echo $current_user;?></p>
+                            <p><?php echo $current_user; ?></p>
                             <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
                         </div>
                     </div>
-                    <!-- search form -->
-                    <form action="#" method="get" class="sidebar-form">
-                        <div class="input-group">
-                            <input type="text" name="q" class="form-control" placeholder="Search...">
-                            <span class="input-group-btn">
-                                <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i>
-                                </button>
-                            </span>
-                        </div>
-                    </form>
-                    <!-- /.search form -->
                     <!-- sidebar menu: : style can be found in sidebar.less -->
                     <?php include'includes/side_nav.php' ?>
                 </section>
@@ -53,7 +42,27 @@
                         <li class="active">Income Statement</li>
                     </ol>
                 </section>
-
+                <?php
+                $sales_amount = 0;
+                $purchases_amount = 0;
+                if (Input::exists() && Input::get('search_income_statement') == 'search_income_statement') {
+                    $from = Input::get('from');
+                    $to = Input::get('to');
+                    if (!empty($from) && !empty($to)) {
+                        $header_income_statement = 'Income Statement from ' . $from . ' to ' . $to;
+                        $sales_amount = number_format(selectSum("payments", "payment_amount", "id_stock_price_type = 2 AND payment_date BETWEEN '$from' AND '$to'"), 2);
+                        $purchases_amount = number_format(selectSum("payments", "payment_amount", "id_stock_price_type = 1 AND payment_date BETWEEN '$from' AND '$to'"), 2);
+                    } else {
+                        $header_income_statement = 'Income Statement';
+                        $sales_amount = number_format(selectSum("payments", "payment_amount", "id_stock_price_type = 2"), 2);
+                        $purchases_amount = number_format(selectSum("payments", "payment_amount", "id_stock_price_type = 1"), 2);
+                    }
+                } else {
+                    $header_income_statement = 'Income Statement';
+                    $sales_amount = number_format(selectSum("payments", "payment_amount", "id_stock_price_type = 2"), 2);
+                    $purchases_amount = number_format(selectSum("payments", "payment_amount", "id_stock_price_type = 1"), 2);
+                }
+                ?>
                 <!-- Main content -->
                 <section class="content">
                     <?php echo $entry_alert; ?>
@@ -62,7 +71,7 @@
                         <div class="box-header with-border">
                             <div class="row form-group">
                                 <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12">
-                                    <h3 class="box-title">Showing Income Statement</h3>
+                                    <h3 class="box-title"><?php echo $header_income_statement; ?></h3>
                                 </div>
                                 <form action="" method="post">
                                     <div class="col-lg-3 col-md-5 col-sm-5 col-xs-5">
@@ -70,7 +79,7 @@
                                             <div class="input-group-addon">
                                                 From
                                             </div>
-                                            <input type="date" class="form-control" name="balance_date" >
+                                            <input type="date" class="form-control" name="from" >
                                         </div>
                                     </div>
                                     <div class="col-lg-3 col-md-5 col-sm-5 col-xs-5">
@@ -78,11 +87,11 @@
                                             <div class="input-group-addon">
                                                 To
                                             </div>
-                                            <input type="date" class="form-control" name="balance_date" >
+                                            <input type="date" class="form-control" name="to" >
                                         </div>
                                     </div>
                                     <div class="col-lg-1 col-md-2 col-sm-2 col-xs-2">
-                                        <input type="submit" class="btn btn-primary" name="search" value="Search">
+                                        <button type="submit" class="btn btn-primary" name="search_income_statement" value="search_income_statement">Search</button>
                                     </div>
                                 </form>
                                 <div class="col-lg-2 col-md-6 col-sm-6 col-xs-6">
@@ -93,9 +102,8 @@
                                             <span class="sr-only">Toggle Dropdown</span>
                                         </button>
                                         <ul class="dropdown-menu" role="menu" style="">
-                                            <li><a data-toggle="modal" href="#new-sale-form" style="color: #72afd2;">Print </a></li>
-                                            <li><a data-toggle="modal" href="#new-purchase-form" style="color: #72afd2;">Export As Excel(.xls)</a></li>
-                                            <li><a data-toggle="modal" href="#new-brand-form" style="color: #72afd2;">Export As PDF(.pdf)</a></li>
+                                            <li><a data-toggle="modal" href="#" style="color: #72afd2;">Print </a></li>
+                                            <li><a data-toggle="modal" href="#" style="color: #72afd2;">Export As Excel(.xls)</a></li>
                                             <li class="divider"></li>
                                             <li><a data-toggle="modal" href="#new-sale-form" style="color: #72afd2;">Sell</a></li>
                                             <li><a data-toggle="modal" href="#new-purchase-form" style="color: #72afd2;">Buy</a></li>
@@ -124,8 +132,8 @@
                                     <tr>
                                         <td>Sales</td>
                                         <td></td>
-                                        <td><?php echo number_format(selectSum("payments","payment_amount", "id_stock_price_type = 2"),2);?></td>
-                                        <td><?php echo number_format(selectSum("payments","payment_amount", "id_stock_price_type = 2"),2);?></td>
+                                        <td><?php echo $sales_amount; ?></td>
+                                        <td><?php echo $sales_amount; ?></td>
                                     </tr>
                                     <tr>
                                         <td>Credit purchases</td>
@@ -147,9 +155,9 @@
                                     </tr>
                                     <tr>
                                         <td>Purchases</td>
-                                        <td><?php echo number_format(selectSum("payments","payment_amount", "id_stock_price_type = 1"),2);?></td>
+                                        <td><?php echo $purchases_amount; ?></td>
                                         <td></td>
-                                        <td><?php echo number_format(selectSum("payments","payment_amount", "id_stock_price_type = 1"),2);?></td>
+                                        <td><?php echo $purchases_amount; ?></td>
                                     </tr>
                                     <tr>
                                         <td>Credit sales</td>

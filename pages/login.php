@@ -7,12 +7,12 @@ ob_start();
     include 'includes/header.php';
     ?>
     <?php
-    global $current_user;
+    // global $current_user;
     $alert_entry = "";
-    if (Input::exists()) {
-        
-        $validate = new Validate();
-        $validation = $validate->check($_POST, array(
+if(Input::exists()){
+    if(Token::check(Input::get('login_token'))){
+    	$validate = new Validate();
+    	    $validation = $validate->check($_POST, array(
             'username' => array(
                 'required' => true
             ),
@@ -20,19 +20,42 @@ ob_start();
                 'required' => true
             )
         ));
-        if ($validation->passed()) {
-            $username = Input::get('username');
-            $password = sha1(Input::get('password'));
-            if (DB::getInstance()->checkRows("SELECT * FROM users WHERE username = '$username' AND user_password = '$password' ")) {
-//                Session::put($username, DB::getInstance()->getName("users", $username, "username", "username"));
-                $current_user =  DB::getInstance()->getName("users", $username, "username", "username");
-                createSession('Admin');
-                Redirect::to('index.php?page=dashboard');
-            } else {
-                $alert_entry = "Sorry, login failed";
-            }
-        }
+    	    if($validation->passed()){
+    	    	$user = new User();
+
+    	    	$login = $user->login(Input::get('username'),Input::get('password'));
+    	    	if($login){
+    	    		Redirect::to('index.php?page=dashboard');
+    	    	}else{
+    	    		$alert_entry = "Sorry, login failed";
+    	    	}
+    	    }
     }
+}
+    // if (Input::exists()) {
+        
+    //     $validate = new Validate();
+    //     $validation = $validate->check($_POST, array(
+    //         'username' => array(
+    //             'required' => true
+    //         ),
+    //         'password' => array(
+    //             'required' => true
+    //         )
+    //     ));
+    //     if ($validation->passed()) {
+    //         $username = Input::get('username');
+    //         $password = sha1(Input::get('password'));
+    //         if (DB::getInstance()->checkRows("SELECT * FROM users WHERE username = '$username' AND user_password = '$password' ")) {
+//                Session::put($username, DB::getInstance()->getName("users", $username, "username", "username"));
+    //             $current_user =  DB::getInstance()->getName("users", $username, "username", "username");
+    //             createSession('Admin');
+    //             Redirect::to('index.php?page=dashboard');
+    //         } else {
+    //             $alert_entry = "Sorry, login failed";
+    //         }
+    //     }
+    // }
 //    if (Input::exists()) {
 //        $username = Input::get('username');
 //        $password = sha1(Input::get('password'));
@@ -60,12 +83,12 @@ ob_start();
                 <form action="" method="post">
 
                     <div class="form-group has-feedback">
-                        <input type="text" class="form-control" name="username" placeholder="Username" required="true" autocomplete="
+                        <input type="text" class="form-control" name="username" placeholder="Username"  autocomplete="
                                off">
                         <span class="glyphicon glyphicon-user form-control-feedback"></span>
                     </div>
                     <div class="form-group has-feedback">
-                        <input type="password" class="form-control" name="password" required="true" placeholder="Password">
+                        <input type="password" class="form-control" name="password"  placeholder="Password">
                         <span class="glyphicon glyphicon-lock form-control-feedback"></span>
                     </div>
                     <div class="row">

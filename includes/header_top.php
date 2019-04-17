@@ -1,4 +1,15 @@
-<?php $current_user = createSession('Admin'); ?>
+ <?php 
+ $user = new User();
+    if($user->isLoggedIn()){
+    $current_user = $user->data()->username;
+    $current_user_name = $user->data()->name;
+    $current_user_address = $user->data()->user_address;
+    $current_user_telephone = $user->data()->telephone;
+    $current_user_email = $user->data()->email;
+    $current_user_photo = $user->data()->user_photo;
+    $current_user_type = $user->data()->usertype;
+    $current_user_id = $user->data()->id_user;
+?>
 <header class="main-header">
     <!-- Logo -->
     <a href="index.php?page=dashboard" class="logo">
@@ -80,39 +91,47 @@
                         <li class="footer"><a href="#">View all</a></li>
                     </ul>
                 </li>
-                <li class="treeview">
+                <!-- <li class="treeview">
                     <a href="index.php?page=login">
                         <span>Sign out</span>
                         <i class="fa fa-power-off"></i> 
                     </a>
-                </li>
+                </li> -->
                 <!-- User Account: style can be found in dropdown.less -->
-                <!--                                <li class="dropdown user user-menu">
+                                                <li class="dropdown user user-menu">
                                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                                        <img src="assets/dist/img/user2-160x160.jpg" class="user-image" alt="User Image">
-                                                        <span class="hidden-xs"><?php // echo Session::get('session/session_name');    ?></span>
+                                                        <img src="<?php echo $current_user_photo;?>" class="user-image" alt="User Image">
+                                                        <span class="hidden-xs"><?php echo $current_user;    ?></span>
                                                     </a>
-                                                    <ul class="dropdown-menu">
-                                                         User image 
+                                                    <ul class="dropdown-menu"> 
                                                         <li class="user-header">
-                                                            <img src="assets/dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
-                                                            <p><?php // echo Session::get('session/session_name');    ?></p>
+                                                            <img src="<?php echo $current_user_photo;?>" class="img-circle" alt="User Image">
+                                                            <p><?php echo $current_user;    ?>
+                                                                <small><?php echo $current_user_telephone;    ?></small>
+                                                            </p>
                                                         </li>
-                                                         Menu Footer
                                                         <li class="user-footer">
                                                             <div class="pull-left">
-                                                                <a href="index.php?page=profile" class="btn btn-default btn-flat">Profile</a>
+                                                                <a href="index.php?page=profile" class="btn btn-default btn-flat"><span>Profile</span>
+                        <i class="glyphicon glyphicon-user text-primary"></i> </a>
                                                             </div>
                                                             <div class="pull-right">
-                                                                <a href="#" class="btn btn-default btn-flat">Sign out</a>
+                                                                <a href="index.php?page=logout" class="btn btn-default btn-flat"><span>Sign out</span>
+                        <i class="fa fa-power-off text-primary"></i> </a>
                                                             </div>
                                                         </li>
                                                     </ul>
-                                                </li>-->
+                                                </li>
             </ul>
         </div>
     </nav>
 </header>
+<?php
+	}else{
+		Redirect::to('index.php?page=login');
+
+	}
+?>
 <div class="modal modal-default fade" id="new-sale-form">
     <div class="modal-dialog">
         <div class="modal-content">

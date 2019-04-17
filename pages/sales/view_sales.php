@@ -15,15 +15,15 @@
                     <!-- Sidebar user panel -->
                     <div class="user-panel">
                         <div class="pull-left image">
-                            <img src="assets/dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
+                            <img src="<?php echo $current_user_photo; ?>" class="img-circle" alt="User Image">
                         </div>
                         <div class="pull-left info">
-                            <p><?php echo $current_user;?></p>
+                            <p><?php echo $current_user; ?></p>
                             <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
                         </div>
                     </div>
                     <!-- search form -->
-                    <form action="#" method="get" class="sidebar-form">
+                    <!-- <form action="#" method="get" class="sidebar-form">
                         <div class="input-group">
                             <input type="text" name="q" class="form-control" placeholder="Search...">
                             <span class="input-group-btn">
@@ -31,7 +31,7 @@
                                 </button>
                             </span>
                         </div>
-                    </form>
+                    </form> -->
                     <!-- /.search form -->
                     <!-- sidebar menu: : style can be found in sidebar.less -->
                     <?php include'includes/side_nav.php' ?>
@@ -54,20 +54,38 @@
                     </ol>
                 </section>
                 <?php
-                        if(Input::exists() && Input::get('save_payment') == 'save_payment'){
+                $bal_msg = "";
+                $edit_msg = "Edit";
+                $del_msg = "Delete";
+                if (Input::exists() && Input::get('save_payment') == 'save_payment') {
 
-                            $arrayPayment = array("payment_amount" => Input::get('balance_pay'), "id_stock_price_type" => 2, "payment_date" => date("Y-m-d h:i:s"), "payment_receipt" => Input::get('sales_receipt'), "id_stock" => Input::get('product_id'));
+                    $arrayPayment = array("payment_amount" => Input::get('balance_pay'), "id_stock_price_type" => 2, "payment_date" => date("Y-m-d h:i:s"), "payment_receipt" => Input::get('sales_receipt'), "id_stock" => Input::get('product_id'));
 
-                            if (DB::getInstance()->insert("payments", $arrayPayment)) {
+                    if (DB::getInstance()->insert("payments", $arrayPayment)) {
 
                         $entry_alert = submissionReport("success", "Payment recorded successfully");
                         Redirect::to();
                     } else {
                         $entry_alert = submissionReport("error", "Failed to submit payment");
                     }
-
-                        }
-                        ?>
+                }
+                if (Input::exists() && Input::get('search_sales') == 'search_sales') {
+                    $from = Input::get('from');
+                    $to = Input::get('to');
+                    if (!empty($from) && !empty($to)) {
+                        $sales_header = 'Showing Sales from ' . $from . ' to ' . $to;
+                        $from = $from . ' 00:00:00';
+                        $to = $to . ' 23:59:59';
+                        $sales_query = DB::getInstance()->query("SELECT * FROM stock s,clients c, stock_name n, stock_prices sk,payments p WHERE s.stock_sold_to =c.id_client AND s.id_stock = sk.id_stock AND s.id_stock_name = n.id_stock_name AND s.id_stock = p.id_stock AND s.stock_status = 'SOLD' AND p.id_stock_price_type =2 AND p.payment_date BETWEEN '$from' AND '$to' AND sk.id_stock_price_type =2 GROUP BY s.id_stock DESC");
+                    } else {
+                        $sales_header = 'Showing Sales';
+                        $sales_query = DB::getInstance()->query("SELECT * FROM stock s,clients c, stock_name n, stock_prices sk,payments p WHERE s.stock_sold_to =c.id_client AND s.id_stock = sk.id_stock AND s.id_stock_name = n.id_stock_name AND s.id_stock = p.id_stock AND s.stock_status = 'SOLD' AND p.id_stock_price_type =2 AND sk.id_stock_price_type =2 GROUP BY s.id_stock DESC");
+                    }
+                } else {
+                    $sales_header = 'Showing Sales';
+                    $sales_query = DB::getInstance()->query("SELECT * FROM stock s,clients c, stock_name n, stock_prices sk,payments p WHERE s.stock_sold_to =c.id_client AND s.id_stock = sk.id_stock AND s.id_stock_name = n.id_stock_name AND s.id_stock = p.id_stock AND s.stock_status = 'SOLD' AND p.id_stock_price_type =2 AND sk.id_stock_price_type =2 GROUP BY s.id_stock DESC");
+                }
+                ?>
 
 
                 <!-- Main content -->
@@ -78,7 +96,7 @@
                         <div class="box-header with-border">
                             <div class="row form-group">
                                 <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12">
-                                    <h3 class="box-title">Showing Sales</h3>
+                                    <h3 class="box-title"><?php echo $sales_header; ?></h3>
                                 </div>
                                 <form action="" method="post">
                                     <div class="col-lg-3 col-md-5 col-sm-5 col-xs-5">
@@ -86,7 +104,7 @@
                                             <div class="input-group-addon">
                                                 From
                                             </div>
-                                            <input type="date" class="form-control" name="balance_date" >
+                                            <input type="date" class="form-control" name="from" >
                                         </div>
                                     </div>
                                     <div class="col-lg-3 col-md-5 col-sm-5 col-xs-5">
@@ -94,11 +112,11 @@
                                             <div class="input-group-addon">
                                                 To
                                             </div>
-                                            <input type="date" class="form-control" name="balance_date" >
+                                            <input type="date" class="form-control" name="to" >
                                         </div>
                                     </div>
                                     <div class="col-lg-1 col-md-2 col-sm-2 col-xs-2">
-                                        <input type="submit" class="btn btn-primary" name="search" value="Search">
+                                        <button type="submit" class="btn btn-primary" name="search_sales" value="search_sales">Search</button>
                                     </div>
                                 </form>
                                 <div class="col-lg-2 col-md-6 col-sm-6 col-xs-6">
@@ -125,7 +143,7 @@
                             </div>
                         </div>
                         <!-- /.box-header -->
-                        
+
                         <div class="box-body">
                             <table id="example1" class="table table-bordered table-hover">
                                 <thead>
@@ -133,18 +151,14 @@
                                         <th>NO</th>
                                         <th>DATE</th>
                                         <th>PRODUCT</th>
-                                        <th>SALES PRICE(UGX)</th>
-                                        <th>SALES BALANCE(UGX)</th>
+                                        <th>SALES_PRICE</th>
+                                        <th>SALES_BALANCE</th>
                                         <th>CUSTOMER</th>
                                         <th style="width:70px;">ACTION</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <?php
-                                    $bal_msg = "";
-                                    $edit_msg = "Edit";
-                                    $del_msg = "Delete";
-                                    $sales_query = DB::getInstance()->query("SELECT * FROM stock s,clients c, stock_name n, stock_prices sk,payments p WHERE s.stock_sold_to =c.id_client AND s.id_stock = sk.id_stock AND s.id_stock_name = n.id_stock_name AND s.id_stock = p.id_stock AND s.stock_status = 'SOLD' AND p.id_stock_price_type =2 AND sk.id_stock_price_type =2 GROUP BY s.id_stock DESC");
                                     $x = 1;
                                     foreach ($sales_query->results() as $sales_query):
                                         ?>
@@ -159,14 +173,14 @@
                                             <td><?php
                                                 $total_pay = selectSum('payments', 'payment_amount', 'id_stock ="' . $sales_query->id_stock . '" AND id_stock_price_type = 2');
                                                 $balance = $sales_price - $total_pay;
-                                                if($balance > 0){
+                                                if ($balance > 0) {
                                                     $bal_msg = "Pay Balance";
-                                                    }else{
-                                                        $bal_msg = "";
-                                                    }
-                                                echo number_format($balance,2);
+                                                } else {
+                                                    $bal_msg = "";
+                                                }
+                                                echo number_format($balance, 2);
                                                 ?></td>
-                                            <td><a href="index.php?page=view_sales_single&id=<?php echo $sales_query->id_client;?>"><?php echo $sales_query->name; ?></a></td>
+                                            <td><a href="index.php?page=view_sales_single&id=<?php echo $sales_query->id_client; ?>&user=<?php echo $sales_query->name; ?>&product=<?php echo getProductName($sales_query->id_stock); ?>&idstock=<?php echo $sales_query->id_stock; ?>"><?php echo $sales_query->name; ?></a></td>
                                             <td><div class="btn-group">
                                                     <button type="button" class="btn btn-default">Action</button>
                                                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
@@ -174,12 +188,12 @@
                                                         <span class="sr-only">Toggle Dropdown</span>
                                                     </button>
                                                     <ul class="dropdown-menu" role="menu" style="">
-                                                        <li><a data-toggle="modal" href="#pay-sales-balance-form<?php echo $sales_query->id_stock;?>" style="color: #72afd2;"><?php echo $bal_msg;?> </a></li>
-                                                        <li><a data-toggle="modal" href="#sales-edit-form" style="color: #72afd2;"><?php echo $edit_msg;?></a></li>
-                                                        <li><a data-toggle="modal" href="#delete-form" style="color: #72afd2;"><?php echo $del_msg;?></a></li>
+                                                        <li><a data-toggle="modal" href="#pay-sales-balance-form<?php echo $sales_query->id_stock; ?>" style="color: #72afd2;"><?php echo $bal_msg; ?> </a></li>
+                                                        <li><a data-toggle="modal" href="#sales-edit-form" style="color: #72afd2;"><?php echo $edit_msg; ?></a></li>
+                                                        <li><a data-toggle="modal" href="#" style="color: #72afd2;"><?php echo $del_msg; ?></a></li>
                                                     </ul>
                                                 </div></td>
-                                    <div class="modal modal-default fade" id="pay-sales-balance-form<?php echo $sales_query->id_stock;?>">
+                                    <div class="modal modal-default fade" id="pay-sales-balance-form<?php echo $sales_query->id_stock; ?>">
                                         <div class="modal-dialog">
                                             <div class="modal-content">
                                                 <div class="modal-header">
@@ -194,10 +208,16 @@
                                                         </div>
                                                         <div class="box-body">
                                                             <div class="row form-group">
-                                                                <div class="col-xs-12">
+                                                                <div class="col-xs-8">
                                                                     <label class="text-info">Customer Name</label>
                                                                     <input type="text" class="form-control" name="customer" required="true" autocomplete="
                                                                            off" value="<?php echo $sales_query->name; ?>">
+                                                                </div>
+                                                                <div class="col-xs-4">
+                                                                    <label class="text-info">Receipt</label>
+                                                                    <p><strong  class="text-danger"  style="font-size: 25px;"><?php echo generateAutoIncrementNumber('payments', 'id_payment'); ?></strong></p>
+                                                                    <input type="hidden" name="sales_receipt" value="<?php echo generateAutoIncrementNumber('payments', 'id_payment'); ?>">
+
                                                                 </div>
                                                             </div>
                                                             <div class="row form-group">
@@ -233,17 +253,12 @@
                                                                 </div>
                                                             </div>
                                                             <div class="row form-group">
-                                                                <div class="col-xs-6">
+                                                                <div class="col-xs-12">
                                                                     <label class="text-info">Amount To Pay</label>
                                                                     <input type="number" class="form-control" name="balance_pay" id="balance_pay" required="true" autocomplete="
                                                                            off">
                                                                 </div>
-                                                                <div class="col-xs-6">
-                                                                    <label class="text-info">Receipt</label>
-                                                                    <p><strong  class="text-danger"  style="font-size: 25px;"><?php echo generateAutoIncrementNumber('payments', 'id_payment'); ?></strong></p>
-                                                                    <input type="hidden" name="sales_receipt" value="<?php echo generateAutoIncrementNumber('payments', 'id_payment'); ?>">
 
-                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>

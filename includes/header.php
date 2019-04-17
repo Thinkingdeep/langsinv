@@ -13,6 +13,8 @@
   <link rel="stylesheet" href="assets/bower_components/font-awesome/css/font-awesome.min.css">
   <!-- DataTables -->
   <link rel="stylesheet" href="assets/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
+  <link rel="stylesheet" href="assets/bower_components/fullcalendar/dist/fullcalendar.min.css">
+  <link rel="stylesheet" href="assets/bower_components/fullcalendar/dist/fullcalendar.print.min.css" media="print">
   <!-- Ionicons -->
   <link rel="stylesheet" href="assets/bower_components/Ionicons/css/ionicons.min.css">
   <!-- daterange picker -->

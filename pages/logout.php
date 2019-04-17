@@ -1,9 +1,8 @@
 <?php
-Input::get('Admin');
-if(isset($_SESSION['Admin'])){
-    session_destroy();
-    Redirect::to('index.php?page=login');
-}
+$user = new User();
+	$user->logout();
+Redirect::to('index.php?page=login');
+
 
 /* 
  * To change this license header, choose License Headers in Project Properties.

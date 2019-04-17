@@ -15,15 +15,15 @@
                     <!-- Sidebar user panel -->
                     <div class="user-panel">
                         <div class="pull-left image">
-                            <img src="assets/dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
+                            <img src="<?php echo $current_user_photo; ?>" class="img-circle" alt="User Image">
                         </div>
                         <div class="pull-left info">
-                            <p><?php echo $current_user;?></p>
+                            <p><?php echo $current_user; ?></p>
                             <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
                         </div>
                     </div>
                     <!-- search form -->
-                    <form action="#" method="get" class="sidebar-form">
+                    <!-- <form action="#" method="get" class="sidebar-form">
                         <div class="input-group">
                             <input type="text" name="q" class="form-control" placeholder="Search...">
                             <span class="input-group-btn">
@@ -31,7 +31,7 @@
                                 </button>
                             </span>
                         </div>
-                    </form>
+                    </form> -->
                     <!-- /.search form -->
                     <!-- sidebar menu: : style can be found in sidebar.less -->
                     <?php include'includes/side_nav.php' ?>
@@ -54,20 +54,23 @@
                     </ol>
                 </section>
                 <?php
-                        if(Input::exists() && Input::get('save_payment') == 'save_payment'){
+                $id = Input::get('id');
+                $user = Input::get('user');
+                $product = Input::get('product');
+                $idstock = Input::get('idstock');
+                if (Input::exists() && Input::get('save_payment') == 'save_payment') {
 
-                            $arrayPayment = array("payment_amount" => Input::get('balance_pay'), "id_stock_price_type" => 2, "payment_date" => date("Y-m-d h:i:s"), "payment_receipt" => Input::get('sales_receipt'), "id_stock" => Input::get('product_id'));
+                    $arrayPayment = array("payment_amount" => Input::get('balance_pay'), "id_stock_price_type" => 2, "payment_date" => date("Y-m-d h:i:s"), "payment_receipt" => Input::get('sales_receipt'), "id_stock" => Input::get('product_id'));
 
-                            if (DB::getInstance()->insert("payments", $arrayPayment)) {
+                    if (DB::getInstance()->insert("payments", $arrayPayment)) {
 
                         $entry_alert = submissionReport("success", "Payment recorded successfully");
                         Redirect::to();
                     } else {
                         $entry_alert = submissionReport("error", "Failed to submit payment");
                     }
-
-                        }
-                        ?>
+                }
+                ?>
 
                 <!-- Main content -->
                 <section class="content">
@@ -77,30 +80,9 @@
                         <div class="box-header with-border">
                             <div class="row form-group">
                                 <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12">
-                                    <h3 class="box-title">Showing Sales</h3>
+                                    <h3 class="box-title">Showing Sales to <?php echo $user; ?></h3>
                                 </div>
-                                <form action="" method="post">
-                                    <div class="col-lg-3 col-md-5 col-sm-5 col-xs-5">
-                                        <div class="input-group ">
-                                            <div class="input-group-addon">
-                                                From
-                                            </div>
-                                            <input type="date" class="form-control" name="balance_date" >
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-3 col-md-5 col-sm-5 col-xs-5">
-                                        <div class="input-group ">
-                                            <div class="input-group-addon">
-                                                To
-                                            </div>
-                                            <input type="date" class="form-control" name="balance_date" >
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-1 col-md-2 col-sm-2 col-xs-2">
-                                        <input type="submit" class="btn btn-primary" name="search" value="Search">
-                                    </div>
-                                </form>
-                                <div class="col-lg-2 col-md-6 col-sm-6 col-xs-6">
+                                <div class="col-lg-2 col-md-6 col-sm-6 col-xs-6 pull-right">
                                     <div class="btn-group">
                                         <button type="button" class="btn btn-primary">Action</button>
                                         <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
@@ -131,19 +113,19 @@
                                         <th>NO</th>
                                         <th>DATE</th>
                                         <th>PRODUCT</th>
-                                        <th>SALES PRICE(UGX)</th>
-                                        <th>SALES BALANCE(UGX)</th>
-                                        <th>CUSTOMER</th>
+                                        <th>SALES_PRICE</th>
+                                        <th>AMOUNT_PAID</th>
+                                        <th>SALES_BALANCE</th>
                                         <th style="width: 70px;">ACTION</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <?php
-                                    $id = Input::get('id');
                                     $bal_msg = "";
                                     $edit_msg = "Edit";
                                     $del_msg = "Delete";
-                                    $sales_query = DB::getInstance()->query("SELECT * FROM stock s,clients c, stock_name n, stock_prices sk,payments p WHERE s.stock_sold_to =c.id_client AND s.id_stock = sk.id_stock AND s.id_stock_name = n.id_stock_name AND s.id_stock = p.id_stock AND s.stock_status = 'SOLD' AND p.id_stock_price_type =2 AND sk.id_stock_price_type =2 AND c.id_client = $id GROUP BY s.id_stock DESC");
+                                    $total_pay = 0;
+                                    $sales_query = DB::getInstance()->query("SELECT * FROM stock s,clients c, stock_name n, stock_prices sk,payments p WHERE s.stock_sold_to =c.id_client AND s.id_stock = sk.id_stock AND s.id_stock_name = n.id_stock_name AND s.id_stock = p.id_stock AND s.stock_status = 'SOLD' AND p.id_stock_price_type =2 AND sk.id_stock_price_type =2 AND c.id_client = $id AND s.id_stock=$idstock");
                                     $x = 1;
                                     foreach ($sales_query->results() as $sales_query):
                                         ?>
@@ -155,8 +137,9 @@
                                                 $sales_price = $sales_query->stock_price;
                                                 echo number_format($sales_query->stock_price, 2);
                                                 ?></td>
+                                            <td> <?php echo number_format($sales_query->payment_amount, 2); ?></td>
                                             <td><?php
-                                                $total_pay = selectSum('payments', 'payment_amount', 'id_stock ="' . $sales_query->id_stock . '" AND id_stock_price_type = 2');
+                                                $total_pay += $sales_query->payment_amount;
                                                 $balance = $sales_price - $total_pay;
                                                 if ($balance > 0) {
                                                     $bal_msg = "Pay Balance";
@@ -165,7 +148,6 @@
                                                 }
                                                 echo number_format($balance, 2);
                                                 ?></td>
-                                            <td><?php echo $sales_query->name; ?></td>
                                             <td><div class="btn-group">
                                                     <button type="button" class="btn btn-default">Action</button>
                                                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">

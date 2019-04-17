@@ -118,6 +118,10 @@ function countEntries($table_name, $column, $where) {
     }
 }
 
-function createSession($name){
-    return $_SESSION[$name] = DB::getInstance()->getName("users", $name, "username", "usertype");
+ function renameUploadedFile($filename,$file_ext){
+        $file = array();
+
+          $file =explode('.',$filename);
+          $new_file_name =$file[0].'-'.date('H-i-s').'.'.$file_ext;
+          return $new_file_name;
 }

@@ -85,7 +85,7 @@
           <ul class="treeview-menu">
             <li><a href="index.php?page=payment_report"><i class="fa fa-circle-o"></i>Payment Reports</a></li>
             <li><a href="index.php?page=income_statement"><i class="fa fa-circle-o"></i>Income Statement</a></li>
-            <li><a href="index.php?page=balance_sheet"><i class="fa fa-circle-o"></i>Balance Sheet</a></li>
+            <!--<li><a href="index.php?page=balance_sheet"><i class="fa fa-circle-o"></i>Balance Sheet</a></li>-->
           </ul>
         </li>
         <li class="treeview">
@@ -103,10 +103,5 @@
             <li><a href="index.php?page=company_income_settings"><i class="fa fa-circle-o"></i>Income Settings</a></li>
             <li><a href="index.php?page=company_expenditure_settings"><i class="fa fa-circle-o"></i>Expenditure Settings</a></li>
           </ul>
-        </li>
-        <li>
-          <a href="index.php?page=login">
-            <i class="fa fa-power-off"></i> <span>Sign out</span>
-          </a>
         </li>
       </ul>

@@ -11,7 +11,7 @@
                     <!-- Sidebar user panel -->
                     <div class="user-panel">
                         <div class="pull-left image">
-                            <img src="assets/dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
+                            <img src="<?php echo $current_user_photo;?>" class="img-circle" alt="User Image">
                         </div>
                         <div class="pull-left info">
                             <p><?php echo $current_user;?></p>
@@ -19,7 +19,7 @@
                         </div>
                     </div>
                     <!-- search form -->
-                    <form action="#" method="get" class="sidebar-form">
+                    <!-- <form action="#" method="get" class="sidebar-form">
                         <div class="input-group">
                             <input type="text" name="q" class="form-control" placeholder="Search...">
                             <span class="input-group-btn">
@@ -27,7 +27,7 @@
                                 </button>
                             </span>
                         </div>
-                    </form>
+                    </form> -->
                     <!-- /.search form -->
                     <!-- sidebar menu: : style can be found in sidebar.less -->
                     <?php include 'includes/side_nav.php'; ?>
@@ -53,7 +53,7 @@
                 <section class="content">
                     <?php echo $entry_alert; ?>
                     <div class="row">
-                        <div class="col-md-7">
+                        <div class="col-md-6">
                             <!-- SELECT2 EXAMPLE -->
                             <div class="box box-primary">
                                 <div class="box-header with-border">
@@ -130,15 +130,11 @@
                                     </div>
                                 </div>
                                 <!-- /.box-body -->
-                                <div class="box-footer">
-                                    Visit <a href="https://select2.github.io/">Select2 documentation</a> for more examples and information about
-                                    the plugin.
-                                </div>
                             </div>
                             <!-- /.box -->
                         </div>
 
-                        <div class="col-md-5">
+                        <div class="col-md-6">
                             <div class="box box-primary">
                                 <div class="box-header with-border">
                                     <h3 class="box-title">Product Colors</h3>
@@ -209,10 +205,6 @@
                                     </div>
                                 </div>
                                 <!-- /.box-body -->
-                                <div class="box-footer">
-                                    Visit <a href="https://select2.github.io/">Select2 documentation</a> for more examples and information about
-                                    the plugin.
-                                </div>
                             </div>
                             <!-- /.box -->
                         </div>

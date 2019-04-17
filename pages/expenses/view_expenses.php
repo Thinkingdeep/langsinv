@@ -15,23 +15,23 @@
                     <!-- Sidebar user panel -->
                     <div class="user-panel">
                         <div class="pull-left image">
-                            <img src="assets/dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
+                            <img src="<?php echo $current_user_photo; ?>" class="img-circle" alt="User Image">
                         </div>
                         <div class="pull-left info">
-                            <p><?php echo $current_user;?></p>
+                            <p><?php echo $current_user; ?></p>
                             <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
                         </div>
                     </div>
-                    <!-- search form -->
-                    <form action="#" method="get" class="sidebar-form">
-                        <div class="input-group">
-                            <input type="text" name="q" class="form-control" placeholder="Search...">
-                            <span class="input-group-btn">
-                                <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i>
-                                </button>
-                            </span>
-                        </div>
-                    </form>
+                    <!--                     search form 
+                                        <form action="#" method="get" class="sidebar-form">
+                                            <div class="input-group">
+                                                <input type="text" name="q" class="form-control" placeholder="Search...">
+                                                <span class="input-group-btn">
+                                                    <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i>
+                                                    </button>
+                                                </span>
+                                            </div>
+                                        </form>-->
                     <!-- /.search form -->
                     <!-- sidebar menu: : style can be found in sidebar.less -->
                     <?php include'includes/side_nav.php' ?>
@@ -44,16 +44,18 @@
                 <!-- Content Header (Page header) -->
                 <section class="content-header">
                     <h1>
-                        Incomes
+                        Expenses
                         <!-- <small>Control panel</small> -->
                     </h1>
                     <ol class="breadcrumb">
                         <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-                        <li class="active">Incomes</li>
-                        <li class="active">View Incomes</li>
+                        <li class="active">Expenses</li>
+                        <li class="active">View Expenses</li>
                     </ol>
                 </section>
                 <?php
+                $edit_msg = "";
+                $del_msg = "";
                 if (Input::exists() && Input::get('save_expense_edits') == 'save_expense_edits') {
                     $expense_id = Input::get('id_expense');
                     $arrayExpenseSource = array("id_expenditure_source" => Input::get('expense_type'), "id_stock" => Input::get('expense_source'), "expense_amount" => Input::get('expense_amount'));
@@ -62,16 +64,32 @@
                     } else {
                         $entry_alert = submissionReport("error", "Failed to update record");
                     }
-                } 
-//                elseif (Input::exists() && Input::get('delete_income_record') == 'delete_income_record') {
-//                    $income_id = Input::get('id_income');
-//                    if (DB::getInstance()->delete("incomes", $income_id)) {
-//                        $entry_alert = submissionReport("success", "Record deleted successfully");
-//                    } else {
-//                        $entry_alert = submissionReport("error", "Failed to delete record");
-//                    }
-//                }
+                } elseif (Input::exists() && Input::get('delete_expense_record') == 'delete_expense_record') {
+                    $expense_id = Input::get('id_expense');
+                    if (DB::getInstance()->delete("expenditures", $expense_id)) {
+                        $entry_alert = submissionReport("success", "Record deleted successfully");
+                    } else {
+                        $entry_alert = submissionReport("error", "Failed to delete record");
+                    }
+                }
+                if (Input::exists() && Input::get('search_expense') == 'search_expense') {
+                    $from = Input::get('from');
+                    $to = Input::get('to');
+                    if (!empty($from) && !empty($to)) {
+                        $expense_header = 'Showing Expenses from ' . $from . ' to ' . $to;
+                        $from = $from . ' 00:00:00';
+                        $to = $to . ' 23:59:59';
+                        $expense_query = DB::getInstance()->query("SELECT * FROM expenditures e, expenditure_sources sr, stock s WHERE s.id_stock = e.id_stock AND sr.id_expenditure_source = e.id_expenditure_source AND e.expense_date BETWEEN '$from' AND '$to' ORDER BY e.expense_date DESC");
+                    } else {
+                        $expense_header = 'Showing Expenses';
+                        $expense_query = DB::getInstance()->query("SELECT * FROM expenditures e, expenditure_sources sr, stock s WHERE s.id_stock = e.id_stock AND sr.id_expenditure_source = e.id_expenditure_source ORDER BY e.expense_date DESC");
+                    }
+                } else {
+                    $expense_header = 'Showing Expenses';
+                    $expense_query = DB::getInstance()->query("SELECT * FROM expenditures e, expenditure_sources sr, stock s WHERE s.id_stock = e.id_stock AND sr.id_expenditure_source = e.id_expenditure_source ORDER BY e.expense_date DESC");
+                }
                 ?>
+
 
                 <!-- Main content -->
                 <section class="content">
@@ -81,7 +99,7 @@
                         <div class="box-header with-border">
                             <div class="row form-group">
                                 <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12">
-                                    <h3 class="box-title">Showing Incomes</h3>
+                                    <h3 class="box-title"><?php echo $expense_header; ?></h3>
                                 </div>
                                 <form action="" method="post">
                                     <div class="col-lg-3 col-md-5 col-sm-5 col-xs-5">
@@ -89,7 +107,7 @@
                                             <div class="input-group-addon">
                                                 From
                                             </div>
-                                            <input type="date" class="form-control" name="balance_date" >
+                                            <input type="date" class="form-control" name="from" >
                                         </div>
                                     </div>
                                     <div class="col-lg-3 col-md-5 col-sm-5 col-xs-5">
@@ -97,11 +115,11 @@
                                             <div class="input-group-addon">
                                                 To
                                             </div>
-                                            <input type="date" class="form-control" name="balance_date" >
+                                            <input type="date" class="form-control" name="to" >
                                         </div>
                                     </div>
                                     <div class="col-lg-1 col-md-2 col-sm-2 col-xs-2">
-                                        <input type="submit" class="btn btn-primary" name="search" value="Search">
+                                        <button type="submit" class="btn btn-primary" name="search_expense" value="search_expense">Search</button>
                                     </div>
                                 </form>
                                 <div class="col-lg-2 col-md-6 col-sm-6 col-xs-6">
@@ -112,9 +130,9 @@
                                             <span class="sr-only">Toggle Dropdown</span>
                                         </button>
                                         <ul class="dropdown-menu" role="menu" style="">
-                                            <li><a data-toggle="modal" href="#new-sale-form" style="color: #72afd2;">Print </a></li>
-                                            <li><a data-toggle="modal" href="#new-purchase-form" style="color: #72afd2;">Export As Excel(.xls)</a></li>
-                                            <li><a data-toggle="modal" href="#new-brand-form" style="color: #72afd2;">Export As PDF(.pdf)</a></li>
+                                            <li><a data-toggle="modal" href="#" style="color: #72afd2;">Print </a></li>
+                                            <li><a data-toggle="modal" href="#" style="color: #72afd2;">Export As Excel(.xls)</a></li>
+                                            <!--<li><a data-toggle="modal" href="#" style="color: #72afd2;">Export As PDF(.pdf)</a></li>-->
                                             <li class="divider"></li>
                                             <li><a data-toggle="modal" href="#new-sale-form" style="color: #72afd2;">Sell</a></li>
                                             <li><a data-toggle="modal" href="#new-purchase-form" style="color: #72afd2;">Buy</a></li>
@@ -143,9 +161,6 @@
                                 </thead>
                                 <tbody>
                                     <?php
-                                    $edit_msg = "";
-                                    $del_msg = "";
-                                    $expense_query = DB::getInstance()->query("SELECT * FROM expenditures e, expenditure_sources sr, stock s WHERE s.id_stock = e.id_stock AND sr.id_expenditure_source = e.id_expenditure_source");
                                     $x = 1;
                                     foreach ($expense_query->results() as $expense_query):
                                         ?>
@@ -228,7 +243,7 @@
                                                             <div class="row form-group">
                                                                 <div class="col-xs-12">
                                                                     <label class="text-info">Amount</label>
-                                                                    <input type="number" class="form-control" name="expense_amount" required="true"  value="<?php echo $expense_query->expense_amount;?>">
+                                                                    <input type="number" class="form-control" name="expense_amount" required="true"  value="<?php echo $expense_query->expense_amount; ?>">
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -261,7 +276,7 @@
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="reset" class="btn btn-warning btn-md pull-left" data-dismiss="modal">No</button>
-                                                        <button type="submit" name="delete_income_record" value="delete_income_record" class="btn btn-success btn-md">Yes</button>
+                                                        <button type="submit" name="delete_expense_record" value="delete_expense_record" class="btn btn-success btn-md">Yes</button>
                                                     </div>
                                                 </form>
                                             </div>
