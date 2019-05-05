@@ -175,7 +175,7 @@
                             <!-- small box -->
                             <div class="small-box bg-red">
                                 <div class="inner">
-                                    <h4><?php echo countEntries('clients', 'id_client', 'id_client_type = 1'); ?></h4>
+                                    <h4><?php echo countEntries('clients', 'id_client', 'id_client_type = 2'); ?></h4>
 
                                     <p>Customers</p>
                                 </div>

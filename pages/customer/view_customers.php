@@ -45,7 +45,7 @@
                 if (Input::exists() && Input::get('save_customer_edits') == 'save_customer_edits') {
                     $customer = Input::get('customer_id');
                     $arrayClient = array("name" => strtoupper(Input::get('customer_name')), "address" => strtoupper(Input::get('customer_address')),
-                        "telephone" => strtoupper(Input::get('customer_telephone')), "email" => Input::get('customer_email'));
+                        "telephone" => strtoupper(Input::get('customer_telephone')), "email" => strtolower(Input::get('customer_email')));
 
                     if (DB::getInstance()->update("clients", $customer, $arrayClient, "id_client")) {
                         $entry_alert = submissionReport("success", "Customer information updated successfully");
@@ -53,14 +53,16 @@
                         $entry_alert = submissionReport("error", "Failed to update customer information");
                     }
                 } elseif (Input::exists() && Input::get('delete_customer') == 'delete_customer') {
+
                     $customer = Input::get('customer_id');
-                    if (DB::getInstance()->delete("clients", $customer)) {
+                    if (DB::getInstance()->query("DELETE FROM clients WHERE id_client = $customer")) {
+                        DB::getInstance()->query("DELETE FROM stock WHERE id_client = $customer");
                         $entry_alert = submissionReport("success", "Customer information deleted successfully");
                     } else {
                         $entry_alert = submissionReport("error", "Failed to delete customer information");
                     }
                 }
-                $query = "SELECT * FROM clients WHERE id_client_type=1";
+                $query = "SELECT * FROM clients WHERE id_client_type=2";
                 $customer_query = DB::getInstance()->query($query);
                 ?>
 
