@@ -88,6 +88,14 @@ function getProuctPrice($table, $stock_id, $id_price_type) {
     return $price;
 }
 
+function getSpecificDetails($table,$column_return,$where){
+    $query = DB::getInstance()->query("SELECT ".$column_return." AS value FROM ".$table." WHERE ".$where."");
+    foreach ($query->results() as $result) {
+        $result->value;
+    }
+    return $result->value;
+}
+
 function selectSum($table_name, $column, $where) {
     $query = DB::getInstance()->query("SELECT SUM(" . $column . ")AS total FROM " . $table_name . " WHERE " . $where . " ");
     foreach ($query->results() as $value) {

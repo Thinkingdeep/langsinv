@@ -72,15 +72,15 @@
                         <div class="box-header with-border">
                             <h3 class="box-title">Showing Customer</h3>
                             <div class="btn-group pull-right">
-                                <button type="button" class="btn btn-primary">Action</button>
-                                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                                <!-- <button type="button" class="btn btn-primary">Action</button> -->
+                                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">Action
                                     <span class="caret"></span>
                                     <span class="sr-only">Toggle Dropdown</span>
                                 </button>
                                 <ul class="dropdown-menu" role="menu" style="">
                                     <li><a data-toggle="modal" href="#new-sale-form" style="color: #72afd2;">Print </a></li>
-                                    <li><a data-toggle="modal" href="#new-purchase-form" style="color: #72afd2;">Export As Excel(.xls)</a></li>
-                                    <li><a data-toggle="modal" href="#new-brand-form" style="color: #72afd2;">Export As PDF(.pdf)</a></li>
+                                    <!-- <li><a data-toggle="modal" href="#new-purchase-form" style="color: #72afd2;">Export As Excel(.xls)</a></li>
+                                    <li><a data-toggle="modal" href="#new-brand-form" style="color: #72afd2;">Export As PDF(.pdf)</a></li> -->
                                     <li class="divider"></li>
                                     <li><a data-toggle="modal" href="#new-sale-form" style="color: #72afd2;">Sell</a></li>
                                     <li><a data-toggle="modal" href="#new-purchase-form" style="color: #72afd2;">Buy</a></li>
@@ -118,8 +118,8 @@
                                             <td><?php echo $customers->telephone; ?></td>
                                             <td><?php echo $customers->email; ?></td>
                                             <td><div class="btn-group">
-                                                    <button type="button" class="btn btn-default">Action</button>
-                                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                                                    <!-- <button type="button" class="btn btn-default">Action</button> -->
+                                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Action
                                                         <span class="caret"></span>
                                                         <span class="sr-only">Toggle Dropdown</span>
                                                     </button>

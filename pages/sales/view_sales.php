@@ -127,8 +127,7 @@
                                 </form>
                                 <div class="col-lg-2 col-md-6 col-sm-6 col-xs-6">
                                     <div class="btn-group">
-                                        <button type="button" class="btn btn-primary">Action</button>
-                                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">Options
                                             <span class="caret"></span>
                                             <span class="sr-only">Toggle Dropdown</span>
                                         </button>
@@ -160,12 +159,14 @@
                                         <th>SALES_PRICE</th>
                                         <th>SALES_BALANCE</th>
                                         <th>CUSTOMER</th>
-                                        <th style="width:70px;">ACTION</th>
+                                        <th style="width:70px;">OPTIONS</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <?php
                                     $x = 1;
+                                    $total_sales = 0;
+                                    $total_balance = 0;
                                     foreach ($sales_query->results() as $sales_query):
                                         ?>
                                         <tr>
@@ -174,22 +175,18 @@
                                             <td><?php echo getProductName($sales_query->id_stock); ?></td>
                                             <td><?php
                                                 $sales_price = $sales_query->stock_price;
+                                                $total_sales +=$sales_price;
                                                 echo number_format($sales_query->stock_price, 2);
                                                 ?></td>
                                             <td><?php
                                                 $total_pay = selectSum('payments', 'payment_amount', 'id_stock ="' . $sales_query->id_stock . '" AND id_stock_price_type = 2');
                                                 $balance = $sales_price - $total_pay;
-                                                if ($balance > 0) {
-                                                    $bal_msg = "Pay Balance";
-                                                } else {
-                                                    $bal_msg = "";
-                                                }
+                                                $total_balance +=$balance;
                                                 echo number_format($balance, 2);
                                                 ?></td>
                                             <td><a href=""><?php echo $sales_query->name; ?></a></td>
                                             <td><div class="btn-group">
-                                                    <button type="button" class="btn btn-default">Action</button>
-                                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Options
                                                         <span class="caret"></span>
                                                         <span class="sr-only">Toggle Dropdown</span>
                                                     </button>
@@ -285,6 +282,17 @@
                                 endforeach;
                                 ?>
                                 </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th></th>
+                                        <th>Total</th>
+                                        <th></th>
+                                        <th><?php echo number_format($total_sales,2); ?></th>
+                                        <th><?php echo number_format($total_balance,2); ?></th>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
+                                </tfoot>
                             </table>
                         </div>
                     </div>

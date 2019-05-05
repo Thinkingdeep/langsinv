@@ -87,8 +87,8 @@
                                 </form>
                                 <div class="col-lg-2 col-md-6 col-sm-6 col-xs-6">
                                     <div class="btn-group">
-                                        <button type="button" class="btn btn-primary">Action</button>
-                                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                                        <!-- <button type="button" class="btn btn-primary"></button> -->
+                                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">Action
                                             <span class="caret"></span>
                                             <span class="sr-only">Toggle Dropdown</span>
                                         </button>

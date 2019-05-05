@@ -177,8 +177,11 @@
             $('#payment_date').hide();
             $("#display_selected_products").hide();
             $("#new_supplier").hide();
-            $("#existing_supplier").hide();
+            // $("#existing_supplier").hide();
             $("#vehicle_number_plate").hide();
+            // $("#existing_brand").hide();
+            $("#new_brand").hide();
+            $("#new_car_color").hide();
         })
         $('#optionsRadios2').click(function () { // when new customer selected, show new customer fields.
             $('#new_customer').hide();
@@ -205,6 +208,22 @@
         })
         $('#optionsRadios6').click(function () { 
             $('#vehicle_number_plate').show();
+        })
+        $('#optionsRadios7').click(function () { 
+            $('#new_brand').show();
+            $('#existing_brand').hide();
+        })
+        $('#optionsRadios8').click(function () { 
+            $('#existing_brand').show();
+            $('#new_brand').hide();
+        })
+        $('#optionsRadios9').click(function () { 
+            $('#existing_car_color').show();
+            $('#new_car_color').hide();
+        })
+        $('#optionsRadios10').click(function () { 
+            $('#new_car_color').show();
+            $('#existing_car_color').hide();
         })
         $('#new_password_again').keyup(function (){
             var password_again = $('#new_password_again').val();

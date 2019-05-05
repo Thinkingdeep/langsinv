@@ -185,6 +185,10 @@
                   <td>Expenses</td>
                   <td><?php echo number_format($product_expenses,2); ?></td>
                 </tr>
+                <tr>
+                  <td><strong>Total cost</strong></td>
+                  <td><?php echo number_format($product_expenses + $purchase_price,2); ?></td>
+                </tr>
 
               </table>
             </div>

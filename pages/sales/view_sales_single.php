@@ -85,8 +85,7 @@
                                 </div>
                                 <div class="col-lg-2 col-md-6 col-sm-6 col-xs-6 pull-right">
                                     <div class="btn-group">
-                                        <button type="button" class="btn btn-primary">Action</button>
-                                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">Action
                                             <span class="caret"></span>
                                             <span class="sr-only">Toggle Dropdown</span>
                                         </button>
@@ -149,8 +148,7 @@
                                                 echo number_format($balance, 2);
                                                 ?></td>
                                             <td><div class="btn-group">
-                                                    <button type="button" class="btn btn-default">Action</button>
-                                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Action
                                                         <span class="caret"></span>
                                                         <span class="sr-only">Toggle Dropdown</span>
                                                     </button>
@@ -252,7 +250,6 @@
                                         <th><?php echo number_format($total_pay,2);?></th>
                                         <th><?php echo number_format($balance,2);?></th>
                                         <th></th>
-                                        <th></th>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -278,7 +275,7 @@
                   <td><?php echo number_format($product_expenses,2); ?></td>
                 </tr>
                 <tr>
-                  <td><strong>Sub total</strong></td>
+                  <td><strong>Total cost</strong></td>
                   <td><?php echo number_format($product_costs,2);?></td>
                 </tr>
                 <tr>
