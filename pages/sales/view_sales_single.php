@@ -50,7 +50,7 @@
                     <ol class="breadcrumb">
                         <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
                         <li class="active">Sales</li>
-                        <li class="active">View Sales</li>
+                        <li class="active">View Sales Single</li>
                     </ol>
                 </section>
                 <?php
@@ -58,18 +58,18 @@
                 $user = Input::get('user');
                 $product = Input::get('product');
                 $idstock = Input::get('idstock');
-                if (Input::exists() && Input::get('save_payment') == 'save_payment') {
-
-                    $arrayPayment = array("payment_amount" => Input::get('balance_pay'), "id_stock_price_type" => 2, "payment_date" => date("Y-m-d h:i:s"), "payment_receipt" => Input::get('sales_receipt'), "id_stock" => Input::get('product_id'));
-
-                    if (DB::getInstance()->insert("payments", $arrayPayment)) {
-
-                        $entry_alert = submissionReport("success", "Payment recorded successfully");
-                        Redirect::to();
-                    } else {
-                        $entry_alert = submissionReport("error", "Failed to submit payment");
-                    }
-                }
+                $purchase_price = getProuctPrice('stock_prices', $idstock, 1);
+                $product_expenses = selectSum('expenditures','expense_amount', 'id_stock ='.$idstock);
+                $product_costs = $purchase_price + $product_expenses;
+                // if (Input::exists() && Input::get('save_payment') == 'save_payment') {
+                //     $arrayPayment = array("payment_amount" => Input::get('balance_pay'), "id_stock_price_type" => 2, "payment_date" => date("Y-m-d h:i:s"), "payment_receipt" => Input::get('sales_receipt'), "id_stock" => Input::get('product_id'));
+                //     if (DB::getInstance()->insert("payments", $arrayPayment)) {
+                //         $entry_alert = submissionReport("success", "Payment recorded successfully");
+                //         Redirect::to();
+                //     } else {
+                //         $entry_alert = submissionReport("error", "Failed to submit payment");
+                //     }
+                // }
                 ?>
 
                 <!-- Main content -->
@@ -79,8 +79,9 @@
                     <div class="box box-primary">
                         <div class="box-header with-border">
                             <div class="row form-group">
-                                <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12">
-                                    <h3 class="box-title">Showing Sales to <?php echo $user; ?></h3>
+                                <div class="col-lg-10 col-md-12 col-sm-12 col-xs-12">
+                                    <h3 class="box-title">Showing Payments for <?php echo $product; ?><br><br>
+                                        Customer name <?php echo $user; ?></h3>
                                 </div>
                                 <div class="col-lg-2 col-md-6 col-sm-6 col-xs-6 pull-right">
                                     <div class="btn-group">
@@ -91,8 +92,6 @@
                                         </button>
                                         <ul class="dropdown-menu" role="menu" style="">
                                             <li><a data-toggle="modal" href="index.php?page=print&columns=5&type=report&sub_type=purchases&from=00-00-0000&to=00-00-0000" style="color: #72afd2;">Print </a></li>
-                                            <!--                                            <li><a data-toggle="modal" href="#new-purchase-form" style="color: #72afd2;">Export As Excel(.xls)</a></li>
-                                                                                        <li><a data-toggle="modal" href="#new-brand-form" style="color: #72afd2;">Export As PDF(.pdf)</a></li>-->
                                             <li class="divider"></li>
                                             <li><a data-toggle="modal" href="#new-sale-form" style="color: #72afd2;">Sell</a></li>
                                             <li><a data-toggle="modal" href="#new-purchase-form" style="color: #72afd2;">Buy</a></li>
@@ -107,23 +106,24 @@
                         </div>
                         <!-- /.box-header -->
                         <div class="box-body">
+                            <div class="col-xs-9">
                             <table id="example1" class="table table-bordered table-hover">
                                 <thead>
                                     <tr>
                                         <th>NO</th>
                                         <th>DATE</th>
-                                        <th>PRODUCT</th>
+                                        <!-- <th>PRODUCT</th> -->
                                         <th>SALES_PRICE</th>
                                         <th>AMOUNT_PAID</th>
                                         <th>SALES_BALANCE</th>
-                                        <th style="width: 70px;">ACTION</th>
+                                        <th style="width: 100px;">ACTION</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <?php
-                                    $bal_msg = "";
-                                    $edit_msg = "Edit";
-                                    $del_msg = "Delete";
+// $bal_msg = "";
+// $edit_msg = "Edit";
+// $del_msg = "Delete";
                                     $total_pay = 0;
                                     $sales_query = DB::getInstance()->query("SELECT * FROM stock s,clients c, stock_name n, stock_prices sk,payments p WHERE s.stock_sold_to =c.id_client AND s.id_stock = sk.id_stock AND s.id_stock_name = n.id_stock_name AND s.id_stock = p.id_stock AND s.stock_status = 'SOLD' AND p.id_stock_price_type =2 AND sk.id_stock_price_type =2 AND c.id_client = $id AND s.id_stock=$idstock");
                                     $x = 1;
@@ -132,7 +132,7 @@
                                         <tr>
                                             <td><?php echo $x; ?></td>
                                             <td><?php echo $sales_query->payment_date; ?></td>
-                                            <td><?php echo getProductName($sales_query->id_stock); ?></td>
+                                            <!-- <td><?php echo getProductName($sales_query->id_stock); ?></td> -->
                                             <td><?php
                                                 $sales_price = $sales_query->stock_price;
                                                 echo number_format($sales_query->stock_price, 2);
@@ -155,9 +155,9 @@
                                                         <span class="sr-only">Toggle Dropdown</span>
                                                     </button>
                                                     <ul class="dropdown-menu" role="menu" style="">
-                                                        <li><a data-toggle="modal" href="#pay-sales-balance-form<?php echo $sales_query->id_stock; ?>" style="color: #72afd2;"><?php echo $bal_msg; ?> </a></li>
-                                                        <li><a data-toggle="modal" href="#sales-edit-form" style="color: #72afd2;"><?php echo $edit_msg; ?></a></li>
-                                                        <li><a data-toggle="modal" href="#delete-form" style="color: #72afd2;"><?php echo $del_msg; ?></a></li>
+                                                        <li><a data-toggle="modal" href="index.php?page=print_receipt&type=cash_sale&idstock=<?php echo $sales_query->id_stock;?>&price=<?php echo $sales_price;?>&amt_pd=<?php echo $total_pay;?>&bal=<?php echo $balance;?>&ticket=<?php echo $sales_query->payment_receipt;?>&idclient=<?php echo $sales_query->id_client;?>&occurred=<?php echo $sales_query->payment_date;?>" style="color: #72afd2;">Print Receipt</a></li>
+                                                        <!-- <li><a data-toggle="modal" href="#sales-edit-form" style="color: #72afd2;">Edit</a></li> -->
+                                                        <li><a data-toggle="modal" href="#delete-form" style="color: #72afd2;">Delete</a></li>
                                                     </ul>
                                                 </div></td>
                                     <div class="modal modal-default fade" id="pay-sales-balance-form<?php echo $sales_query->id_stock; ?>">
@@ -244,7 +244,85 @@
                                 endforeach;
                                 ?>
                                 </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th>Total</th>
+                                        <th></th>
+                                        <th><?php echo number_format($sales_price,2);?></th>
+                                        <th><?php echo number_format($total_pay,2);?></th>
+                                        <th><?php echo number_format($balance,2);?></th>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
+                                </tfoot>
                             </table>
+                        </div>
+                        <div class="col-xs-3">
+                            <div class="box">
+            <div class="box-header">
+              <h3 class="box-title text-primary">Transaction Summary</h3>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body no-padding">
+              <table class="table table-condensed">
+                <tr>
+                  <th>Details</th>
+                  <th>Amount</th>
+                </tr>
+                <tr>
+                  <td>Purchase price</td>
+                  <td><?php echo number_format($purchase_price,2); ?></td>
+                </tr>
+                <tr>
+                  <td>Expenses</td>
+                  <td><?php echo number_format($product_expenses,2); ?></td>
+                </tr>
+                <tr>
+                  <td><strong>Sub total</strong></td>
+                  <td><?php echo number_format($product_costs,2);?></td>
+                </tr>
+                <tr>
+                  <td>Sales price</td>
+                  <td><?php echo number_format($sales_price,2);?></td>
+                </tr>
+                <tr>
+                  <td><strong>Profit expected</strong></td>
+                  <td><?php echo number_format(($sales_price - $purchase_price),2) ?></td>
+                </tr>
+                <tr>
+                  <td>Amount paid</td>
+                  <td><?php echo number_format($total_pay,2);?></td>
+                </tr>
+                <tr>
+                  <td>Balance</td>
+                  <td><?php echo number_format($balance,2);?></td>
+                </tr>
+                <?php 
+                    $capital_recovered = 0;
+                    $profit_recovered = 0;
+                    if($total_pay > $purchase_price){
+                        $capital_recovered = $purchase_price;
+                        $profit_recovered = $total_pay - $purchase_price;
+                    }else{
+                        $capital_recovered = $total_pay;
+                        $profit_recovered = 0;
+                    }
+                ?>
+                <tr>
+                  <td><strong>Capital recovered</strong></td>
+                  <td><?php echo number_format($capital_recovered,2); ?></td>
+                </tr>
+                <tr>
+                  <td><strong>Profit recovered</strong></td>
+                  <td><?php echo number_format($profit_recovered,2); ?></td>
+                </tr>
+
+              </table>
+            </div>
+            <!-- /.box-body -->
+          </div>
+          <!-- /.box -->
+                        </div>
                         </div>
                     </div>
                 </section>

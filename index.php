@@ -55,6 +55,11 @@ switch ($page) {
             include 'pages/' . $page . '.php';
         break;
 
+    case 'print_receipt':
+        if (file_exists('pages/' . $page . '.php'))
+            include 'pages/' . $page . '.php';
+        break;
+
     case 'record_input':
         if (file_exists('pages/' . $page . '.php'))
             include 'pages/' . $page . '.php';

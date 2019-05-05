@@ -37,6 +37,51 @@
                         <li class="active">Dashboard</li>
                     </ol>
                 </section>
+                <?php
+                if (Input::exists() && Input::get('save_payment') == 'save_payment') {
+                    $amount = Input::get('balance_pay');
+                    $payment_date = date("Y-m-d h:i:s");
+                    $receipt = Input::get('sales_receipt');
+                    $idstock = Input::get('product_id');
+                    $sales_price = Input::get('sales_price');
+                    $balance = Input::get('outstanding_balance');
+                    $idclient = Input::get('idclient');
+                    $arrayPayment = array("payment_amount" => $amount, "id_stock_price_type" => 2, "payment_date" => $payment_date, "payment_receipt" => $receipt, "id_stock" => $idstock);
+                if($amount<=$balance){
+                    if (DB::getInstance()->insert("payments", $arrayPayment)) {
+
+                        $entry_alert = submissionReport("success", "Payment recorded successfully");
+                        Redirect::to("index.php?page=print_receipt&type=cash_sale&idstock=".$idstock."&price=".$sales_price."&amt_pd=".$amount."&bal=".($balance-$amount)."&ticket=".$receipt."&idclient=".$idclient."&occurred=".$payment_date."");
+                    } else {
+                        $entry_alert = submissionReport("error", "Failed to submit payment");
+                    }
+                }else{
+                    $entry_alert = submissionReport("warning", "Your balance is ".number_format($balance,2).". Enter amount not exceeding the balance");
+                }
+                }elseif(Input::exists() && Input::get('save_purchase_payment') == 'save_purchase_payment'){
+                    $idclient = Input::get('idclient');
+                    $idstock = Input::get('idstock');
+                    $purchase_price = Input::get('purchase_price');
+                    $amount_paid = Input::get('amount_paid');
+                    $purchase_balance = Input::get('purchase_balance');
+                    $amount_to_pay = Input::get('amount_to_pay');
+                    $payment_receipt = Input::get('payment_receipt');
+                    $payment_date = date("Y-m-d h:i:s");
+                    $arrayPayment = array("payment_amount" => $amount_to_pay, "id_stock_price_type" => 1, "payment_date" => $payment_date, "payment_receipt" => $payment_receipt, "id_stock" => $idstock);
+                    if($amount_to_pay<=$purchase_balance){
+                    if (DB::getInstance()->insert("payments", $arrayPayment)) {
+
+                        $entry_alert = submissionReport("success", "Payment recorded successfully");
+                        Redirect::to("index.php?page=print_receipt&type=cash_purchase&idstock=".$idstock."&price=".$purchase_price."&amt_pd=".$amount_to_pay."&bal=".($purchase_balance-$amount_to_pay)."&ticket=".$payment_receipt."&idclient=".$idclient."&occurred=".$payment_date."");
+                    } else {
+                        $entry_alert = submissionReport("error", "Failed to submit payment");
+                    }
+                }else{
+                    $entry_alert = submissionReport("warning", "Your balance is ".number_format($purchase_balance,2).". Enter amount not exceeding the balance");
+                }
+
+                }
+                ?>
 
                 <!-- Main content -->
                 <section class="content">
@@ -181,9 +226,10 @@
                                                         <th>DATE & TIME</th>
                                                         <th>PRODUCT</th>
                                                         <th>SALES_PRICE</th>
+                                                        <!--<th>AMOUNT_PAID</th>-->
                                                         <th>BALANCE</th>
                                                         <th>CUSTOMER</th>
-                                                        <th>RECEIPT</th>
+                                                        <th style="width: 70px;">ACTION</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -195,27 +241,130 @@
                                                             <td><?php echo $x; ?></td>
                                                             <td><?php echo $sales_query->payment_date; ?></td>
                                                             <td><?php echo getProductName($sales_query->id_stock); ?></td>
-                                                            <td><?php
+                                                            <td>
+                                                                <?php
                                                                 $sales_price = $sales_query->stock_price;
                                                                 echo number_format($sales_query->stock_price, 2);
-                                                                ?></td>
-                                                            <td><?php
+                                                                ?>
+                                                            </td>
+                                                            <!--<td>-->
+                                                                <?php
                                                                 $total_pay = selectSum('payments', 'payment_amount', 'id_stock ="' . $sales_query->id_stock . '" AND id_stock_price_type = 2');
                                                                 $balance = $sales_price - $total_pay;
-                                                                if ($balance > 0) {
-                                                                    $bal_msg = "Pay Balance";
-                                                                } else {
-                                                                    $bal_msg = "";
-                                                                }
+                                                                // if ($balance > 0) {
+                                                                //     $bal_msg = "Pay Balance";
+                                                                // } else {
+                                                                //     $bal_msg = "";
+                                                                // }
+//                                                                echo number_format($total_pay, 2);
+                                                                ?>
+                                                            <!--</td>-->
+
+                                                                <td><?php
                                                                 echo number_format($balance, 2);
                                                                 ?></td>
-                                                            <td><a href="index.php?page=view_sales_single&id=<?php echo $sales_query->stock_sold_to; ?>"><?php echo $sales_query->name; ?></a></td>
-                                                            <td><?php echo $sales_query->payment_receipt; ?></td>
-                                                        </tr>
-                                                        <?php
-                                                        $x++;
-                                                    endforeach;
-                                                    ?>
+
+                                                            <td><a href=""><?php echo $sales_query->name; ?></a></td>
+                                                            <td><div class="btn-group">
+                                                                    <button type="button" class="btn btn-default">Action</button>
+                                                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                                                                        <span class="caret"></span>
+                                                                        <span class="sr-only">Toggle Dropdown</span>
+                                                                    </button>
+                                                                    <ul class="dropdown-menu" role="menu" style="">
+                                                                        <li><a data-toggle="modal" href="index.php?page=view_sales_single&id=<?php echo $sales_query->id_client; ?>&user=<?php echo $sales_query->name; ?>&product=<?php echo getProductName($sales_query->id_stock); ?>&idstock=<?php echo $sales_query->id_stock; ?>" style="color: #72afd2;">View Payments</a></li>
+                                                                        <li><a data-toggle="modal" href="#pay-sales-balance-form<?php echo $sales_query->id_stock; ?>" style="color: #72afd2;">Pay Balance</a></li>
+                                                                        
+                                                                    </ul>
+                                                                </div>
+                                                            </td>
+                                                    <div class="modal modal-default fade" id="pay-sales-balance-form<?php echo $sales_query->id_stock; ?>">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span></button>
+                                                    <h4 class="modal-title text-center text-primary">BALANCE PAYMENT FORM</h4>
+                                                </div>
+                                                <form action="" method="post">
+                                                    <div class="modal-body">
+                                                        <div class="box-header with-border">
+                                                            <h3 class="box-title text-success">Sales Payment</h3>
+                                                        </div>
+                                                        <div class="box-body">
+                                                            <div class="row form-group">
+                                                                <div class="col-xs-8">
+                                                                    <input type="hidden" name="idclient" value="<?php echo $sales_query->id_client;?>">
+                                                                    <label class="text-info">Customer Name</label>
+                                                                    <input type="text" class="form-control" name="customer" required="true" autocomplete="
+                                                                           off" value="<?php echo $sales_query->name; ?>">
+                                                                </div>
+                                                                <div class="col-xs-4">
+                                                                    <label class="text-info">Receipt</label>
+                                                                    <p><strong  class="text-danger"  style="font-size: 25px;"><?php echo generateAutoIncrementNumber('payments', 'id_payment'); ?></strong></p>
+                                                                    <input type="hidden" name="sales_receipt" value="<?php echo generateAutoIncrementNumber('payments', 'id_payment'); ?>">
+
+                                                                </div>
+                                                            </div>
+                                                            <div class="row form-group">
+                                                                <div class="col-xs-12">
+                                                                    <label class="text-info">Product</label>
+                                                                    <input type="text" class="form-control" name="product" required="true" autocomplete="
+                                                                           off" value="<?php echo getProductName($sales_query->id_stock); ?>">
+                                                                    <input type="hidden" class="form-control" name="product_id" required="true" autocomplete="
+                                                                           off" value="<?php echo $sales_query->id_stock; ?>">
+                                                                </div>
+                                                            </div>
+                                                            <div class="row form-group">
+                                                                <div class="col-xs-12">
+                                                                    <label class="text-info">Sales Price</label>
+                                                                    <input type="text" class="form-control" disabled="true" required="true" autocomplete="
+                                                                           off" value="<?php echo number_format($sales_price, 2); ?>">
+                                                                    <input type="hidden" name="sales_price" value="<?php echo $sales_price; ?>">
+                                                                </div>
+                                                            </div>
+                                                            <div class="row form-group">
+                                                                <div class="col-xs-12">
+                                                                    <label class="text-info">Amount Paid</label>
+                                                                    <input type="text" class="form-control" disabled="true" id="amount" autocomplete="
+                                                                           off" value="<?php echo number_format($total_pay, 2); ?>">
+                                                                </div>
+                                                            </div>
+                                                            <div class="row form-group">
+                                                                <div class="col-xs-12">
+                                                                    <label class="text-info">Balance</label>
+                                                                    <input type="text" class="form-control" id="balance" disabled="true" autocomplete="
+                                                                           off" value="<?php echo number_format(($balance), 2); ?>" >
+                                                                    <input type="hidden" id="outstanding_balance" name="outstanding_balance"  autocomplete="
+                                                                           off" value="<?php echo $balance; ?>" >
+                                                                </div>
+                                                            </div>
+                                                            <div class="row form-group">
+                                                                <div class="col-xs-12">
+                                                                    <label class="text-info">Amount To Pay</label>
+                                                                    <input type="number" class="form-control" name="balance_pay" id="balance_pay" required="true" autocomplete="
+                                                                           off" onkeyup="controlPaymentInput()">
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="reset" class="btn btn-warning btn-md pull-left" data-dismiss="modal">Cancel</button>
+                                                        <button type="submit" name="save_payment" value="save_payment" class="btn btn-success btn-md">Record</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            <!-- /.modal-content -->
+                                        </div>
+                                        <!-- /.modal-dialog -->
+                                    </div>
+
+                                                    </tr>
+                                                    <?php
+                                                    $x++;
+                                                endforeach;
+                                                ?>
                                                 </tbody>
                                                 <tfoot></tfoot>
                                             </table>
@@ -228,17 +377,7 @@
                                         $del_msg = "";
                                         $bal_msg = "";
                                         $price_msg = "";
-                                        if (Input::exists() && Input::get('save_price') == 'save_price') {
-                                            $stock_id = Input::get('id_stock');
-                                            $sales_price = Input::get('sales_price');
-                                            $arraySalesPrice = array("stock_price" => $sales_price, "id_stock_price_type" => 2, "id_stock" => $stock_id);
-
-                                            if (DB::getInstance()->insert("stock_prices", $arraySalesPrice)) {
-                                                $entry_alert = submissionReport("success", "Price set successfully");
-                                            } else {
-                                                $entry_alert = submissionReport("error", "Failed to set product price");
-                                            }
-                                        } elseif (Input::exists() && Input::get('search_purchases') == 'search_purchases') {
+                                        if (Input::exists() && Input::get('search_purchases') == 'search_purchases') {
                                             $from = Input::get('from');
                                             $to = Input::get('to');
                                             $purchases_header = 'Purchases from ' . $from . ' to ' . $to;
@@ -287,7 +426,6 @@
                                                         <th>PURCHASE_PRICE</th>
                                                         <th>PURCHASE_BALANCE</th>
                                                         <th>SUPPLIER</th>
-                                                        <th>SALES_PRICE</th>
                                                         <th>STATUS</th>
                                                         <th style="width: 70px;">ACTION</th>
                                                     </tr>
@@ -315,35 +453,9 @@
                                                             ?>
                                                             <td><?php echo number_format($balance, 2); ?></td>
                                                             <td><a href="index.php?page=view_purchases_single&id=<?php echo $query_purchase->id_client; ?>"><?php echo $supplier; ?></a></td>
-                                                            <?php
-                                                            $sales_price = getProuctPrice('stock_prices', $query_purchase->id_stock, 2);
-                                                            if ($sales_price <= 0) {
-                                                                echo '<td><button class="btn btn-primary">NOT SET</button></td>';
-                                                            } else {
-                                                                ?>
-                                                                <td><?php
-                                                                    echo number_format($sales_price, 2);
-                                                                }
-                                                                ?></td>
-
                                                             <td><?php
                                                                 echo $query_purchase->stock_status;
                                                                 $status = $query_purchase->stock_status;
-                                                                if (($balance > 0) && ($status == 'NOT SOLD') && ($sales_price <= 0)) {
-                                                                    $bal_msg = 'Pay Balance';
-                                                                    $del_msg = 'Delete';
-                                                                    $price_msg = 'Set Price';
-                                                                } elseif (($balance > 0) && ($sales_price > 0)) {
-                                                                    $bal_msg = 'Pay Balance';
-                                                                } elseif (($balance > 0) && ($status == 'NOT SOLD' || $status == 'SOLD') && ($sales_price <= 0)) {
-                                                                    $bal_msg = 'Pay Balance';
-                                                                } elseif ($balance <= 0 && $sales_price <= 0) {
-                                                                    $price_msg = 'all';
-                                                                } else {
-                                                                    $del_msg = '';
-                                                                    $bal_msg = '';
-                                                                    $price_msg = 'none';
-                                                                }
                                                                 ?></td>
                                                             <td><div class="btn-group">
                                                                     <button type="button" class="btn btn-default">Action</button>
@@ -352,57 +464,221 @@
                                                                         <span class="sr-only">Toggle Dropdown</span>
                                                                     </button>
                                                                     <ul class="dropdown-menu" role="menu" style="">
-                                                                        <li style="display: none;"><a data-toggle="modal" href="#set-sales_price-form<?php echo $idstock; ?>" style="color: #72afd2;">SET PRICE</a></li>
+                                                                        <li><a data-toggle="modal" href="index.php?page=view_purchases_single&id=<?php echo $query_purchase->id_client; ?>&user=<?php echo $supplier; ?>&product=<?php echo getProductName($query_purchase->id_stock); ?>&idstock=<?php echo $query_purchase->id_stock; ?>" style="color: #72afd2;">View Payment</a></li>
+                                                                        <li><a data-toggle="modal" href="#pay-purchases-balance-form<?php echo $query_purchase->id_stock; ?>" style="color: #72afd2;">Pay Balance</a></li>
+                                                                        <li ><a data-toggle="modal" href="#pay-purchases-edit-form<?php echo $query_purchase->id_stock; ?>" style="color: #72afd2;">Edit</a></li>
+                                                                        <li><a data-toggle="modal" href="#set-sales_price-form<?php echo $idstock; ?>" style="color: #72afd2;">Delete</a></li>
                                                                     </ul>
                                                                 </div>
                                                             </td>
-                                                    <div class="modal modal-default fade" id="set-sales_price-form<?php echo $idstock; ?>">
+                                                    <div class="modal modal-default fade" id="pay-purchases-balance-form<?php echo $query_purchase->id_stock; ?>">
                                                         <div class="modal-dialog">
                                                             <div class="modal-content">
                                                                 <div class="modal-header">
                                                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                                         <span aria-hidden="true">&times;</span></button>
-                                                                    <h4 class="modal-title text-primary text-center">PRODUCT PRICING FORM</h4>
+                                                                    <h4 class="modal-title text-primary text-center">BALANCE PAYMENT FORM</h4>
                                                                 </div>
                                                                 <form action="" method="post">
                                                                     <div class="modal-body">
                                                                         <div class="box-header with-border">
-                                                                            <h3 class="box-title text-success">Product</h3>
+                                                                            <h3 class="box-title text-success">Purchases Payment</h3>
                                                                         </div>
                                                                         <div class="box-body">
-                                                                            <input type="hidden" name="id_stock" value="<?php echo $idstock; ?>">
+                                                                            <input type="hidden" name="idclient" value="<?php echo $query_purchase->id_client; ?>">
                                                                             <div class="row form-group">
-                                                                                <div class="col-xs-12">
-                                                                                    <label class="text-info">Product Name</label>
-                                                                                    <input type="text" class="form-control" disabled="true" value="<?php
-                                                                                    echo DB::getInstance()->getName('stock_name', $query_purchase->id_stock_name, 'stock_make', 'id_stock_name')
-                                                                                    . ' ' . DB::getInstance()->getName('stock_name', $query_purchase->id_stock_name, 'stock_model', 'id_stock_name');
-                                                                                    ?>">
+                                                                                <div class="col-xs-8">
+                                                                                    <label class="text-info">Supplier Name</label>
+                                                                                    <input type="text" class="form-control" disabled="true" value="<?php echo DB::getInstance()->getName('clients', $query_purchase->id_client, 'name', 'id_client'); ?>" >
                                                                                 </div>
+                                                                                
+                                                                                <div class="col-xs-4">
+                                                                    <label class="text-info">Receipt</label>
+                                                                    <p><strong  class="text-danger"  style="font-size: 25px;"><?php echo generateAutoIncrementNumber('payments', 'id_payment'); ?></strong></p>
+                                                                    <input type="hidden" name="payment_receipt" value="<?php echo generateAutoIncrementNumber('payments', 'id_payment'); ?>">
+
+                                                                </div>
                                                                             </div>
                                                                             <div class="row form-group">
                                                                                 <div class="col-xs-12">
-                                                                                    <label class="text-info">Supplier</label>
-                                                                                    <input type="text" class="form-control" disabled="true" value="<?php echo DB::getInstance()->getName('clients', $query_purchase->id_client, 'name', 'id_client'); ?>" >
+                                                                                    <label class="text-info">Product</label>
+                                                                                    <input type="text" class="form-control" disabled="true" value="<?php
+                                                                                    echo getProductName($query_purchase->id_stock);
+                                                                                    ?>">
+                                                                                    <input type="hidden" name="idstock" value="<?php echo $query_purchase->id_stock; ?>">
                                                                                 </div>
                                                                             </div>
                                                                             <div class="row form-group">
                                                                                 <div class="col-xs-12">
                                                                                     <label class="text-info">Purchase Price</label>
                                                                                     <input type="text" class="form-control" disabled="true" value="<?php echo number_format($cost_price, 2); ?>">
+                                                                                    <input type="hidden" name="purchase_price" value="<?php echo $cost_price; ?>">
                                                                                 </div>
                                                                             </div>
                                                                             <div class="row form-group">
                                                                                 <div class="col-xs-12">
-                                                                                    <label class="text-info">Sales Price</label>
-                                                                                    <input type="number" class="form-control" name="sales_price" value="">
+                                                                                    <label class="text-info">Amount Paid</label>
+                                                                                    <input type="text" class="form-control" disabled="true" value="<?php echo number_format($total_pay,2);?>">
+                                                                                    <input type="hidden" name="amount_paid" value="<?php echo $total_pay; ?>">
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row form-group">
+                                                                                <div class="col-xs-12">
+                                                                                    <label class="text-info">Balance</label>
+                                                                                    <input type="text" class="form-control" disabled="true"  value="<?php echo number_format($balance,2);?>">
+                                                                                    <input type="hidden" name="purchase_balance" value="<?php echo $balance; ?>">
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row form-group">
+                                                                                <div class="col-xs-12">
+                                                                                    <label class="text-info">Amount To Pay</label>
+                                                                                    <input type="text" class="form-control" name="amount_to_pay" value="" autocomplete="off">
                                                                                 </div>
                                                                             </div>
                                                                         </div>
                                                                     </div>
                                                                     <div class="modal-footer">
                                                                         <button type="reset" class="btn btn-warning btn-md pull-left" data-dismiss="modal">Cancel</button>
-                                                                        <button type="submit" name="save_price" value="save_price" class="btn btn-success btn-md">Save</button>
+                                                                        <button type="submit" name="save_purchase_payment" value="save_purchase_payment" class="btn btn-success btn-md">Record</button>
+                                                                    </div>
+                                                                </form>
+                                                            </div>
+                                                            <!-- /.modal-content -->
+                                                        </div>
+                                                        <!-- /.modal-dialog -->
+                                                    </div>
+
+                                                    <div class="modal modal-default fade" id="pay-purchases-edit-form<?php echo $query_purchase->id_stock; ?>">
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                        <span aria-hidden="true">&times;</span></button>
+                                                                    <h4 class="modal-title text-primary text-center">BALANCE PAYMENT FORM</h4>
+                                                                </div>
+                                                                <form action="" method="post">
+                                                                    <div class="modal-body">
+                                                                        <div class="box-header with-border">
+                                                                            <h3 class="box-title text-success">Purchases Payment</h3>
+                                                                        </div>
+                                                                        <div class="box-body">
+                                                                            
+                                                                            <div class="row form-group">
+                                                                                <div class="col-xs-12">
+                                                                                    <label class="text-info">Supplier Name</label>
+                                                                                    <select class="form-control select2 " name="idclient" style="width: 100%">
+                                    <option value="<?php echo $query_purchase->id_client; ?>"><?php echo DB::getInstance()->getName('clients', $query_purchase->id_client, 'name', 'id_client'); ?></option>
+                                    <?php
+                                    $supplier_query = "SELECT * FROM clients WHERE id_client_type = 2";
+                                    $suppliers = DB::getInstance()->query($supplier_query);
+                                    foreach ($suppliers->results() as $suppliers) {
+                                        ?>
+                                        <option value="<?php echo $suppliers->id_client; ?>"><?php echo $suppliers->name . ' ' . $suppliers->address . ' ' . $suppliers->telephone; ?></option>
+
+                                    <?php } ?>
+                                </select>
+                                                                                    
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row form-group">
+                                                                                <?php
+                                                                                $id_stock_name = 0;
+                                                                                $stock_make='';
+                                                                                $chasis = '';
+                                                                                $engine = '';
+                                                                                $plate = '';
+                                                                                $id_stock_color = 0;
+                                                                                $color = '';
+            
+            $stock_query = DB::getInstance()->query("SELECT * FROM stock_name n,stock_color c,stock s WHERE s.id_stock_name = n.id_stock_name AND s.id_stock_color = c.id_stock_color AND s.id_stock = $idstock");
+                foreach ($stock_query->results() as $stock_query) {
+                    $id_stock_name = $stock_query->id_stock_name;
+                    $stock_make = $stock_query->stock_make.' '.$stock_query->stock_model;
+                    $chasis = $stock_query->chasis_number;
+                    $engine = $stock_query->engine_number;
+                    $plate = $stock_query->plate_number;
+                    $id_stock_color = $stock_query->id_stock_color;
+                    $color = $stock_query->color_name;
+                }
+            ?>
+                                                                                <div class="col-xs-4">
+                                <label class="text-info">Brand</label>
+                                <select  class="form-control select2 " name="stock_name"  style="width: 100%;" required>
+                                    <option value="<?php echo $id_stock_name; ?>" ><?php echo $stock_make; ?></option>
+                                    <?php 
+                                    $brand_names = DB::getInstance()->query("SELECT * FROM stock_name");
+                                    foreach ($brand_names->results() as $brand) { ?>
+                                        <option  value="<?php echo $brand->id_stock_name; ?>"><?php echo $brand->stock_manufacturer . ': ' . $brand->stock_make . ' ' . $brand->stock_model; ?></option>    
+                                        <?php
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+                            <div class="col-xs-4">
+                                <label class="text-info">Chasis Number</label>
+                                <input type="text" class="form-control" name="chasis_number" placeholder="Enter" required="true" autocomplete="
+                                       off" value="<?php echo $chasis; ?>">
+                            </div>
+                            <div class="col-xs-4">
+                                <label class="text-info">Engine Number</label>
+                                <input type="text" class="form-control" name="engine_number" placeholder="Enter" required="true" autocomplete="
+                                       off" value="<?php echo $engine; ?>">
+                            </div>
+                            
+                                                                            </div>
+                                                                            <div class="row form-group">
+                                                                                <div class="col-xs-4">
+                                <label class="text-info">Plate Number</label>
+                                <input type="text" class="form-control" name="engine_number" placeholder="Enter" required="true" autocomplete="
+                                       off" value="<?php echo $plate; ?>">
+                            </div>
+                            <div class="col-xs-4">
+                                <label class="text-info">Color</label>
+                                <select class="form-control select2 " name="car_color" style="width: 100%" required="true">
+                                    <option value="<?php echo $id_stock_color; ?>"><?php echo $color; ?></option>
+                                    <?php
+                                    $color_query = "SELECT * FROM stock_color";
+                                    $stock_colors = DB::getInstance()->query($color_query);
+                                    foreach ($stock_colors->results() as $colors) {
+                                        ?>
+                                        <option value="<?php echo $colors->id_stock_color; ?>"><?php echo $colors->color_name; ?></option>
+
+                                    <?php } ?>
+                                </select>
+                            </div>
+                                                                            </div>
+                                                                            <div class="row form-group">
+                                                                                <div class="col-xs-12">
+                                                                                    <label class="text-info">Purchase Price</label>
+                                                                                    <input type="text" class="form-control" disabled="true" value="<?php echo number_format($cost_price, 2); ?>">
+                                                                                    <input type="hidden" name="purchase_price" value="<?php echo $cost_price; ?>">
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row form-group">
+                                                                                <div class="col-xs-12">
+                                                                                    <label class="text-info">Amount Paid</label>
+                                                                                    <input type="text" class="form-control" disabled="true" value="<?php echo number_format($total_pay,2);?>">
+                                                                                    <input type="hidden" name="amount_paid" value="<?php echo $total_pay; ?>">
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row form-group">
+                                                                                <div class="col-xs-12">
+                                                                                    <label class="text-info">Balance</label>
+                                                                                    <input type="text" class="form-control" disabled="true"  value="<?php echo number_format($balance,2);?>">
+                                                                                    <input type="hidden" name="purchase_balance" value="<?php echo $balance; ?>">
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row form-group">
+                                                                                <div class="col-xs-12">
+                                                                                    <label class="text-info">Amount To Pay</label>
+                                                                                    <input type="text" class="form-control" name="amount_to_pay" value="" autocomplete="off">
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="modal-footer">
+                                                                        <button type="reset" class="btn btn-warning btn-md pull-left" data-dismiss="modal">Cancel</button>
+                                                                        <button type="submit" name="save_purchase_payment" value="save_purchase_payment" class="btn btn-success btn-md">Record</button>
                                                                     </div>
                                                                 </form>
                                                             </div>

@@ -59,6 +59,7 @@ function getProductName($id_stock) {
     $chasis = '';
     $engine = '';
     $plate = '';
+    try{
     $product_query = DB::getInstance()->query("SELECT * FROM stock s, stock_name n WHERE s.id_stock_name = n.id_stock_name AND s.id_stock = $id_stock");
     foreach ($product_query->results() as $product_query) {
         $make = $product_query->stock_make;
@@ -68,6 +69,9 @@ function getProductName($id_stock) {
         $engine = $product_query->engine_number;
         $plate = $product_query->plate_number;
     }
+}catch(Exception $e){
+    echo $e->getMessage();
+}
     return $make . ' ' . $model . ' CHS  ' . $chasis . ' EGN ' . $engine . ' PLT ' . $plate;
 }
 
@@ -97,7 +101,12 @@ function submissionReport($type, $message) {
         $alert = '<div class="alert alert-success alert-dismissible" style="height: 40px;">
                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                 <p class="text-center" style="font-size: 16px;">' . $message . '</p></div>';
-    } elseif ($type == 'error') {
+    }elseif ($type == 'warning') {
+        $alert = '<div class="alert alert-warning alert-dismissible" style="height: 40px;">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                <p class="text-center" style="font-size: 16px;">' . $message . '</p>
+              </div>';
+    }elseif ($type == 'error') {
         $alert = '<div class="alert alert-danger alert-dismissible" style="height: 40px;">
                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                 <p class="text-center" style="font-size: 16px;">' . $message . '</p>

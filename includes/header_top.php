@@ -51,7 +51,7 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                         <span>Notifiations</span>
                         <i class="fa fa-bell-o"></i>
-                        <span class="label label-warning">10</span>
+                        <!-- <span class="label label-warning">10</span> -->
 
                     </a>
                     <ul class="dropdown-menu">
@@ -195,30 +195,32 @@
                         <div class="row form-group">
                             <div class="col-xs-6">
                                 <label class="text-info">Sales Price</label>
-                                <input type="number" id="product_sales_price" class="form-control" required="true" name="product_sales_price" placeholder="Enter Price">
+                                <input type="text" id="product_sales_price" class="form-control" required="true" name="product_sales_price" placeholder="Enter Price" autocomplete="off">
                             </div>
                             <div class="col-xs-6">
                                 <label class="text-info">Profit</label>
-                                <input type="number" id="product_profit" class="form-control" name="product_profit" placeholder="Profit/Loss after sale" disabled="true">
+                                <input type="text" id="product_profit" class="form-control" name="product_profit" placeholder="Profit/Loss after sale" disabled="true">
                             </div>
                         </div>
                         <div class="row form-group">
-                            <div class="col-xs-4">
+                            <div class="col-xs-6">
                                 <label class="text-info">Cash Deposit</label>
-                                <input type="number" id="product_cash_paid" class="form-control" name="product_cash_paid" placeholder="Enter amount">
+                                <input type="text" id="product_cash_paid" class="form-control" name="product_cash_paid" placeholder="Amount" autocomplete="off">
                             </div>
-                            <div class="col-xs-4">
+                            <div class="col-xs-6">
                                 <label class="text-info">Balance</label>
-                                <input type="number" id="product_balance" class="form-control" disabled="true" name="product_balance" placeholder="Amount">
+                                <input type="text" id="product_balance" class="form-control" disabled="true" name="product_balance" placeholder="Amount">
                             </div>
-                            <div class="col-xs-4" id="payment_date">
-                                <label class="text-info">Balance Payment Date</label>
-                                <div class="input-group ">
-                                    <div class="input-group-addon">
-                                        <i class="fa fa-calendar"></i>
-                                    </div>
-                                    <input type="date" class="form-control pull-right" name="balance_pay_date" >
-                                </div>
+                            
+                        </div>
+                        <div class="row form-group">
+                            <div class="col-xs-6">
+                                <label class="text-info">Capital Recovered</label>
+                                <input type="text" id="capital_recovered" class="form-control" disabled="true" name="capital_recovered" placeholder="Amount">
+                            </div>
+                            <div class="col-xs-6">
+                                <label class="text-info">Profit Recovered</label>
+                                <input type="text" id="profit_recovered" class="form-control" disabled="true" name="profit_recovered" placeholder="Amount">
                             </div>
                         </div>
                         <div class="row form-group">

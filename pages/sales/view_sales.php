@@ -54,19 +54,25 @@
                     </ol>
                 </section>
                 <?php
-                $bal_msg = "";
-                $edit_msg = "Edit";
-                $del_msg = "Delete";
                 if (Input::exists() && Input::get('save_payment') == 'save_payment') {
+                    $amount = Input::get('balance_pay');
+                    $payment_date = date("Y-m-d h:i:s");
+                    $receipt = Input::get('sales_receipt');
+                    $idstock = Input::get('product_id');
+                    $sales_price = Input::get('sales_price');
+                    $balance = Input::get('outstanding_balance');
+                    $idclient = Input::get('idclient');
 
-                    $arrayPayment = array("payment_amount" => Input::get('balance_pay'), "id_stock_price_type" => 2, "payment_date" => date("Y-m-d h:i:s"), "payment_receipt" => Input::get('sales_receipt'), "id_stock" => Input::get('product_id'));
-
+                    $arrayPayment = array("payment_amount" => $amount, "id_stock_price_type" => 2, "payment_date" => $payment_date, "payment_receipt" =>$receipt, "id_stock" =>$idstock);
+                    if($amount<=$balance){
                     if (DB::getInstance()->insert("payments", $arrayPayment)) {
 
                         $entry_alert = submissionReport("success", "Payment recorded successfully");
-                        Redirect::to();
+                        Redirect::to("index.php?page=print_receipt&type=cash_sale&idstock=".$idstock."&price=".$sales_price."&amt_pd=".$amount."&bal=".($balance-$amount)."&ticket=".$receipt."&idclient=".$idclient."&occurred=".$payment_date."");
                     } else {
                         $entry_alert = submissionReport("error", "Failed to submit payment");
+                    }}else{
+                        $entry_alert = submissionReport("warning", "Your balance is ".number_format($balance,2).". Enter amount not exceeding the balance");
                     }
                 }
                 if (Input::exists() && Input::get('search_sales') == 'search_sales') {
@@ -180,7 +186,7 @@
                                                 }
                                                 echo number_format($balance, 2);
                                                 ?></td>
-                                            <td><a href="index.php?page=view_sales_single&id=<?php echo $sales_query->id_client; ?>&user=<?php echo $sales_query->name; ?>&product=<?php echo getProductName($sales_query->id_stock); ?>&idstock=<?php echo $sales_query->id_stock; ?>"><?php echo $sales_query->name; ?></a></td>
+                                            <td><a href=""><?php echo $sales_query->name; ?></a></td>
                                             <td><div class="btn-group">
                                                     <button type="button" class="btn btn-default">Action</button>
                                                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
@@ -188,9 +194,8 @@
                                                         <span class="sr-only">Toggle Dropdown</span>
                                                     </button>
                                                     <ul class="dropdown-menu" role="menu" style="">
-                                                        <li><a data-toggle="modal" href="#pay-sales-balance-form<?php echo $sales_query->id_stock; ?>" style="color: #72afd2;"><?php echo $bal_msg; ?> </a></li>
-                                                        <li><a data-toggle="modal" href="#sales-edit-form" style="color: #72afd2;"><?php echo $edit_msg; ?></a></li>
-                                                        <li><a data-toggle="modal" href="#" style="color: #72afd2;"><?php echo $del_msg; ?></a></li>
+                                                        <li><a data-toggle="modal" href="index.php?page=view_sales_single&id=<?php echo $sales_query->id_client; ?>&user=<?php echo $sales_query->name; ?>&product=<?php echo getProductName($sales_query->id_stock); ?>&idstock=<?php echo $sales_query->id_stock; ?>" style="color: #72afd2;">View Payments</a></li>
+                                                        <li><a data-toggle="modal" href="#pay-sales-balance-form<?php echo $sales_query->id_stock; ?>" style="color: #72afd2;">Pay Balance</a></li> 
                                                     </ul>
                                                 </div></td>
                                     <div class="modal modal-default fade" id="pay-sales-balance-form<?php echo $sales_query->id_stock; ?>">
@@ -209,6 +214,7 @@
                                                         <div class="box-body">
                                                             <div class="row form-group">
                                                                 <div class="col-xs-8">
+                                                                    <input type="hidden" name="idclient" value="<?php echo $sales_query->id_client;?>">
                                                                     <label class="text-info">Customer Name</label>
                                                                     <input type="text" class="form-control" name="customer" required="true" autocomplete="
                                                                            off" value="<?php echo $sales_query->name; ?>">
@@ -234,6 +240,7 @@
                                                                     <label class="text-info">Sales Price</label>
                                                                     <input type="text" class="form-control" disabled="true" required="true" autocomplete="
                                                                            off" value="<?php echo number_format($sales_price, 2); ?>">
+                                                                    <input type="hidden" name="sales_price" value="<?php echo $sales_price; ?>">
                                                                 </div>
                                                             </div>
                                                             <div class="row form-group">
@@ -248,7 +255,7 @@
                                                                     <label class="text-info">Balance</label>
                                                                     <input type="text" class="form-control" id="balance" disabled="true" autocomplete="
                                                                            off" value="<?php echo number_format(($balance), 2); ?>" >
-                                                                    <input type="hidden" class="form-control" id="outstanding_balance"  autocomplete="
+                                                                    <input type="hidden" id="outstanding_balance" name="outstanding_balance"  autocomplete="
                                                                            off" value="<?php echo $balance; ?>" >
                                                                 </div>
                                                             </div>
@@ -256,7 +263,7 @@
                                                                 <div class="col-xs-12">
                                                                     <label class="text-info">Amount To Pay</label>
                                                                     <input type="number" class="form-control" name="balance_pay" id="balance_pay" required="true" autocomplete="
-                                                                           off">
+                                                                           off" onkeyup="">
                                                                 </div>
 
                                                             </div>

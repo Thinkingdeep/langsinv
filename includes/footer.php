@@ -118,12 +118,22 @@
         $("#product_cash_paid").keyup(function () {
             $("#product_balance").val();
             var value = $('#product_sales_price').val() - $('#product_cash_paid').val();
+            var instant_profit = $('#product_cash_paid').val() - $('#selectedProductPrice').val();
             if (value < 0) {
                 $("#product_balance").val(0);
+                $("#capital_recovered").val(0);
+                $("#profit_recovered").val(0);
                 $("#product_cash_paid").val($('#product_sales_price').val());
                 $("#product_cash_paid").disable();
             } else {
                 $("#product_balance").val(value);
+                if(instant_profit > 0){
+                 $("#capital_recovered").val($('#selectedProductPrice').val());
+                 $("#profit_recovered").val(instant_profit);    
+                }else{
+                  $("#capital_recovered").val($('#product_cash_paid').val());
+                  $("#profit_recovered").val(0);  
+                }
             }
         })
 
@@ -142,15 +152,24 @@
         })
 
 ///////////////////////////////////////////////////////////////////////////////////////////
+        
+        // $('#balance_pay').keyup(function () {
+        //     var x = $('#outstanding_balance').val();
+        //     var y = $('#balance_pay').val();
+        //     if ((y-x) >= 0) {
+        //         $('#balance_pay').val($('#outstanding_balance').val());
+        //         $('#balance_pay').disable();
+        //     }
+        // })
 
-        $('#balance_pay').keyup(function () {
-            var x = $('#outstanding_balance').val();
-            var y = $('#balance_pay').val();
-            if ((x - y) <= 0) {
-                $('#balance_pay').val($('#outstanding_balance').val());
-                $('#balance_pay').disable();
-            }
-        })
+        // $('#balance_pay_2').keyup(function () {
+        //     var x = $('#outstanding_balance_2').val();
+        //     var y = $('#balance_pay_2').val();
+        //     if ((y-x) >= 0) {
+        //         $('#balance_pay_2').val($('#outstanding_balance_2').val());
+        //         $('#balance_pay_2').disable();
+        //     }
+        // })
         
         $(document).ready(function () { //// when page loads, hide fields for new and existing customers
             $('#new_customer').hide();
@@ -197,6 +216,14 @@
                 $('#password_notification').hide();
             }
         })
-    })
+    });
+// function controlPaymentInput(){
+//     var x = $('#outstanding_balance').val();
+//             var y = $('#balance_pay').val();
+//             if ((y-x) >= 0) {
+//                 $('#balance_pay').val($('#outstanding_balance').val());
+//                 $('#balance_pay').disable();
+//             }
+// }
 
 </script>
