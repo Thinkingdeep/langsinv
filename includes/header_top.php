@@ -206,13 +206,17 @@ if ($user->isLoggedIn()) {
                             </div>
                         </div>
                         <div class="row form-group">
-                            <div class="col-xs-6">
+                            <div class="col-xs-4">
                                 <label class="text-info">Cash Deposit</label>
                                 <input type="text" id="product_cash_paid" class="form-control" name="product_cash_paid" placeholder="Amount" autocomplete="off">
                             </div>
-                            <div class="col-xs-6">
+                            <div class="col-xs-4">
                                 <label class="text-info">Balance</label>
                                 <input type="text" id="product_balance" class="form-control" disabled="true" name="product_balance" placeholder="Amount">
+                            </div>
+                            <div class="col-xs-4">
+                                <label class="text-info">Sales Date</label>
+                                <input type="date" id="sales_date" class="form-control" name="sales_date" placeholder="Select date">
                             </div>
 
                         </div>
@@ -1008,7 +1012,7 @@ if (Input::exists()) {
         $stock_price = Input::get('product_sales_price');
         $cash_paid = Input::get('product_cash_paid');
         $sales_balance = Input::get('product_balance');
-        $pay_date = Input::get('balance_pay_date');
+        $pay_date = strtotime(Input::get('sales_date'));
         $cash_receipt = Input::get('sales_receipt');
         $name = strtoupper(Input::get('full_name'));
         $address = strtoupper(Input::get('customer_address'));
@@ -1026,15 +1030,15 @@ if (Input::exists()) {
             $arrayUpdateStockPrice = array("stock_price" => $stock_price);
             DB::getInstance()->updateMany("stock_prices", $arrayUpdateStockPrice, "id_stock =" . $product_sold . " AND id_stock_price_type =2");
         } else {
-            $arrayStockPrice = array("stock_price" => $stock_price, "id_stock_price_type" => 2, "id_stock" => $product_sold);
+            $arrayStockPrice = array("stock_price" => $stock_price, "id_stock_price_type" => 2,"occurred_on"=>$pay_date, "id_stock" => $product_sold);
             DB::getInstance()->insert("stock_prices", $arrayStockPrice);
         }
 
 //=======================================INSERT INTO CLIENT ORDER TABLE==============================
 
-        $arrayCustomerOrder = array("order_status" => 'NOT PAID', "id_client" => $customer, "id_stock" => $product_sold);
+        $arrayCustomerOrder = array("order_status" => 'NOT PAID', "id_client" => $customer,"order_date"=>$pay_date, "id_stock" => $product_sold);
         DB::getInstance()->insert("client_orders", $arrayCustomerOrder);
-        $arrayCustomerPayment = array("id_stock" => $product_sold, "id_stock_price_type" => 2, "payment_amount" => $cash_paid, "payment_receipt" => $cash_receipt);
+        $arrayCustomerPayment = array("id_stock" => $product_sold, "id_stock_price_type" => 2, "payment_amount" => $cash_paid,"payment_date"=>$pay_date, "payment_receipt" => $cash_receipt);
 
 //=======================INSERT INTO PAYMENTS TABLE, UPDATE STOCK & CLIENT ORDER TABLES===============
 
