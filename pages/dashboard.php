@@ -273,7 +273,7 @@
                                                     ?>
                                                     <tr>
                                                         <td><?php echo $x; ?></td>
-                                                        <td><?php echo $sales_query->payment_date; ?></td>
+                                                        <td><?php echo date("Y-m-d",$sales_query->payment_date); ?></td>
                                                         <td><?php echo getProductName($sales_query->id_stock); ?></td>
                                                         <td>
                                                             <?php
