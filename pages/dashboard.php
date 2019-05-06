@@ -51,14 +51,13 @@
                 if (DB::getInstance()->insert("payments", $arrayPayment)) {
 
                 $entry_alert = submissionReport("success", "Payment recorded successfully");
-//                            Redirect::to("index.php?page=print_receipt&type=cash_sale&idstock=" . $idstock . "&price=" . $sales_price . "&amt_pd=" . $amount . "&bal=" . ($balance - $amount) . "&ticket=" . $receipt . "&idclient=" . $idclient . "&occurred=" . $payment_date . "");
                 } else {
                 $entry_alert = submissionReport("error", "Failed to submit payment");
                 }
                 } else {
                 $entry_alert = submissionReport("warning", "Your balance is " . number_format($balance, 2) . ". Enter amount not exceeding the balance");
                 }
-                } elseif (Input::exists() && Input::get('save_purchase_payment') == 'save_purchase_payment') {
+                }elseif (Input::exists() && Input::get('save_purchase_payment') == 'save_purchase_payment') {
                 $idclient = Input::get('idclient');
                 $idstock = Input::get('idstock');
                 $purchase_price = Input::get('purchase_price');
@@ -72,7 +71,6 @@
                 if (DB::getInstance()->insert("payments", $arrayPayment)) {
 
                 $entry_alert = submissionReport("success", "Payment recorded successfully");
-//                            Redirect::to("index.php?page=print_receipt&type=cash_purchase&idstock=" . $idstock . "&price=" . $purchase_price . "&amt_pd=" . $amount_to_pay . "&bal=" . ($purchase_balance - $amount_to_pay) . "&ticket=" . $payment_receipt . "&idclient=" . $idclient . "&occurred=" . $payment_date . "");
                 } else {
                 $entry_alert = submissionReport("error", "Failed to submit payment");
                 }
@@ -113,7 +111,6 @@
                 if (DB::getInstance()->update('stock', $idstock, $arrayStock, 'id_stock')) {
                 DB::getInstance()->query("DELETE FROM stock_prices WHERE id_stock = $idstock AND id_stock_price_type=2");
                 DB::getInstance()->query("DELETE FROM payments WHERE id_stock = $idstock AND id_stock_price_type = 2");
-//                        DB::getInstance()->update('stock',$idstock,$arrayStock,'id_stock');
                 $entry_alert = submissionReport('success', 'Record deleted successfully');
                 } else {
                 $entry_alert = submissionReport('error', 'Failure in deleting record');
