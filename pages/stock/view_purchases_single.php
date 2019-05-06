@@ -70,7 +70,8 @@
                     }
                 } elseif (Input::exists() && Input::get('save_payment_edits') == 'save_payment_edits') {
                     $id_payment = Input::get('id_payment');
-                    $arrayPayment = array("payment_amount" => Input::get('amount_paid'));
+                    $payment_date = strtotime(Input::get('payment_date'));
+                    $arrayPayment = array("payment_amount" => Input::get('amount_paid'),"payment_date"=>$payment_date);
                     if (DB::getInstance()->update('payments', $id_payment, $arrayPayment, 'id_payment')) {
                         $entry_alert = submissionReport('success', 'Payment updated successfully');
                     } else {
@@ -136,7 +137,7 @@
                                             ?>
                                             <tr>
                                                 <td><?php echo $i; ?></td>
-                                                <td><?php echo $purchase_query->payment_date; ?></td>
+                                                <td><?php echo date("Y-m-d",$purchase_query->payment_date); ?></td>
                                                 <?php
                                                 $purchase_price = getProuctPrice('stock_prices', $idstock, 1);
                                                 $amount_paid += $purchase_query->payment_amount;
@@ -202,6 +203,12 @@
                                                                            <div class="col-xs-12">
                                                                         <label class="text-info">Product</label>
                                                                         <input type="text" class="form-control" disabled="true" value="<?php echo $product; ?>">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row form-group">
+                                                                    <div class="col-xs-12">
+                                                                        <label class="text-info">Payment Date</label>
+                                                                        <input type="date" class="form-control" name="payment_date" value="<?php echo date("Y-m-d",$purchase_query->payment_date); ?>">
                                                                     </div>
                                                                 </div>
                                                                 <div class="row form-group">

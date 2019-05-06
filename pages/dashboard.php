@@ -66,7 +66,7 @@
                 $purchase_balance = Input::get('purchase_balance');
                 $amount_to_pay = Input::get('amount_to_pay');
                 $payment_receipt = Input::get('payment_receipt');
-                $payment_date = date("Y-m-d h:i:s");
+                $payment_date = strtotime(Input::get('amount_paid_on'));
                 $arrayPayment = array("payment_amount" => $amount_to_pay, "id_stock_price_type" => 1, "payment_date" => $payment_date, "payment_receipt" => $payment_receipt, "id_stock" => $idstock);
                 if ($amount_to_pay <= $purchase_balance) {
                 if (DB::getInstance()->insert("payments", $arrayPayment)) {
@@ -494,7 +494,7 @@
                                                     ?>
                                                     <tr>
                                                         <td><?php echo $x; ?></td>
-                                                        <td><?php echo date("Y-m-d h:i:s",$query_purchase->purchase_date); ?></td>
+                                                        <td><?php echo date("Y-m-d",$query_purchase->purchase_date); ?></td>
                                                         <td><?php echo $product; ?></td>
                                                         <td><?php
                                                             echo number_format(getProuctPrice('stock_prices', $query_purchase->id_stock, 1), 2);
@@ -585,7 +585,13 @@
                                                                         <div class="row form-group">
                                                                             <div class="col-xs-12">
                                                                                 <label class="text-info">Amount To Pay</label>
-                                                                                <input type="text" class="form-control" name="amount_to_pay" value="" autocomplete="off">
+                                                                                <input type="text" class="form-control" name="amount_to_pay" required autocomplete="off">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="row form-group">
+                                                                            <div class="col-xs-12">
+                                                                                <label class="text-info">Amount Paid On</label>
+                                                                                <input type="date" class="form-control" name="amount_paid_on" required autocomplete="off">
                                                                             </div>
                                                                         </div>
                                                                     </div>
