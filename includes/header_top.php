@@ -933,7 +933,7 @@ if (Input::exists()) {
         $receipt_number = Input::get('purchases_receipt');
         $supplier = Input::get('id_supplier');
         $cost_price = Input::get('buy_price');
-        $purchase_date = Input::get('buy_date');
+        $purchase_date = strtotime(Input::get('buy_date'));
         $cash_paid = Input::get('cash_paid');
         $vehicle_number_plate = strtoupper(Input::get('plate_number'));
         $name = strtoupper(Input::get('full_name'));
@@ -981,7 +981,7 @@ if (Input::exists()) {
 
                 DB::getInstance()->insert("stock_prices", $arrayStockPrice);
 
-                $arrayPayment = array("payment_amount" => $cash_paid, "id_stock_price_type" => 1, "payment_date" => date("Y-m-d h:i:s"), "payment_receipt" => $receipt_number, "id_stock" => getLastInsertId('stock', 'id_stock'));
+                $arrayPayment = array("payment_amount" => $cash_paid, "id_stock_price_type" => 1, "payment_date" => $purchase_date, "payment_receipt" => $receipt_number, "id_stock" => getLastInsertId('stock', 'id_stock'));
 
                 DB::getInstance()->insert("payments", $arrayPayment);
 
@@ -992,11 +992,11 @@ if (Input::exists()) {
 
                 DB::getInstance()->insert("stock", $arrayStock);
 
-                $arrayStockPrice = array("stock_price" => $cost_price, "occurred_on" => date("Y-m-d h:i:s"), "id_stock_price_type" => 1,
+                $arrayStockPrice = array("stock_price" => $cost_price, "occurred_on" => $purchase_date, "id_stock_price_type" => 1,
                     "id_stock" => getLastInsertId('stock', 'id_stock'));
                 DB::getInstance()->insert("stock_prices", $arrayStockPrice);
 
-                $arrayPayment = array("payment_amount" => $cash_paid, "id_stock_price_type" => 1, "payment_date" => date("Y-m-d h:i:s"), "payment_receipt" => $receipt_number, "id_stock" => getLastInsertId('stock', 'id_stock'));
+                $arrayPayment = array("payment_amount" => $cash_paid, "id_stock_price_type" => 1, "payment_date" => $purchase_date, "payment_receipt" => $receipt_number, "id_stock" => getLastInsertId('stock', 'id_stock'));
                 DB::getInstance()->insert("payments", $arrayPayment);
 
                 $entry_alert = submissionReport('success', 'Data saved successfully');
