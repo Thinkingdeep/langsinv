@@ -976,7 +976,7 @@ if (Input::exists()) {
 
                 DB::getInstance()->insert("stock", $arrayStock);
 
-                $arrayStockPrice = array("stock_price" => $cost_price, "occurred_on" => date("Y-m-d h:i:s"), "id_stock_price_type" => 1,
+                $arrayStockPrice = array("stock_price" => $cost_price, "occurred_on" => $purchase_date, "id_stock_price_type" => 1,
                     "id_stock" => getLastInsertId('stock', 'id_stock'));
 
                 DB::getInstance()->insert("stock_prices", $arrayStockPrice);

@@ -494,7 +494,7 @@
                                                     ?>
                                                     <tr>
                                                         <td><?php echo $x; ?></td>
-                                                        <td><?php echo $query_purchase->purchase_date; ?></td>
+                                                        <td><?php echo date("Y-m-d h:i:s",$query_purchase->purchase_date); ?></td>
                                                         <td><?php echo $product; ?></td>
                                                         <td><?php
                                                             echo number_format(getProuctPrice('stock_prices', $query_purchase->id_stock, 1), 2);
