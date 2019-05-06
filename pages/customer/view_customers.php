@@ -127,7 +127,7 @@
                                                     </button>
                                                     <ul class="dropdown-menu" role="menu" style="">
                                                         <li><a data-toggle="modal" href="#customer-edit-form<?php echo $customers->id_client; ?>" style="color: #72afd2;">Edit</a></li>
-                                                        <li><a data-toggle="modal" href="#customer-delete-form<?php echo $customers->id_client; ?>" style="color: #72afd2;">Delete</a></li>
+                                                        <li id="delete_link"><a data-toggle="modal" href="#customer-delete-form<?php echo $customers->id_client; ?>" style="color: #72afd2;">Delete</a></li>
                                                     </ul>
                                                 </div></td>
                                     <div class="modal modal-default fade" id="customer-edit-form<?php echo $customers->id_client; ?>">

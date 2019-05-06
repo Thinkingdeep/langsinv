@@ -66,7 +66,7 @@
                     }
                 } elseif (Input::exists() && Input::get('delete_supplier') == 'delete_supplier') {
                     $supplier = Input::get('supplier_id');
-                    if (DB::getInstance()->delete("clients", $supplier)) {
+                    if (DB::getInstance()->query("DELETE FROM clients WHERE id_client = $supplier")) {
                         $entry_alert = submissionReport("success", "Supplier information deleted successfully");
                     } else {
                         $entry_alert = submissionReport("error", "Failed to delete supplier information");
@@ -84,8 +84,8 @@
         <div class="box-header with-border">
             <h3 class="box-title">Showing Suppliers</h3>
             <div class="btn-group pull-right">
-                                        <button type="button" class="btn btn-primary">Action</button>
-                                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                                        <!--<button type="button" class="btn btn-primary">Action</button>-->
+                                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">Options
                                             <span class="caret"></span>
                                             <span class="sr-only">Toggle Dropdown</span>
                                         </button>
@@ -115,7 +115,7 @@
                                                                 <th>ADDRESS/COMPANY</th>
                                                                 <th>TELEPHONE</th>
                                                                 <th>EMAIL</th>
-                                                                <th>ACTION</th>
+                                                                <th>OPTIONS</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -131,8 +131,8 @@
                                                                 <td><?php echo $suppliers->telephone;?></td>
                                                                 <td><?php echo $suppliers->email;?></td>
                                                                 <td><div class="btn-group">
-                                                            <button type="button" class="btn btn-default">Action</button>
-                                                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                                                            <!--<button type="button" class="btn btn-default">Action</button>-->
+                                                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Options
                                                                 <span class="caret"></span>
                                                                 <span class="sr-only">Toggle Dropdown</span>
                                                             </button>
