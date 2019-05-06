@@ -18,7 +18,7 @@
                             <img src="assets/dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
                         </div>
                         <div class="pull-left info">
-                            <p><?php echo $current_user;?></p>
+                            <p><?php echo $current_user; ?></p>
                             <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
                         </div>
                     </div>
@@ -54,20 +54,30 @@
                     </ol>
                 </section>
                 <?php
-                if (Input::exists() && Input::get('submit')) {
-                    $type = Input::get('expense_type');
+                if (Input::exists() && Input::get('submit') == 'submit') {
+                    $type = strtoupper(Input::get('expense_type'));
                     $arrayIncomeType = array("expenditure_name" => $type);
                     if (DB::getInstance()->checkRows("SELECT * FROM expenditure_sources WHERE expenditure_name='$type'")) {
-                        $entry_alert = '<div class="alert alert-danger alert-dismissible" style="height: 40px;">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                <p class="text-center" style="font-size: 16px;"> Expense Type ' . $type . ' exists in the database, enter a different type</p>
-              </div>';
+                        $entry_alert = submissionReport('error', 'Expense Type ' . $type . ' exists in the database, enter a different type');
                     } else {
                         DB::getInstance()->insert("expenditure_sources", $arrayIncomeType);
-                        $entry_alert = '<div class="alert alert-success alert-dismissible" style="height: 40px;">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                <p class="text-center" style="font-size: 16px;">Data saved successfully</p>
-              </div>';
+                        $entry_alert = submissionReport('success', 'Data saved successfully');
+                    }
+                } elseif (Input::exists() && Input::get('save_expense_edits') == 'save_expense_edits') {
+                    $id_expense = Input::get('id_expense');
+                    $arrayExpenseType = array("expenditure_name" => strtoupper(Input::get('expense_name')));
+                    if (DB::getInstance()->update("expenditure_sources", $id_expense, $arrayExpenseType, 'id_expenditure_source')) {
+                        $entry_alert = submissionReport('success', 'Expenditure updated successfully');
+                    } else {
+                        $entry_alert = submissionReport('error', 'Failure in updating record');
+                    }
+                } elseif (Input::exists() && Input::get('delete_expense') == 'delete_expense') {
+                    $id_expense = Input::get('id_expense');
+                    if (DB::getInstance()->query("DELETE FROM expenditure_sources WHERE id_expenditure_source = $id_expense")) {
+                        DB::getInstance()->query("DELETE FROM expenditures WHERE id_expenditure_source = $id_expense");
+                        $entry_alert = submissionReport('success', 'Expenditure deleted successfully');
+                    } else {
+                        $entry_alert = submissionReport('error', 'Failed to delete expenditure');
                     }
                 }
                 ?>
@@ -96,7 +106,7 @@
                                     <!-- /.box-body -->
 
                                     <div class="box-footer">
-                                        <button type="submit" class="btn btn-primary" name="submit" value="submit">Submit</button>
+                                        <button type="submit" class="btn btn-primary"  name="submit" value="submit">Submit</button>
                                     </div>
                                 </form>
                             </div>
@@ -112,7 +122,7 @@
                                             <tr>
                                                 <th>NO</th>
                                                 <th>EXPENSE TYPE</th>
-                                                <th>ACTION</th>
+                                                <th>OPTIONS</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -125,21 +135,79 @@
                                                     <td><?php echo $x; ?></td>
                                                     <td><?php echo $income->expenditure_name; ?></td>
                                                     <td><div class="btn-group">
-                                                            <button type="button" class="btn btn-default">Action</button>
-                                                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                                                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Options
                                                                 <span class="caret"></span>
                                                                 <span class="sr-only">Toggle Dropdown</span>
                                                             </button>
                                                             <ul class="dropdown-menu" role="menu" style="">
-                                                                <li><a data-toggle="modal" href="#new-purchase-form" style="color: #72afd2;">Edit</a></li>
-                                                                <li><a data-toggle="modal" href="#delete-form" style="color: #72afd2;">Delete</a></li>
+                                                                <li><a data-toggle="modal" href="#expense_edit_form<?php echo $income->id_expenditure_source; ?>" style="color: #72afd2;">Edit</a></li>
+                                                                <li><a data-toggle="modal" href="#expense_delete_form<?php echo $income->id_expenditure_source; ?>" style="color: #72afd2;">Delete</a></li>
                                                             </ul>
                                                         </div></td>
-                                                </tr>
+                                            <div class="modal modal-default fade" id="expense_edit_form<?php echo $income->id_expenditure_source; ?>">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span></button>
+                                                            <h4 class="modal-title text-center">SETTINGS EDIT FORM</h4>
+                                                        </div>
+                                                        <form action="" method="post">
+                                                            <div class="modal-body">
+                                                                <div class="box-header with-border">
+                                                                    <h3 class="box-title text-success">Edit Expenditure</h3>
+                                                                </div>
+                                                                <div class="box-body">
+                                                                    <div class="row form-group">
+                                                                        <input type="hidden" name="id_expense" value="<?php echo $income->id_expenditure_source; ?>">
+                                                                        <div class="col-xs-12">
+                                                                            <label class="text-info">Expenditure Name</label>
+                                                                            <input type="text" class="form-control" name="expense_name" value="<?php echo $income->expenditure_name; ?>">
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="reset" class="btn btn-warning btn-md pull-left" data-dismiss="modal">Cancel</button>
+                                                                <button type="submit" name="save_expense_edits" value="save_expense_edits" class="btn btn-success btn-md">Record</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                    <!-- /.modal-content -->
+                                                </div>
+                                                <!-- /.modal-dialog -->
+                                            </div>
+                                            <div class="modal modal-default fade" id="expense_delete_form<?php echo $income->id_expenditure_source; ?>">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span></button>
+                                                            <h4 class="modal-title text-danger text-center">INFORMATION</h4>
+                                                        </div>
+                                                        <form action="" method="post">
+                                                            <div class="modal-body">
+                                                                <div class="box-header text-center">
+                                                                    <h3 class="box-title text-success">This record will be deleted<br><br>Do you really want to continue?</h3>
+                                                                    <input type="hidden" name="id_expense" value="<?php echo $income->id_expenditure_source; ?>">
+                                                                </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="reset" class="btn btn-warning btn-md pull-left" data-dismiss="modal">No</button>
+                                                                <button type="submit" name="delete_expense" value="delete_expense" class="btn btn-success btn-md">Yes</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                    <!-- /.modal-content -->
+                                                </div>
+                                                <!-- /.modal-dialog -->
+                                            </div>
+                                            </tr>
 
-                                                <?php $x++;
-                                            endforeach;
-                                            ?>
+                                            <?php
+                                            $x++;
+                                        endforeach;
+                                        ?>
                                         </tbody>
                                         <tfoot></tfoot>
                                     </table>
@@ -152,7 +220,7 @@
                 <!-- /.section -->
             </div>
 
-<?php include 'includes/footer.php'; ?>
+            <?php include 'includes/footer.php'; ?>
 
 
 

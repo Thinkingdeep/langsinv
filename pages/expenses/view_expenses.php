@@ -124,14 +124,14 @@
                                 </form>
                                 <div class="col-lg-2 col-md-6 col-sm-6 col-xs-6">
                                     <div class="btn-group">
-                                        <button type="button" class="btn btn-primary">Action</button>
-                                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                                        <!--<button type="button" class="btn btn-primary">Action</button>-->
+                                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">Options
                                             <span class="caret"></span>
                                             <span class="sr-only">Toggle Dropdown</span>
                                         </button>
                                         <ul class="dropdown-menu" role="menu" style="">
                                             <li><a data-toggle="modal" href="#" style="color: #72afd2;">Print </a></li>
-                                            <li><a data-toggle="modal" href="#" style="color: #72afd2;">Export As Excel(.xls)</a></li>
+                                            <!--<li><a data-toggle="modal" href="#" style="color: #72afd2;">Export As Excel(.xls)</a></li>-->
                                             <!--<li><a data-toggle="modal" href="#" style="color: #72afd2;">Export As PDF(.pdf)</a></li>-->
                                             <li class="divider"></li>
                                             <li><a data-toggle="modal" href="#new-sale-form" style="color: #72afd2;">Sell</a></li>
@@ -156,7 +156,7 @@
                                         <th>EXPENDITURE ON</th>
                                         <th>EXPENSE TYPE</th>
                                         <th>AMOUNT</th>
-                                        <th>ACTION</th>
+                                        <th>OPTIONS</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -184,9 +184,9 @@
                                             }
                                             ?>
                                             <td><div class="btn-group">
-                                                    <button type="button" class="btn btn-default">Action</button>
+                                                    <!--<button type="button" class="btn btn-default">Action</button>-->
                                                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                                                        <span class="caret"></span>
+                                                        Options<span class="caret"></span>
                                                         <span class="sr-only">Toggle Dropdown</span>
                                                     </button>
                                                     <ul class="dropdown-menu" role="menu" style="">

@@ -175,7 +175,7 @@
                             <!-- small box -->
                             <div class="small-box bg-red">
                                 <div class="inner">
-                                    <h4><?php echo countEntries('clients', 'id_client', 'id_client_type = 2'); ?></h4>
+                                    <h4><?php echo countEntries('clients', 'id_client', 'id_client_type = 1'); ?></h4>
 
                                     <p>Customers</p>
                                 </div>
@@ -818,7 +818,7 @@
                                         <div class="box-header with-border">
                                             <div class="row form-group">
                                                 <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12">
-                                                    <h3 class="box-title">Recent Supplier Payments</h3>
+                                                    <h3 class="box-title">Showing Creditors</h3>
                                                 </div>
                                             </div>
                                         </div>
@@ -830,35 +830,44 @@
                                                         <th>NO</th>
                                                         <th>CLIENT</th>
                                                         <th>PRODUCT</th>
-                                                        <th>TOTOAL COST</th>
-                                                        <th>AMOUNT PAID</th>
-                                                        <th>BALANCE</th>
+                                                        <th>CREDIT AMOUNT</th>
+                                                        <th>PAYMENT DATE</th>
+                                                        <th>OPTIONS</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     <?php
-                                                    $payments_query = DB::getInstance()->query("SELECT * FROM clients c,stock s, stock_prices p WHERE c.id_client = s.id_client AND s.id_stock = p.id_stock AND p.id_stock_price_type = 2 AND c.id_client_type = 2 GROUP BY s.id_stock ");
-                                                    $x = 1;
-                                                    foreach ($payments_query->results() as $payments_query):
+                                                    $x=1;
+                                                    $query_sales = DB::getInstance()->query("SELECT * FROM stock s,stock_prices p WHERE s.id_stock = p.id_stock AND s.stock_status = 'SOLD' AND p.id_stock_price_type = 1");
+                                                    foreach ($query_sales->results() as $query_sales):
+                                                    $idstock = $query_sales->id_stock;
+                                                    $purchase_price = $query_sales -> stock_price;
+                                                    $amount_paid = selectSum('payments','payment_amount','id_stock = '.$idstock.' AND id_stock_price_type=2');
+                                                    $debtor = getSpecificDetails('client_orders o,clients c','name','o.id_client = c.id_client AND o.id_stock = '.$idstock.'');
+                                                    $debt_amount = $purchase_price - $amount_paid;
+                                                    if($debt_amount>0){
                                                     ?>
                                                     <tr>
-                                                        <td><?php echo $x; ?></td>
-                                                        <td><?php echo $payments_query->name; ?></td>
-                                                        <td><?php echo getProductName($payments_query->id_stock); ?></td>
-                                                        <td><?php
-                                                            $cost_price = getProuctPrice('stock_prices', $payments_query->id_stock, $payments_query->id_stock_price_type);
-                                                            echo number_format($cost_price, 2);
-                                                            ?></td>
-                                                        <td><?php
-                                                            $total_pay = selectSum("payments", "payment_amount", "id_stock_price_type = 1 AND id_stock =$payments_query->id_stock");
-                                                            echo number_format($total_pay, 2);
-                                                            ?></td>
-                                                        <td><?php echo number_format(($cost_price - $total_pay), 2) ?></td>
+                                                        <td><?php echo $x;?></td>
+                                                        <td><?php echo $debtor;?></td>
+                                                        <td><?php echo getProductName($idstock);?></td>
+                                                        <td><?php echo number_format($debt_amount,2);?></td>
+                                                        <td></td>
+                                                        <td><div class="btn-group">
+                                                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Options
+                                                                    <span class="caret"></span>
+                                                                    <span class="sr-only">Toggle Dropdown</span>
+                                                                </button>
+                                                                <ul class="dropdown-menu" role="menu" style="">
+                                                                    <li><a data-toggle="modal" href="#pay-purchases-balance-form" style="color: #72afd2;">Pay Balance</a></li>
+                                                                    <li ><a data-toggle="modal" href="#pay-purchases-edit-form" style="color: #72afd2;">Edit</a></li>
+                                                                    <li id="delete_link"><a data-toggle="modal" href="#purchases_delete_form" style="color: #72afd2;">Delete</a></li>
+                                                                </ul>
+                                                            </div></td>
                                                     </tr>
-                                                    <?php
+                                                    <?php }
                                                     $x++;
-                                                    endforeach;
-                                                    ?>
+                                                    endforeach; ?>
                                                 </tbody>
                                             </table>
                                         </div>

@@ -61,15 +61,22 @@
                 $purchase_price = getProuctPrice('stock_prices', $idstock, 1);
                 $product_expenses = selectSum('expenditures','expense_amount', 'id_stock ='.$idstock);
                 $product_costs = $purchase_price + $product_expenses;
-                // if (Input::exists() && Input::get('save_payment') == 'save_payment') {
-                //     $arrayPayment = array("payment_amount" => Input::get('balance_pay'), "id_stock_price_type" => 2, "payment_date" => date("Y-m-d h:i:s"), "payment_receipt" => Input::get('sales_receipt'), "id_stock" => Input::get('product_id'));
-                //     if (DB::getInstance()->insert("payments", $arrayPayment)) {
-                //         $entry_alert = submissionReport("success", "Payment recorded successfully");
-                //         Redirect::to();
-                //     } else {
-                //         $entry_alert = submissionReport("error", "Failed to submit payment");
-                //     }
-                // }
+                if (Input::exists() && Input::get('save_payment_edits') == 'save_payment_edits') {
+                    $id_payment = Input::get('id_payment');
+                    $arrayPayment = array("payment_amount" => Input::get('amount_paid'));
+                    if (DB::getInstance()->update('payments', $id_payment, $arrayPayment, 'id_payment')) {
+                        $entry_alert = submissionReport('success', 'Payment updated successfully');
+                    } else {
+                        $entry_alert = submissionReport('error', 'Failure in updating payment');
+                    }
+                }elseif (Input::exists() && Input::get('delete_payment') == 'delete_payment') {
+                    $id_payment = Input::get('id_payment');
+                    if (DB::getInstance()->query("DELETE FROM payments WHERE id_payment = $id_payment")) {
+                        $entry_alert = submissionReport('success', 'Payment deleted successfully');
+                    } else {
+                        $entry_alert = submissionReport('error', 'Failure in deleting payment');
+                    }
+                }
                 ?>
 
                 <!-- Main content -->
@@ -154,8 +161,8 @@
                                                     </button>
                                                     <ul class="dropdown-menu" role="menu" style="">
                                                         <li><a data-toggle="modal" href="index.php?page=print_receipt&type=cash_sale&idstock=<?php echo $sales_query->id_stock;?>&price=<?php echo $sales_price;?>&amt_pd=<?php echo $total_pay;?>&bal=<?php echo $balance;?>&ticket=<?php echo $sales_query->payment_receipt;?>&idclient=<?php echo $sales_query->id_client;?>&occurred=<?php echo $sales_query->payment_date;?>" style="color: #72afd2;">Print Receipt</a></li>
-                                                        <!-- <li><a data-toggle="modal" href="#sales-edit-form" style="color: #72afd2;">Edit</a></li> -->
-                                                        <li><a data-toggle="modal" href="#delete-form" style="color: #72afd2;">Delete</a></li>
+                                                         <li><a data-toggle="modal" href="#sales_edit_form<?php echo $sales_query->id_payment; ?>" style="color: #72afd2;">Edit</a></li> 
+                                                        <li><a data-toggle="modal" href="#sales_delete_form<?php echo $sales_query->id_payment; ?>" style="color: #72afd2;">Delete</a></li>
                                                     </ul>
                                                 </div></td>
                                     <div class="modal modal-default fade" id="pay-sales-balance-form<?php echo $sales_query->id_stock; ?>">
@@ -236,6 +243,77 @@
                                         </div>
                                         <!-- /.modal-dialog -->
                                     </div>
+                                <div class="modal modal-default fade" id="sales_delete_form<?php echo $sales_query->id_payment; ?>">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span></button>
+                                                        <h4 class="modal-title text-danger text-center">INFORMATION</h4>
+                                                    </div>
+                                                    <form action="" method="post">
+                                                        <div class="modal-body">
+                                                            <div class="box-header text-center">
+                                                                <h3 class="box-title text-success">This record will be deleted<br><br>Do you really want to continue?</h3>
+                                                                <input type="hidden" name="id_payment" value="<?php echo $sales_query->id_payment; ?>">
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="reset" class="btn btn-warning btn-md pull-left" data-dismiss="modal">No</button>
+                                                            <button type="submit" name="delete_payment" value="delete_payment" class="btn btn-success btn-md">Yes</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                                <!-- /.modal-content -->
+                                            </div>
+                                            <!-- /.modal-dialog -->
+                                        </div>
+                                    <div class="modal modal-default fade" id="sales_edit_form<?php echo $sales_query->id_payment; ?>">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span></button>
+                                                        <h4 class="modal-title text-primary text-center">CASH ENTRY EDIT FORM</h4>
+                                                    </div>
+                                                    <form action="" method="post">
+                                                        <div class="modal-body">
+                                                            <div class="box-header with-border">
+                                                                <h3 class="box-title text-success">Sales Transaction Edit</h3>
+                                                            </div>
+                                                            <div class="box-body">
+
+                                                                <div class="row form-group">
+                                                                    <input type="hidden" name="id_payment" value="<?php echo $sales_query->id_payment; ?>">
+                                                                           <div class="col-xs-12">
+                                                                        <label class="text-info">Product</label>
+                                                                        <input type="text" class="form-control" disabled="true" value="<?php echo $product; ?>">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row form-group">
+                                                                    <div class="col-xs-12">
+                                                                        <label class="text-info">Sales Price</label>
+                                                                        <input type="text" class="form-control" disabled="true" value="<?php echo number_format($sales_price, 2); ?>">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row form-group">
+                                                                    <div class="col-xs-12">
+                                                                        <label class="text-info">Amount Paid</label>
+                                                                        <input type="text" class="form-control" name="amount_paid" value="<?php echo $sales_query->payment_amount; ?>">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="reset" class="btn btn-warning btn-md pull-left" data-dismiss="modal">Cancel</button>
+                                                            <button type="submit" name="save_payment_edits" value="save_payment_edits" class="btn btn-success btn-md">Record</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                                <!-- /.modal-content -->
+                                            </div>
+                                            <!-- /.modal-dialog -->
+                                        </div>
                                     </tr>
                                     <?php
                                     $x++;

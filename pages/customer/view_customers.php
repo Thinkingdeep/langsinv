@@ -62,7 +62,7 @@
                         $entry_alert = submissionReport("error", "Failed to delete customer information");
                     }
                 }
-                $query = "SELECT * FROM clients WHERE id_client_type=2";
+                $query = "SELECT * FROM clients WHERE id_client_type=1";
                 $customer_query = DB::getInstance()->query($query);
                 ?>
 
@@ -105,7 +105,7 @@
                                         <th>ADDRESS/COMPANY</th>
                                         <th>TELEPHONE</th>
                                         <th>EMAIL</th>
-                                        <th>ACTION</th>
+                                        <th>OPTIONS</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -121,7 +121,7 @@
                                             <td><?php echo $customers->email; ?></td>
                                             <td><div class="btn-group">
                                                     <!-- <button type="button" class="btn btn-default">Action</button> -->
-                                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Action
+                                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Options
                                                         <span class="caret"></span>
                                                         <span class="sr-only">Toggle Dropdown</span>
                                                     </button>
