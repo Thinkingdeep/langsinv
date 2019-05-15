@@ -97,7 +97,7 @@
                                             <span class="sr-only">Toggle Dropdown</span>
                                         </button>
                                         <ul class="dropdown-menu" role="menu" style="">
-                                            <li><a data-toggle="modal" href="index.php?page=print&columns=5&type=report&sub_type=purchases&from=00-00-0000&to=00-00-0000" style="color: #72afd2;">Print </a></li>
+                                            <li><a data-toggle="modal" href="" style="color: #72afd2;">Print </a></li>
                                             <li class="divider"></li>
                                             <li><a data-toggle="modal" href="#new-sale-form" style="color: #72afd2;">Sell</a></li>
                                             <li><a data-toggle="modal" href="#new-purchase-form" style="color: #72afd2;">Buy</a></li>
@@ -137,8 +137,7 @@
                                         ?>
                                         <tr>
                                             <td><?php echo $x; ?></td>
-                                            <td><?php echo $sales_query->payment_date; ?></td>
-                                            <!-- <td><?php echo getProductName($sales_query->id_stock); ?></td> -->
+                                            <td><?php echo date("Y-m-d",$sales_query->payment_date); ?></td>
                                             <td><?php
                                                 $sales_price = $sales_query->stock_price;
                                                 echo number_format($sales_query->stock_price, 2);

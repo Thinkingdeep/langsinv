@@ -18,17 +18,6 @@
                             <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
                         </div>
                     </div>
-                    <!-- search form -->
-                    <!-- <form action="#" method="get" class="sidebar-form">
-                        <div class="input-group">
-                            <input type="text" name="q" class="form-control" placeholder="Search...">
-                            <span class="input-group-btn">
-                                <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i>
-                                </button>
-                            </span>
-                        </div>
-                    </form> -->
-                    <!-- /.search form -->
                     <!-- sidebar menu: : style can be found in sidebar.less -->
                     <?php include 'includes/side_nav.php'; ?>
                 </section>
@@ -115,7 +104,7 @@
                                                                 <ul class="dropdown-menu" role="menu" style="">
                                                                     <li><a data-toggle="modal" href="#new-brand-form" style="color: #72afd2;">Add New Brand</a></li>
                                                                     <li><a data-toggle="modal" href="#new-purchase-form" style="color: #72afd2;">Edit</a></li>
-                                                                    <li><a data-toggle="modal" href="#delete-form" style="color: #72afd2;">Delete if not sold</a></li>
+                                                                    <li><a data-toggle="modal" href="#delete-form" style="color: #72afd2;">Delete</a></li>
                                                                 </ul>
                                                             </div></td>
                                                     </tr>

@@ -56,7 +56,7 @@
                 <?php
                 if (Input::exists() && Input::get('save_payment') == 'save_payment') {
                     $amount = Input::get('balance_pay');
-                    $payment_date = date("Y-m-d h:i:s");
+                    $payment_date = strtotime(Input::get('balance_pay_date'));
                     $receipt = Input::get('sales_receipt');
                     $idstock = Input::get('product_id');
                     $sales_price = Input::get('sales_price');
@@ -68,11 +68,32 @@
                     if (DB::getInstance()->insert("payments", $arrayPayment)) {
 
                         $entry_alert = submissionReport("success", "Payment recorded successfully");
-                        Redirect::to("index.php?page=print_receipt&type=cash_sale&idstock=".$idstock."&price=".$sales_price."&amt_pd=".$amount."&bal=".($balance-$amount)."&ticket=".$receipt."&idclient=".$idclient."&occurred=".$payment_date."");
+                        // Redirect::to("index.php?page=print_receipt&type=cash_sale&idstock=".$idstock."&price=".$sales_price."&amt_pd=".$amount."&bal=".($balance-$amount)."&ticket=".$receipt."&idclient=".$idclient."&occurred=".$payment_date."");
                     } else {
                         $entry_alert = submissionReport("error", "Failed to submit payment");
                     }}else{
                         $entry_alert = submissionReport("warning", "Your balance is ".number_format($balance,2).". Enter amount not exceeding the balance");
+                    }
+                }elseif(Input::exists() && Input::get('save_uploaded_agreement') == 'save_uploaded_agreement'){
+                    $idstock = Input::get('idstock');
+                    $file_name = $_FILES['agreement']['name']; //get the file name for the photo
+                    $file_tmp = $_FILES['agreement']['tmp_name'];
+                    $url = '';
+                    if (!empty($file_name)) {
+                        $file_ext = strtolower(substr($file_name, strpos($file_name, '.') + 1));
+                        if (($file_ext == 'jpg') || ($file_ext == 'jpeg') || ($file_ext == 'png') || ($file_ext == 'pdf')) {
+                            $new_file_name = renameUploadedFile($file_name, $file_ext);
+                            move_uploaded_file($file_tmp, "assets/uploads/attachments/" . $new_file_name);
+                            $url = 'assets/uploads/attachments/' . $new_file_name;
+                            $arrayUploadAgreement = array("sales_agreement"=>$url);
+                            if(DB::getInstance()->update('stock',$idstock,$arrayUploadAgreement,'id_stock')){
+                                $entry_alert = submissionReport('success', 'Uploaded successfully');
+                            }else{
+                                $entry_alert = submissionReport('error', 'Error in uploading attachment');
+                            }
+                        } else {
+                            $entry_alert = submissionReport('error', 'Unsupported format of attachment selected, select a .jpeg or .jpg or .png or .pdf');
+                        }
                     }
                 }
                 if (Input::exists() && Input::get('search_sales') == 'search_sales') {
@@ -132,9 +153,7 @@
                                             <span class="sr-only">Toggle Dropdown</span>
                                         </button>
                                         <ul class="dropdown-menu" role="menu" style="">
-                                            <li><a data-toggle="modal" href="index.php?page=print&columns=5&type=report&sub_type=purchases&from=00-00-0000&to=00-00-0000" style="color: #72afd2;">Print </a></li>
-                                            <!--                                            <li><a data-toggle="modal" href="#new-purchase-form" style="color: #72afd2;">Export As Excel(.xls)</a></li>
-                                                                                        <li><a data-toggle="modal" href="#new-brand-form" style="color: #72afd2;">Export As PDF(.pdf)</a></li>-->
+                                            <li><a data-toggle="modal" href="" style="color: #72afd2;">Print </a></li>
                                             <li class="divider"></li>
                                             <li><a data-toggle="modal" href="#new-sale-form" style="color: #72afd2;">Sell</a></li>
                                             <li><a data-toggle="modal" href="#new-purchase-form" style="color: #72afd2;">Buy</a></li>
@@ -159,6 +178,7 @@
                                         <th>SALES_PRICE</th>
                                         <th>SALES_BALANCE</th>
                                         <th>CUSTOMER</th>
+                                        <th>AGREEMENT</th>
                                         <th style="width:70px;">OPTIONS</th>
                                     </tr>
                                 </thead>
@@ -171,7 +191,7 @@
                                         ?>
                                         <tr>
                                             <td><?php echo $x; ?></td>
-                                            <td><?php echo $sales_query->payment_date; ?></td>
+                                            <td><?php echo date("Y-m-d",$sales_query->payment_date); ?></td>
                                             <td><?php echo getProductName($sales_query->id_stock); ?></td>
                                             <td><?php
                                                 $sales_price = $sales_query->stock_price;
@@ -185,6 +205,13 @@
                                                 echo number_format($balance, 2);
                                                 ?></td>
                                             <td><a href=""><?php echo $sales_query->name; ?></a></td>
+                                            <?php $attachment = $sales_query->sales_agreement; 
+                                                        if(!empty($attachment)){?>
+                                                        <td><a href="<?php echo $attachment;?>" target="_blank"><i class="fa fa-eye"> view</i></a></td><?php }else{?>
+                                                            <td><a data-toggle="modal" href="#attach-agreement-form<?php echo $sales_query->id_stock; ?>"><i class="fa fa-upload"> upload</i></a></td>
+                                                        <?php 
+                                                            }
+                                                        ?>
                                             <td><div class="btn-group">
                                                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Options
                                                         <span class="caret"></span>
@@ -192,6 +219,7 @@
                                                     </button>
                                                     <ul class="dropdown-menu" role="menu" style="">
                                                         <li><a data-toggle="modal" href="index.php?page=view_sales_single&id=<?php echo $sales_query->id_client; ?>&user=<?php echo $sales_query->name; ?>&product=<?php echo getProductName($sales_query->id_stock); ?>&idstock=<?php echo $sales_query->id_stock; ?>" style="color: #72afd2;">View Payments</a></li>
+                                                        <li><a data-toggle="modal" href="#attach-agreement-form<?php echo $sales_query->id_stock; ?>" style="color: #72afd2;">Upload Agreement</a></li>
                                                         <li><a data-toggle="modal" href="#pay-sales-balance-form<?php echo $sales_query->id_stock; ?>" style="color: #72afd2;">Pay Balance</a></li> 
                                                     </ul>
                                                 </div></td>
@@ -259,10 +287,16 @@
                                                             <div class="row form-group">
                                                                 <div class="col-xs-12">
                                                                     <label class="text-info">Amount To Pay</label>
-                                                                    <input type="number" class="form-control" name="balance_pay" id="balance_pay" required="true" autocomplete="
-                                                                           off" onkeyup="">
+                                                                    <input type="text" class="form-control" name="balance_pay" id="balance_pay" required="true" autocomplete="
+                                                                           off" placeholder="Enter">
                                                                 </div>
-
+                                                            </div>
+                                                            <div class="row form-group">
+                                                                <div class="col-xs-12">
+                                                                    <label class="text-info">Amount Paid On</label>
+                                                                    <input type="date" class="form-control" name="balance_pay_date" id="balance_pay_date" required="true" autocomplete="
+                                                                           off" placeholder="Enter date">
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -276,6 +310,35 @@
                                         </div>
                                         <!-- /.modal-dialog -->
                                     </div>
+                                    <div class="modal modal-default fade" id="attach-agreement-form<?php echo $sales_query->id_stock; ?>">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span></button>
+                                                                <h4 class="modal-title text-center text-primary">UPLOADS FORM</h4>
+                                                            </div>
+                                                            <form action="" method="post" enctype="multipart/form-data">
+                                                                <input type="hidden" name="idstock" value="<?php echo $sales_query->id_stock; ?>">
+                                                                <div class="modal-body">
+                                                                    <div class="row form-group">
+                                                <label for="inputEmail" class="col-sm-4 control-label">Upload Attachment</label>
+
+                                                <div class="col-sm-8">
+                                                    <input type="file" name="agreement" id="exampleInputFile" accept="image/jpg,image/png,image/jpeg/pdf">
+                                                </div>
+                                            </div>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="reset" class="btn btn-warning btn-md pull-left" data-dismiss="modal">Cancel</button>
+                                                                    <button type="submit" class="btn btn-success btn-md" name="save_uploaded_agreement" value="save_uploaded_agreement">Save</button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                        <!-- /.modal-content -->
+                                                    </div>
+                                                    <!-- /.modal-dialog -->
+                                                </div>
                                     </tr>
                                     <?php
                                     $x++;
