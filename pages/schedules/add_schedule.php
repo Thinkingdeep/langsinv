@@ -4,13 +4,13 @@
     error_reporting(E_ALL);
     include 'includes/header.php';
     $id_customer = Input::get('id_customer');
-                            $id_product = Input::get('id_product');
-                            $pay_date = Input::get('pay_date');
-                            $balance = Input::get('balance'); 
-                            if(empty($balance) && empty($id_product) && empty($pay_date)){
-                                $pay_date = '';
-                                $balance = '';
-                            }
+    $id_product = Input::get('id_product');
+    $pay_date = Input::get('pay_date');
+    $balance = Input::get('balance');
+    if (empty($balance) && empty($id_product) && empty($pay_date)) {
+        $pay_date = '';
+        $balance = '';
+    }
     ?>
     <body class="hold-transition skin-blue sidebar-mini">
         <div class="wrapper">
@@ -76,18 +76,19 @@
                                             <div class="col-xs-12">
                                                 <label class="text-info">Customer</label>
                                                 <select  class="form-control select2 " id="select_customer" name="id_customer"  style="width: 100%;">
-                                                    <?php if(empty($id_customer)){
-                                                        $id_customer = 0;?>
-                                                    <option>--select--</option>
-                                                    <?php}else{?>
-                                                    <option value="<?php echo $id_customer;?>"><?php echo getSpecificDetails('clients','name','id_client ='.$id_customer).' '.getSpecificDetails('clients','address','id_client ='.$id_customer).' '.getSpecificDetails('clients','telephone','id_client ='.$id_customer);?></option>
-                                                    <?php
-                                                }
+                                                    <?php if (empty($id_customer)) {
+                                                        $id_customer = 0;
+                                                        ?>
+                                                        <option>--select--</option>
+                                                        <?php } else{ ?>
+                                                        <option value="<?php echo $id_customer; ?>"><?php echo getSpecificDetails('clients', 'name', 'id_client =' . $id_customer) . ' ' . getSpecificDetails('clients', 'address', 'id_client =' . $id_customer) . ' ' . getSpecificDetails('clients', 'telephone', 'id_client =' . $id_customer); ?></option>
+                                                        <?php
+                                                    }
                                                     $query_customer = DB::getInstance()->query("SELECT * FROM clients WHERE id_client_type = 1");
                                                     foreach ($query_customer->results() as $query_customer):
                                                         ?>
                                                         <option value="<?php echo $query_customer->id_client; ?>"><?php echo $query_customer->name . ' ' . $query_customer->address . ' ' . $query_customer->telephone; ?></option>
-                                                    <?php endforeach; ?>
+<?php endforeach; ?>
                                                 </select>
                                             </div>
                                         </div>
@@ -95,15 +96,16 @@
                                             <div class="col-xs-8">
                                                 <label class="text-info">Product</label>
                                                 <select  class="form-control select2 " id="select_product" name="id_product"  style="width: 100%;">
-                                                    <?php if(empty($id_product)){
-                                                        $id_product = 0;?>
+                                                    <?php if (empty($id_product)) {
+                                                        $id_product = 0;
+                                                        ?>
                                                         <option>--select</option>
                                                         <?php
-                                                    }else{
+                                                    } else {
                                                         ?>
-                                                    <option value="<?php echo $id_product;?>" ><?php echo getProductName($id_product);?></option>
-                                                    <?php
-                                                }
+                                                        <option value="<?php echo $id_product; ?>" ><?php echo getProductName($id_product); ?></option>
+                                                        <?php
+                                                    }
                                                     $products_query = DB::getInstance()->query("SELECT * FROM stock s,stock_name n,stock_prices p WHERE p.id_stock = s.id_stock AND s.id_stock_name = n.id_stock_name AND s.stock_status ='SOLD' AND p.id_stock_price_type = 2");
                                                     foreach ($products_query->results() as $products_query):
                                                         ?>
@@ -118,7 +120,7 @@
                                             </div>
                                             <div class="col-xs-4">
                                                 <label class="text-info">Amount to pay</label>
-                                                <input type="text" id="schedule_amount_to_pay" class="form-control" name="schedule_amount_to_pay" placeholder="Enter amount to pay" autocomplete="off" required value="<?php echo $balance;?>">
+                                                <input type="text" id="schedule_amount_to_pay" class="form-control" name="schedule_amount_to_pay" placeholder="Enter amount to pay" autocomplete="off" required value="<?php echo $balance; ?>">
                                             </div>
                                         </div>
                                         <div class="row form-group">
@@ -128,7 +130,7 @@
                                             </div>
                                             <div class="col-xs-6">
                                                 <label class="text-info">Payment start date</label>
-                                                <input type="date" class="form-control" id="schedule_start_date" name="schedule_start_date" autocomplete="off" required value="<?php echo $pay_date;?>">
+                                                <input type="date" class="form-control" id="schedule_start_date" name="schedule_start_date" autocomplete="off" required value="<?php echo $pay_date; ?>">
                                             </div>
                                         </div>
                                         <div class="row form-group" id="display_schedule">
@@ -157,7 +159,7 @@
                             <?php
                             $customer_name = '';
                             $product_name = '';
-                            
+
                             if (Input::exists() && Input::get('save_schedule') == 'save_schedule') {
                                 $id_customer = Input::get('id_customer');
                                 $id_product = Input::get('id_product');
@@ -178,14 +180,14 @@
                                 $customer_name = "Customer Name " . getSpecificDetails('clients', 'name', 'id_client=' . $id_customer);
                                 $product_name = "Payment Schedule for " . getProductName($id_product);
                                 //}
-                            }elseif(Input::exists() && Input::get('save_edit_schedule') == 'save_edit_schedule'){
+                            } elseif (Input::exists() && Input::get('save_edit_schedule') == 'save_edit_schedule') {
                                 $id_customer = Input::get('id_client');
                                 $id_product = Input::get('id_stock');
                                 $id_schedule = Input::get('id_schedule');
                                 $schedule_date = Input::get('schedule_date');
                                 $schedule_amount = Input::get('schedule_amount');
-                                $arrayUpdateSchedule = array("payment_date"=>$schedule_date,"payment_amount"=>$schedule_amount);
-                                DB::getInstance()->update('payment_schedules',$id_schedule,$arrayUpdateSchedule,'id_payment_schedule');
+                                $arrayUpdateSchedule = array("payment_date" => $schedule_date, "payment_amount" => $schedule_amount);
+                                DB::getInstance()->update('payment_schedules', $id_schedule, $arrayUpdateSchedule, 'id_payment_schedule');
                                 $customer_name = "Customer Name " . getSpecificDetails('clients', 'name', 'id_client=' . $id_customer);
                                 $product_name = "Payment Schedule for " . getProductName($id_product);
                             }
@@ -243,20 +245,20 @@
                                                                     <input type="hidden" class="form-control" name="id_client" value="<?php echo $query_schedule->id_client; ?>">
                                                                     <input type="hidden" class="form-control" name="id_stock" value="<?php echo $query_schedule->id_stock; ?>">
                                                                     <div class="row form-group">
-                                                                <div class="col-xs-12">
-                                                                    <label class="text-info">Date</label>
-                                                                    <input type="date" class="form-control" name="schedule_date" required="true" autocomplete="
-                                                                           off" value="<?php echo $query_schedule->payment_date; ?>">
+                                                                        <div class="col-xs-12">
+                                                                            <label class="text-info">Date</label>
+                                                                            <input type="date" class="form-control" name="schedule_date" required="true" autocomplete="
+                                                                                   off" value="<?php echo $query_schedule->payment_date; ?>">
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="row form-group">
+                                                                        <div class="col-xs-12">
+                                                                            <label class="text-info">Amount</label>
+                                                                            <input type="text" class="form-control" name="schedule_amount" required="true" autocomplete="
+                                                                                   off" value="<?php echo $query_schedule->payment_amount; ?>">
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
-                                                            </div>
-                                                            <div class="row form-group">
-                                                                <div class="col-xs-12">
-                                                                    <label class="text-info">Amount</label>
-                                                                    <input type="text" class="form-control" name="schedule_amount" required="true" autocomplete="
-                                                                           off" value="<?php echo $query_schedule->payment_amount; ?>">
-                                                                </div>
-                                                            </div>
-                                                        </div>
                                                                 <div class="modal-footer">
                                                                     <button type="reset" class="btn btn-warning btn-md pull-left" data-dismiss="modal">No</button>
                                                                     <button type="submit" name="save_edit_schedule" value="save_edit_schedule" class="btn btn-success btn-md">Yes</button>

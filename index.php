@@ -115,7 +115,7 @@ switch ($page) {
             include 'pages/sales/' . $page . '.php';
         break;
         
-    case 'new_schedule':
+    case 'add_schedule':
         if (file_exists('pages/schedules/' . $page . '.php'))
             include 'pages/schedules/' . $page . '.php';
         break;
