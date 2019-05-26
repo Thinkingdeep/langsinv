@@ -14,14 +14,14 @@ $GLOBALS['config'] = array(
 		// $password="a2cuggWE";
 		// $dbname="josephezati_langas";
     'mysql' => array(
-         'host' => '127.0.0.1',
-         'username' => 'root',
-         'password' => '',
-         'db' => 'new_langas_db'
          // 'host' => '127.0.0.1',
-         // 'username' => 'josep_user',
-         // 'password' => 'a2cuggWE',
-         // 'db' => 'josephezati_langas'
+         // 'username' => 'root',
+         // 'password' => '',
+         // 'db' => 'new_langas_db'
+         'host' => '127.0.0.1',
+         'username' => 'josep_user',
+         'password' => 'a2cuggWE',
+         'db' => 'josephezati_langas'
      ),
      
     'remember' => array(
