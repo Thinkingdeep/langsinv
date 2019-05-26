@@ -1051,18 +1051,16 @@ if (Input::exists()) {
             foreach ($order_query->results() as $order_query) {
                 $order_id = $order_query->id_client_order;
             }
-            if ($cash_paid > 0) {
+            if ($cash_paid > 0 && $sales_balance > 0) {
                 $arrayUpdateCustomerOrder = array("order_status" => 'PAID');
                 DB::getInstance()->update("client_orders", $order_id, $arrayUpdateCustomerOrder, 'id_client_order');
                 $entry_alert = submissionReport('success', 'Data saved successfully' . $sales_balance);
-
-                if ($sales_balance > 0) {
-                    Redirect::to('index.php?page=new_schedule');
-                }
-            } else {
-                if ($sales_balance > 0) {
-                    Redirect::to('index.php?page=new_schedule');
-                }
+                    Redirect::to('index.php?page=new_schedule&&id_customer='.$customer.'&&id_product='.$product_sold.'&&pay_date='.$pay_date.'&&balance='.$sales_balance.'');
+            } elseif($cash_paid > 0 ) {
+                
+                $arrayUpdateCustomerOrder = array("order_status" => 'PAID');
+                DB::getInstance()->update("client_orders", $order_id, $arrayUpdateCustomerOrder, 'id_client_order');
+                $entry_alert = submissionReport('success', 'Data saved successfully' . $sales_balance);
             }
         } else {
             $entry_alert = submissionReport('error', 'Error in submitting payment');

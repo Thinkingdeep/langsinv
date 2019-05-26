@@ -77,6 +77,18 @@
         </li>
         <li class="treeview">
           <a href="#">
+            <i class="fa fa-circle"></i> <span>Payment schedules</span>
+            <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span>
+          </a>
+          <ul class="treeview-menu">
+            <li><a href="index.php?page=new_schedule"><i class="fa fa-circle-o"></i>New schedule</a></li>
+            <li><a href="index.php?page=view_schedules"><i class="fa fa-circle-o"></i>View schedules</a></li>
+          </ul>
+        </li>
+        <li class="treeview">
+          <a href="#">
             <i class="fa fa-circle"></i> <span>Reports</span>
             <span class="pull-right-container">
               <i class="fa fa-angle-left pull-right"></i>

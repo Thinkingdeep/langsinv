@@ -34,16 +34,15 @@ class User
                 return TRUE;
             }
         }
-        return FALSE;
     }
     public function  login($username=null,$password=null){
         $user=  $this->find($username);
-//        print_r($this->_data);
+        //print_r($this->_data);
         if($user)
         {
-//            if($this->data()->password===Hash::make($password)){
-                //echo 'OK!';
-                Session::put($this->_sessionId, $this->data()->id_user);
+//            if($this->data()->password==Hash::make($password)){
+//                echo 'OK!';
+                Session::put($this->_sessionId, $this->data()->username);
                 return TRUE;
 //            }
         }

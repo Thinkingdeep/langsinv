@@ -150,6 +150,7 @@
                 $("#purchase_balance").val(value);
             }
         })
+        
 
 ///////////////////////////////////////////////////////////////////////////////////////////
         
@@ -182,6 +183,7 @@
             // $("#existing_brand").hide();
             $("#new_brand").hide();
             $("#new_car_color").hide();
+            $("#display_schedule").hide();
         })
         $('#optionsRadios2').click(function () { // when new customer selected, show new customer fields.
             $('#new_customer').hide();
@@ -233,6 +235,34 @@
                 $('#password_notification').show();
             }else{
                 $('#password_notification').hide();
+            }
+        })
+        $('#schedule_start_date').blur(function(){
+            var x = $('#number_of_schedules').val();
+            var y = $('#schedule_amount_to_pay').val();
+            var schedule_date = $('#schedule_start_date').val();
+            if(x!="" && y!="" && schedule_date!=""){
+                x = parseInt(x);
+                y = parseInt(y);
+                var z = y/x;
+                schedule_date = new Date(schedule_date)
+                var month = schedule_date.getMonth();
+                var date = parseInt(schedule_date.getDate());
+                var year = schedule_date.getFullYear();
+
+                for(var i =1;i<=x;i++){
+
+                    schedule_date = new Date(year,month,date+1);
+                   // var today = new Date();
+ var correct_date = schedule_date.toISOString().substring(0, 10);
+                $("#table_display_schedule").find('tbody')
+                .append($('<tr>')
+                    .append($('<td>').text(correct_date))
+                    .append($('<td>').text(z))
+                    )
+                month++;
+            }
+            $("#display_schedule").show();
             }
         })
     });

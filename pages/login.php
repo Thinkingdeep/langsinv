@@ -7,67 +7,28 @@ ob_start();
     include 'includes/header.php';
     ?>
     <?php
-    // global $current_user;
-    $alert_entry = "";
-if(Input::exists()){
-    if(Token::check(Input::get('login_token'))){
-    	$validate = new Validate();
-    	    $validation = $validate->check($_POST, array(
-            'username' => array(
-                'required' => true
-            ),
-            'password' => array(
-                'required' => true
-            )
-        ));
-    	    if($validation->passed()){
-    	    	$user = new User();
-
-    	    	$login = $user->login(Input::get('username'),Input::get('password'));
-    	    	if($login){
-    	    		Redirect::to('index.php?page=dashboard');
-    	    	}else{
-    	    		$alert_entry = "Sorry, login failed";
-    	    	}
-    	    }
-    }
-}
-    // if (Input::exists()) {
-        
-    //     $validate = new Validate();
-    //     $validation = $validate->check($_POST, array(
-    //         'username' => array(
-    //             'required' => true
-    //         ),
-    //         'password' => array(
-    //             'required' => true
-    //         )
-    //     ));
-    //     if ($validation->passed()) {
-    //         $username = Input::get('username');
-    //         $password = sha1(Input::get('password'));
-    //         if (DB::getInstance()->checkRows("SELECT * FROM users WHERE username = '$username' AND user_password = '$password' ")) {
-//                Session::put($username, DB::getInstance()->getName("users", $username, "username", "username"));
-    //             $current_user =  DB::getInstance()->getName("users", $username, "username", "username");
-    //             createSession('Admin');
-    //             Redirect::to('index.php?page=dashboard');
-    //         } else {
-    //             $alert_entry = "Sorry, login failed";
-    //         }
-    //     }
-    // }
-//    if (Input::exists()) {
-//        $username = Input::get('username');
-//        $password = sha1(Input::get('password'));
-//        if (DB::getInstance()->checkRows("SELECT * FROM users WHERE username = '$username' AND user_password = '$password' ")) {
-//            $username = Config::get('session/session_name');
-//            $_SESSION['user_name'] = DB::getInstance()->getName("users", $username, "username", "username");
-//            Redirect::to('index.php?page=dashboard');
-//        } else {
-//            $alert_entry = "Sorry, login failed";
-//        }
-//    }
-    ?>
+    $alert_entry = '';
+                            if (Input::exists()) {
+                                if (Token::check(Input::get("login_token"))) {
+                                    $validate = new Validate();
+                                    $validation = $validate->check($_POST, array(
+                                        'username' => array('required' => TRUE),
+                                        'password' => array('required' => TRUE)
+                                    ));
+                                    if ($validation->passed()) {
+                                        $username = Input::get("username");
+                                        //login user
+                                        $user = new User();
+                                        $login = $user->login(Input::get("username"), Input::get("password"));
+                                        if ($login) {
+                                            Redirect::to('index.php?page=dashboard');
+                                        } else {
+                                            $alert_entry = 'Sorry, login failed';
+                                        }
+                                    } 
+                                }
+                            }
+                            ?>
     <body class="hold-transition login-page">
         <div class="login-box">
             <div class="login-logo">
